@@ -60,8 +60,8 @@ function renderSkills(skills, repoSlug) {
       a.frontmatter.name.localeCompare(b.frontmatter.name),
     );
     for (const s of sorted) {
-      const desc = s.frontmatter.description.trim().replace(/\s+/g, " ");
-      lines.push(`- **\`${s.frontmatter.name}\`**: ${desc}`);
+      const tagline = s.frontmatter.metadata.tagline.trim().replace(/\s+/g, " ");
+      lines.push(`- **\`${s.frontmatter.name}\`**: ${tagline}`);
       lines.push("");
       lines.push("  ```bash");
       lines.push(`  npx skills add ${repoSlug} --skill ${s.frontmatter.name}`);

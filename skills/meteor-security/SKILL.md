@@ -15,6 +15,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: security
+  tagline: "Audit and harden Meteor 3 apps (`check()` coverage, `this.userId` guards, browser-policy CSP, rate limits, oauth-encryption)."
   bundle: ["essentials", "fullstack"]
   docs_synced_at: "2026-05-14"
 license: MIT

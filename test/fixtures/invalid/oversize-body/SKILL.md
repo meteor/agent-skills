@@ -8,6 +8,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: test
+  tagline: "Fixture tagline for the body-size rule."
 ---
 
 # Big body

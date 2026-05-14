@@ -35,8 +35,11 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: migration
+  tagline: "Migrate Meteor 2.x code to Meteor 3.x async APIs (callAsync, findOneAsync, Fibers removal)."
 ---
 ```
+
+`description` is agent-facing and packed with trigger phrases so the assistant picks the skill against a user prompt. `tagline` is human-facing: a short one-liner (16-200 chars) rendered as the bullet text in the README catalog. Keep them separate; do not collapse one into the other.
 
 Optional:
 
@@ -51,6 +54,7 @@ license: MIT
 
 - `name` must equal the folder name.
 - `description` is <=1024 characters and contains at least two trigger phrases. Trigger phrases include: `Use when`, `Use this skill when`, `Use this Skill when`, `Triggers on`, any `ask about` or `asks about` substring.
+- `metadata.tagline` is 16-200 characters. Rendered verbatim into the README catalog.
 - `metadata.kind` is one of `knowledge`, `tool`, `workflow`.
 - `metadata.meteor` is a semver range. Default for v1: `">=3.0"`.
 - `metadata.author` is always the literal string `meteor`. Non-Meteor-org skills do not belong in this repo.

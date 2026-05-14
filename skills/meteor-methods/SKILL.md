@@ -12,6 +12,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: data
+  tagline: "Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`)."
   bundle: ["essentials", "fullstack"]
   docs_synced_at: "2026-05-14"
 license: MIT

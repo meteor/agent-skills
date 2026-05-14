@@ -21,6 +21,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.3"
   area: build
+  tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
   docs_synced_at: "2026-05-14"
 license: MIT

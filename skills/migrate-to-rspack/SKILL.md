@@ -19,6 +19,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.4"
   area: migration
+  tagline: "Migrate an existing Meteor 3 app to the Rspack bundler integration (`mainModule`, replacing legacy build plugins with loaders)."
   bundle: ["migration"]
   docs_synced_at: "2026-05-14"
 license: MIT

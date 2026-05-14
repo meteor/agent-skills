@@ -22,7 +22,7 @@
     },
     "metadata": {
       "type": "object",
-      "required": ["author", "version", "kind", "meteor", "area"],
+      "required": ["author", "version", "kind", "meteor", "area", "tagline"],
       "additionalProperties": true,
       "properties": {
         "author": {
@@ -43,6 +43,11 @@
           "type": "string",
           "minLength": 1,
           "maxLength": 64
+        },
+        "tagline": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 200
         },
         "bundle": {
           "type": "array",

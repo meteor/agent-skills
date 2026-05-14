@@ -5,7 +5,7 @@ Preamble that the generator must not touch.
 <!-- SKILLS:BEGIN -->
 ### Auth
 
-- **`meteor-bar`**: Use when fixture-testing the catalog generator. Triggers on catalog rendering. Ask about Bar in tests.
+- **`meteor-bar`**: Fixture tagline for the catalog generator (bar).
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-bar
@@ -13,7 +13,7 @@ Preamble that the generator must not touch.
 
 ### Data
 
-- **`meteor-foo`**: Use when fixture-testing the catalog generator. Triggers on catalog rendering. Ask about Foo in tests.
+- **`meteor-foo`**: Fixture tagline for the catalog generator (foo).
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-foo

@@ -1,7 +1,6 @@
 {
   "bundles": {
     "essentials": [
-      "migrate-to-meteor-3",
       "meteor-modern-build-stack",
       "meteor-methods",
       "meteor-pubsub",

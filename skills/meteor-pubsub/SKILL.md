@@ -13,6 +13,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: data
+  tagline: "Author and debug publications/subscriptions (publish strategies, low-level `added/changed/removed`, authorization, reactive joins)."
   bundle: ["essentials", "fullstack"]
   docs_synced_at: "2026-05-14"
 license: MIT

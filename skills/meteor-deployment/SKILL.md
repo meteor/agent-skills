@@ -15,6 +15,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: ops
+  tagline: "Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching)."
   bundle: ["ops"]
   docs_synced_at: "2026-05-14"
 license: MIT

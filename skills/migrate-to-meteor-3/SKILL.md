@@ -21,7 +21,8 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: migration
-  bundle: ["migration", "essentials"]
+  tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
+  bundle: ["migration"]
   docs_synced_at: "2026-05-14"
 license: MIT
 ---

@@ -9,6 +9,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: auth
+  tagline: "Fixture tagline for the catalog generator (bar)."
 ---
 
 # Bar

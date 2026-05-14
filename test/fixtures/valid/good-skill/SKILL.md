@@ -10,6 +10,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: test
+  tagline: "Fixture tagline for the validator happy path."
 ---
 
 # Good skill

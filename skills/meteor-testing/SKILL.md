@@ -14,6 +14,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: testing
+  tagline: "Set up and debug tests (`meteortesting:mocha`, async test signatures, testing methods/publications, Playwright/Cypress E2E)."
   bundle: ["fullstack"]
   docs_synced_at: "2026-05-14"
 license: MIT

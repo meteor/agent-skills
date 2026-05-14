@@ -9,6 +9,7 @@ metadata:
   kind: knowledge
   meteor: ">=3.0"
   area: meta
+  tagline: "Template fixture used to scaffold new skills under skills/."
 ---
 
 # Template skill
@@ -27,6 +28,7 @@ Then edit:
 
 - Folder name: must equal `name` in frontmatter.
 - `name`: lowercase-kebab-case.
-- `description`: at least two trigger phrases.
+- `description`: at least two trigger phrases. Agent-facing; pack with trigger keywords.
+- `metadata.tagline`: short one-line summary rendered in the README catalog (16-200 chars).
 - `metadata.version`: start at `0.1.0`.
 - This body: replace with the actual skill content.
