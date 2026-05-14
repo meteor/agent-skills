@@ -13,7 +13,7 @@ The open `skills` CLI installs skills into your local agent (Claude Code, Cursor
 npx skills add meteor/agent-skills
 
 # one skill
-npx skills add meteor/agent-skills --skill meteor-async-migration
+npx skills add meteor/agent-skills --skill migrate-to-meteor-3
 
 # every skill, non-interactive
 npx skills add meteor/agent-skills --all
@@ -40,7 +40,24 @@ Coming in plan 06.
 
 ## Manual install
 
-Coming in plan 03.
+For users who cannot or do not want to run `npx skills add`:
+
+1. Open the [latest release](https://github.com/meteor/agent-skills/releases/latest).
+2. Download the `.zip` for the skill you want, e.g. `migrate-to-meteor-3.zip`.
+3. Unzip into your agent's skills directory:
+
+   ```bash
+   # Claude Code (project)
+   mkdir -p .claude/skills/migrate-to-meteor-3
+   unzip ~/Downloads/migrate-to-meteor-3.zip -d .claude/skills/migrate-to-meteor-3
+
+   # Claude Code (global)
+   mkdir -p ~/.claude/skills/migrate-to-meteor-3
+   unzip ~/Downloads/migrate-to-meteor-3.zip -d ~/.claude/skills/migrate-to-meteor-3
+   ```
+
+Other agents follow the same pattern with their own skills directory (for
+example `.cursor/skills/`, `.codex/skills/`).
 
 ## Contributing
 

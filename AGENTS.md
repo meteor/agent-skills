@@ -132,6 +132,13 @@ pnpm test
 
 All three must pass before opening a PR.
 
+## Zip artifacts
+
+`.zip` files under `skills/` are built artifacts and must not be committed.
+The release workflow builds them on tag and uploads them as GitHub Release
+assets. Locally, `pnpm run build:zips` produces them under `skills/` for
+inspection; they are gitignored.
+
 ## How a skill is reviewed
 
 1. Validator must pass.

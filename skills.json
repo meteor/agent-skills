@@ -1,0 +1,16 @@
+{
+  "$schema": "https://unpkg.com/skills-package-manager@0.9.0/skills.schema.json",
+  "installDir": ".agents/skills",
+  "skills": [
+    {
+      "name": "skill-creator",
+      "source": "github:rstackjs/agent-skills",
+      "path": "skills/skill-creator"
+    },
+    {
+      "name": "skill-evaluator",
+      "source": "github:rstackjs/agent-skills",
+      "path": "dev-skills/rstack-skill-evaluator"
+    }
+  ]
+}
