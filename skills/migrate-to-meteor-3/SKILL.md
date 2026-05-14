@@ -2,15 +2,13 @@
 name: migrate-to-meteor-3
 description: >
   Use when migrating a Meteor 2.x application to Meteor 3.x. Triggers on
-  callAsync, findOneAsync, removed Fibers, "X is not a function" errors,
-  ReferenceError on top-level globals, "page renders but Minimongo is empty",
-  Iron Router controllers not firing, lost reactivity after await, Blaze
-  templates rendering nothing, Atmosphere packages failing to resolve,
-  cursor.added writes never reaching the client. Use this skill when the
-  user asks about upgrading, asks about sync to async rewrites, asks about
-  strict mode and explicit imports, asks about Tracker reactivity in async
-  helpers, asks about replacing or forking third-party packages, or asks
-  about iterators with await.
+  callAsync, *Async Mongo methods, removed Fibers, ReferenceError on
+  top-level globals after upgrade, Iron Router controllers silently not
+  running, lost reactivity in Blaze helpers after async rewrites, "publish
+  function returned a Promise", and Atmosphere packages failing to resolve
+  after the upgrade. Use this skill when the user asks about upgrading
+  Meteor, asks about sync to async rewrites, asks about iterators with
+  await, or asks about replacing or forking third-party packages.
 metadata:
   author: meteor
   version: "0.2.0"
