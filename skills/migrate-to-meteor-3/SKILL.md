@@ -100,4 +100,5 @@ client cleanup.
 - `references/publications.md`: cursor internals and the publish API.
 - `references/package-triage.md`: Atmosphere dependency strategy.
 - `references/js-iterators.md`: iterators that contain `await`.
+- `references/community-case-studies.md`: real-world migration write-ups (Galaxy blog, dev.to) and which failure modes each covers.
 - `references/eval-cases.md`: smoke-test prompts.
