@@ -18,7 +18,7 @@ metadata:
   version: "0.1.0"
   kind: knowledge
   meteor: ">=3.4"
-  area: build
+  area: migration
   bundle: ["migration"]
   docs_synced_at: "2026-05-14"
 license: MIT

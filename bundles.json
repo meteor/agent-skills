@@ -1,0 +1,27 @@
+{
+  "bundles": {
+    "essentials": [
+      "migrate-to-meteor-3",
+      "meteor-modern-build-stack",
+      "meteor-methods",
+      "meteor-pubsub",
+      "meteor-mongo-minimongo",
+      "meteor-security"
+    ],
+    "migration": [
+      "migrate-to-meteor-3",
+      "migrate-to-rspack"
+    ],
+    "fullstack": [
+      "meteor-methods",
+      "meteor-pubsub",
+      "meteor-mongo-minimongo",
+      "meteor-accounts",
+      "meteor-security",
+      "meteor-testing"
+    ],
+    "ops": [
+      "meteor-deployment"
+    ]
+  }
+}

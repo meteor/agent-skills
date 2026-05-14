@@ -139,6 +139,24 @@ The release workflow builds them on tag and uploads them as GitHub Release
 assets. Locally, `pnpm run build:zips` produces them under `skills/` for
 inspection; they are gitignored.
 
+## Regenerating the catalog
+
+After adding or editing a skill, regenerate the README catalog and the
+bundles install snippets:
+
+```bash
+pnpm run catalog:write
+```
+
+Commit the README diff in the same PR. CI runs `pnpm run catalog:check`
+and fails the PR if `README.md` is out of sync. Bundle membership lives
+in `bundles.json`; keep it in step with each skill's `metadata.bundle`
+array.
+
+The `<!-- SKILLS:BEGIN -->...<!-- SKILLS:END -->` and
+`<!-- BUNDLES:BEGIN -->...<!-- BUNDLES:END -->` blocks belong to the
+generator. Hand edits inside the markers are reverted on next run.
+
 ## How a skill is reviewed
 
 1. Validator must pass.
