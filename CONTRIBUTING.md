@@ -22,6 +22,23 @@ All three must pass before opening a PR.
 5. Run the local checks.
 6. Open a PR. Describe the skill in two sentences in the PR body.
 
+## Smoke test against a local agent
+
+Once your skill validates, install it into a local agent and run the eval
+cases against a real LLM.
+
+```bash
+# From the meteor/agent-skills repo root
+npx skills add ./ --skill <your-skill-name>
+
+# Open a project that uses Claude Code (or Cursor / Codex / etc.).
+# Run each prompt in references/eval-cases.md by hand.
+# Mark pass/fail in the PR description.
+```
+
+The PR is not ready to merge until every eval case passes for at least two
+distinct agents.
+
 ## Reporting an issue
 
 Open a GitHub issue using one of the templates. See `.github/ISSUE_TEMPLATE/` (plan 07).

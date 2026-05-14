@@ -22,7 +22,15 @@ npx skills add meteor/agent-skills --all
 ## Catalog
 
 <!-- SKILLS:BEGIN -->
-*No public skills yet. Plan 02 lands the first one.*
+### Migration
+
+- **`meteor-async-migration`**: Use when migrating Meteor 2.x to Meteor 3.x.
+  Covers `callAsync`, `*Async` Mongo methods, removed Fibers helpers, and the
+  common errors after upgrade.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-async-migration
+  ```
 <!-- SKILLS:END -->
 
 ## Bundles
