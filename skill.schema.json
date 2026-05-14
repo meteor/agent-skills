@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/meteor/agent-skills/blob/main/skill.schema.json",
+  "title": "Meteor Agent Skill frontmatter",
+  "type": "object",
+  "required": ["name", "description", "metadata"],
+  "additionalProperties": true,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^_?[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+      "maxLength": 64
+    },
+    "description": {
+      "type": "string",
+      "minLength": 32,
+      "maxLength": 1024
+    },
+    "license": {
+      "type": "string",
+      "enum": ["MIT"]
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["author", "version", "kind", "meteor", "area"],
+      "additionalProperties": true,
+      "properties": {
+        "author": {
+          "const": "meteor"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
+        },
+        "kind": {
+          "enum": ["knowledge", "tool", "workflow"]
+        },
+        "meteor": {
+          "type": "string",
+          "minLength": 1
+        },
+        "area": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 64
+        },
+        "bundle": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+          "uniqueItems": true
+        },
+        "docs_synced_at": {
+          "type": "string",
+          "format": "date"
+        }
+      }
+    }
+  }
+}

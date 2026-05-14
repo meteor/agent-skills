@@ -1,0 +1,23 @@
+{
+  "name": "@meteor/agent-skills",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Agent Skills for Meteor 3 application developers.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "validate": "node scripts/validate-skills.mjs",
+    "check-links": "node scripts/check-links.mjs",
+    "test": "rstest run"
+  },
+  "devDependencies": {
+    "@rstest/core": "^0.9.10",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "gray-matter": "^4.0.3"
+  },
+  "license": "MIT"
+}

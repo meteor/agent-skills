@@ -1,0 +1,13 @@
+node_modules/
+*.log
+.DS_Store
+.vscode/
+.idea/
+
+# built artifacts (plan 03)
+skills/**/*.zip
+
+# test artifacts
+coverage/
+.vitest-cache/
+test/fixtures/**/*.hydrated
