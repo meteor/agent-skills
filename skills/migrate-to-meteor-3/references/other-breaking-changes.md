@@ -95,6 +95,78 @@ be upgraded or replaced. Audit `package.json` for any `engines.node`
 constraint and any package whose latest release pre-dates Node 18 active
 support.
 
+## "Cannot enlarge memory array" during `meteor update`
+
+Running `meteor update --release=3.x` directly from a heavy 2.x project
+sometimes crashes with:
+
+```
+MINISAT-out: Cannot enlarge memory arrays.
+abort() at Error
+```
+
+The version-constraint solver (`minisat`) runs out of memory while
+resolving the upgrade against a large `.meteor/packages` file. The fix
+is to reduce the package surface before the upgrade:
+
+1. Remove every Atmosphere package the app no longer uses.
+2. Update or fork remaining packages to declare
+   `api.versionsFrom(['2.x', '3.0'])` so the solver has fewer
+   alternatives to consider.
+3. Retry the upgrade. If it still fails, comment out non-core packages
+   in `.meteor/packages`, upgrade, then re-add them one by one.
+
+This is the same root cause as "the install just hangs forever" reports.
+
+## `Meteor.bindEnvironment` for external callbacks
+
+Code that registers a callback with a non-Meteor library (a third-party
+SDK, a raw Node stream, a global event emitter) loses Meteor context.
+`this.userId`, `Meteor.user()`, `Meteor.EnvironmentVariable` values all
+read as `undefined` inside the callback.
+
+Wrap the callback with `Meteor.bindEnvironment`:
+
+```javascript
+import { Meteor } from 'meteor/meteor';
+
+externalSdk.on('event', Meteor.bindEnvironment(async (payload) => {
+  // Meteor context is restored here. this.userId / Meteor.user() work.
+  await Posts.insertAsync({ payload, createdBy: Meteor.userId() });
+}));
+```
+
+This is not new in Meteor 3, but it surfaces more often because async
+code paths are everywhere. If a callback used to work and now doesn't,
+suspect lost environment and reach for `bindEnvironment`.
+
+## Monkey-patching from `Meteor.startup()`
+
+Code that monkey-patches a Meteor API (intercepting `Meteor.publish`,
+wrapping `Accounts.createUser`, etc.) must run after the API is loaded.
+On 3.x, package load order is less forgiving than on 2.x; patches at the
+top of a file may fire before the target API exists.
+
+Wrap the patch in `Meteor.startup`:
+
+```javascript
+import { Meteor } from 'meteor/meteor';
+
+Meteor.startup(() => {
+  const original = Meteor.publish;
+  Meteor.publish = function (name, handler, ...rest) {
+    return original.call(this, name, async function (...args) {
+      // patched behavior
+      return handler.apply(this, args);
+    }, ...rest);
+  };
+});
+```
+
+Symptom: the patch is in the codebase but the wrapped behavior never
+runs. The patch fired before the target API loaded, so `Meteor.publish`
+was `undefined` at patch time and the assignment was a no-op.
+
 ## NPM installer
 
 The official Meteor install command is now `npx meteor` (a thin npm

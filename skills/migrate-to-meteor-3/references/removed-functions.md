@@ -35,6 +35,26 @@ Inside a method or publication, `this.userId` works unchanged.
 | `Accounts.createUser(opts, cb)`        | `await Accounts.createUserAsync(opts)`      |
 | `Accounts.setPassword(uid, p, opts)`   | `await Accounts.setPasswordAsync(uid, p)`   |
 | `Accounts.changePassword(old, new)`    | `await Accounts.changePasswordAsync(old, new)` |
+| `Accounts.addEmail(uid, addr)`         | `await Accounts.addEmailAsync(uid, addr)`   |
+
+## Email
+
+| Removed                  | Replacement                          |
+|--------------------------|--------------------------------------|
+| `Email.send(options)`    | `await Email.sendAsync(options)`     |
+
+## Assets
+
+| Removed                    | Replacement                            |
+|----------------------------|----------------------------------------|
+| `Assets.getText(path)`     | `await Assets.getTextAsync(path)`      |
+| `Assets.getBinary(path)`   | `await Assets.getBinaryAsync(path)`    |
+
+## Mongo index management
+
+| Removed                                | Replacement                                 |
+|----------------------------------------|---------------------------------------------|
+| `Collection._ensureIndex(spec, opts?)` | `await Collection.createIndexAsync(spec, opts?)` |
 
 ## Fibers helpers
 

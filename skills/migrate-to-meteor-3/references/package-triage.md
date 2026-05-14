@@ -83,6 +83,25 @@ breaking changes in major versions (typically array shorthand and decimal
 options). Keep the schema definitions next to the collection definitions
 so a single audit pass covers them.
 
+## Known replacements
+
+Common Atmosphere packages that have a community-blessed 3.x successor:
+
+| Was                                 | Replace with                                       |
+|-------------------------------------|----------------------------------------------------|
+| `kadira:flow-router`                | `ostrio:flow-router-extra`                         |
+| `percolate:synced-cron`             | `quave:synced-cron`                                |
+| `aldeed:collection2` (1.x/2.x)      | `aldeed:collection2@4.0.0` (bundles `aldeed:simple-schema`; drop the npm `simpl-schema` dep) |
+| `mquandalle:jade`                   | Removed. Migrate templates to Blaze HTML or another templating package. |
+| `simple:json-routes` / Restivus     | `WebApp.handlers` with Express routes (see `webapp-express.md`). |
+| `tmeasday:publish-counts`           | `compat:publish-counts` (community fork)           |
+| `meteor/http` (`HTTP.get`/`post`)   | `meteor/fetch` or native `fetch`                   |
+| `underscore` (Atmosphere)           | Native ES `Array` / `Object` methods, or the npm `underscore` if you really need it. |
+
+This is a starting set, not exhaustive. For any package not listed,
+search the community fork organizations or Packosphere before forking
+yourself.
+
 ## When to publish back
 
 If the original package is dormant, publish your fork under a different

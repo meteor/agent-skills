@@ -5,13 +5,16 @@ description: >
   callAsync, *Async Mongo methods, removed Fibers, ReferenceError on
   top-level globals after upgrade, Iron Router controllers silently not
   running, lost reactivity in Blaze helpers after async rewrites, "publish
-  function returned a Promise", Atmosphere packages failing to resolve,
-  WebApp.handlers replacing WebApp.connectHandlers under Express 5,
-  Meteor.EnvironmentVariable context lost in async, and rawCollection
-  callbacks no longer firing. Use this skill when the user asks about
-  upgrading Meteor, asks about sync to async rewrites, asks about iterators
-  with await, asks about Express middleware migration, or asks about
-  replacing or forking third-party packages.
+  function returned a Promise", "Method stub took too long", Atmosphere
+  packages failing to resolve, WebApp.handlers replacing
+  WebApp.connectHandlers under Express 5, Meteor.EnvironmentVariable
+  context lost in async, rawCollection callbacks no longer firing,
+  meteor/* imports losing TypeScript types after upgrade, useTracker and
+  useSubscribe not re-running after upgrade. Use this skill when the user
+  asks about upgrading Meteor, asks about sync to async rewrites, asks
+  about iterators with await, asks about Express middleware migration,
+  asks about zodern:types, or asks about replacing or forking third-party
+  packages.
 metadata:
   author: meteor
   version: "0.2.0"
@@ -33,20 +36,32 @@ in phases. Do not flip the framework version flag first.
 ## Recommended strategy
 
 1. Update the project to the latest 2.x release.
-2. Migrate server-side sync Mongo calls to `*Async` siblings while still on
-   2.x. See `references/async-rewrites.md` and `references/call-vs-callAsync.md`.
-3. Audit Atmosphere packages. Find replacements or fork outdated ones; pin
-   `api.versionsFrom(['2.x', '3.0'])`. See `references/package-triage.md`.
-4. Upgrade to Meteor 3.x.
-5. Sweep implicit globals; rewrite to `const` or `export` / `import`.
+2. Run the app with `WARN_WHEN_USING_OLD_API=true meteor run`. The console
+   logs every sync-API call that needs an async sibling, giving you a
+   to-do list before the framework flip.
+3. Migrate server-side sync Mongo calls to `*Async` siblings while still
+   on 2.x. See `references/async-rewrites.md` and
+   `references/call-vs-callAsync.md`. A community jscodeshift codemod
+   automates the easy cases, but it misses non-standard collection
+   imports (for example, `meteor/<publisher>:collections`). Review the
+   diff by hand.
+4. Audit Atmosphere packages. Find replacements or fork outdated ones;
+   pin `api.versionsFrom(['2.x', '3.0'])`. See
+   `references/package-triage.md`.
+5. Upgrade to Meteor 3.x.
+6. Sweep implicit globals; rewrite to `const` or `export` / `import`.
    See `references/module-system.md`.
-6. Audit Blaze helpers and `Tracker.autorun` blocks for lost reactivity
+7. Audit Blaze helpers and `Tracker.autorun` blocks for lost reactivity
    after `await`. See `references/client-reactivity.md`.
-7. Replace iterators that contain `await` (`forEach`, `map`, `filter`) with
-   `for...of` or `Promise.all`. See `references/js-iterators.md`.
-8. Audit publications using internal cursor APIs (`_cursorDescription`,
+8. Replace iterators that contain `await` (`forEach`, `map`, `filter`)
+   with `for...of` or `Promise.all`. See `references/js-iterators.md`.
+9. Audit publications using internal cursor APIs (`_cursorDescription`,
    manual `sub.added`). Prefer returning cursors directly.
    See `references/publications.md`.
+10. For TypeScript projects, install `zodern:types` and update
+    `tsconfig.json`. See `references/typescript-migration.md`.
+11. For React projects, decide whether to adopt the Suspense-aware
+    `react-meteor-data` import. See `references/react-migration.md`.
 
 ## Symptom router
 
@@ -70,6 +85,12 @@ in phases. Do not flip the framework version flag first.
 | `rawCollection` callback never fires                 | `references/other-breaking-changes.md` |
 | `EnvironmentVariable.withValue` context is `undefined` in an async handler | `references/other-breaking-changes.md` |
 | `meteor reset` did not wipe the local Mongo          | `references/other-breaking-changes.md` |
+| `Method stub (X) took too long` console warning      | `references/call-vs-callAsync.md`      |
+| "Cannot enlarge memory array" during `meteor update` | `references/other-breaking-changes.md` |
+| External callback lost `this.userId` or env vars     | `references/other-breaking-changes.md` |
+| Monkey-patched `Meteor.publish` never runs           | `references/other-breaking-changes.md` |
+| `meteor/*` imports resolve to `any` in TypeScript    | `references/typescript-migration.md`   |
+| `useTracker` or `useSubscribe` not re-running        | `references/react-migration.md`        |
 
 ## Anti-patterns
 
@@ -109,7 +130,9 @@ client cleanup.
 - `references/package-triage.md`: Atmosphere dependency strategy.
 - `references/js-iterators.md`: iterators that contain `await`.
 - `references/webapp-express.md`: WebApp / Express 5 API renames and Express 5 routing changes.
-- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, Node 22 baseline.
+- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, Node 22 baseline, "Cannot enlarge memory array" on upgrade, `Meteor.bindEnvironment` for external callbacks, monkey-patching from `Meteor.startup`.
+- `references/typescript-migration.md`: `zodern:types`, `tsconfig.json` updates for existing TS projects.
+- `references/react-migration.md`: Suspense-aware `react-meteor-data`, `useTracker(key, fn)`, `useSubscribe` suspends.
 - `references/eval-cases.md`: smoke-test prompts.
 
 ## Further reading (optional)

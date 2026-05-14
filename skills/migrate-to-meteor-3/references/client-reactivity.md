@@ -63,20 +63,46 @@ Template.profile.helpers({
 Reactivity is preserved through the first `await`. Any reactive reads after
 that need `Tracker.withComputation` to be tracked.
 
-## The `@resolved` Blaze helper
+## Blaze async helpers (Blaze 2.7+)
 
-When a template passes an async value into a sub-template, Blaze can
-suspend rendering until the Promise settles:
+Blaze 2.7+ understands Promises returned by helpers and exposes three
+state directives inside `{{#let}}`:
+
+- `@resolved "<name>"`: true once the named `let` binding has settled.
+- `@pending "<name>"`: true while the named `let` binding is still
+  awaiting.
+- `@rejected "<name>"`: true if the named `let` binding threw or its
+  Promise rejected.
 
 ```handlebars
 {{#let user=getUserAsync}}
+  {{#if @pending "user"}}<Spinner />{{/if}}
+  {{#if @rejected "user"}}<Error msg="Could not load user" />{{/if}}
   {{#if @resolved "user"}}
     {{> profile data=user}}
   {{/if}}
 {{/let}}
 ```
 
-`@resolved "name"` is true once the named `let` binding has settled.
+This gives the same surface as React Suspense: a spinner during the
+await, an error region on rejection, the resolved value once ready.
+
+## Async iteration in Blaze
+
+`{{#each}}` accepts an async helper that returns a Promise of an array
+or cursor. Pair it with `{{else}}` for an empty-state branch:
+
+```handlebars
+{{#each user in getUsersAsync}}
+  {{> userRow user=user}}
+{{else}}
+  <p>No users yet.</p>
+{{/each}}
+```
+
+The minimum Blaze version for these directives is 2.7. If your project
+pins an older Blaze, upgrade `blaze-html-templates` and the
+`blaze` runtime packages before relying on `@pending`/`@rejected`.
 
 ## Symptoms
 

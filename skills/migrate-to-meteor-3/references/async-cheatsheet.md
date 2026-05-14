@@ -18,6 +18,11 @@ Quick lookup for the sync-to-async rewrite Meteor 3 requires on the server.
 | User identity (server) | `Meteor.user()`                 | `await Meteor.userAsync()`              |
 | Accounts create        | `Accounts.createUser(o, cb)`    | `await Accounts.createUserAsync(o)`     |
 | Accounts password set  | `Accounts.setPassword(...)`     | `await Accounts.setPasswordAsync(...)`  |
+| Accounts add email     | `Accounts.addEmail(uid, addr)`  | `await Accounts.addEmailAsync(uid, addr)` |
+| Email                  | `Email.send(opts)`              | `await Email.sendAsync(opts)`           |
+| Mongo index            | `Collection._ensureIndex(spec)` | `await Collection.createIndexAsync(spec)` |
+| Asset, text            | `Assets.getText(path)`          | `await Assets.getTextAsync(path)`       |
+| Asset, binary          | `Assets.getBinary(path)`        | `await Assets.getBinaryAsync(path)`     |
 
 Minimongo on the client keeps the synchronous API. None of these rewrites
 apply to the client.
