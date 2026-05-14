@@ -32,6 +32,32 @@ npx skills add meteor/agent-skills --all
   ```bash
   npx skills add meteor/agent-skills --skill migrate-to-meteor-3
   ```
+
+### Data
+
+- **`meteor-methods`**: Use when authoring or debugging Meteor methods.
+  Covers `check()` validation, optimistic stubs, `DDPRateLimiter`, and
+  `Meteor.Error` shape.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-methods
+  ```
+
+- **`meteor-pubsub`**: Use when authoring or debugging publications and
+  subscriptions. Covers `this.userId` filters, publication strategies, and
+  the low-level publish API for async joins.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-pubsub
+  ```
+
+- **`meteor-mongo-minimongo`**: Use when writing Mongo queries on the server
+  or Minimongo on the client. Covers async server APIs, sync Minimongo,
+  indexes, selectors, modifiers, and projections.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-mongo-minimongo
+  ```
 <!-- SKILLS:END -->
 
 ## Bundles
