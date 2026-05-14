@@ -33,6 +33,26 @@ npx skills add meteor/agent-skills --all
   npx skills add meteor/agent-skills --skill migrate-to-meteor-3
   ```
 
+- **`migrate-to-rspack`**: Use when converting an existing Meteor 3 app to
+  the Rspack bundler integration. Covers entry points, nested-import
+  cleanup, build-plugin replacements (SCSS/Less/Svelte/CoffeeScript),
+  default-import interop, and CI/Docker `meteor update --npm`.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill migrate-to-rspack
+  ```
+
+### Build
+
+- **`meteor-modern-build-stack`**: Use when enabling or tuning the modern
+  build stack: SWC transpiler, SWC minifier, `@parcel/watcher`,
+  `.meteorignore`, and the Rspack bundler integration. Covers
+  `"modern": true`, `.swcrc`, and `rspack.config.js` helpers.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-modern-build-stack
+  ```
+
 ### Data
 
 - **`meteor-methods`**: Use when authoring or debugging Meteor methods.
