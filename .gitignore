@@ -11,3 +11,4 @@ skills/**/*.zip
 coverage/
 .vitest-cache/
 test/fixtures/**/*.hydrated
+test/fixtures/catalog/README.work.md
