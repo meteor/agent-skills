@@ -78,6 +78,46 @@ npx skills add meteor/agent-skills --all
   ```bash
   npx skills add meteor/agent-skills --skill meteor-mongo-minimongo
   ```
+
+### Auth
+
+- **`meteor-accounts`**: Use when wiring up authentication.
+  Covers `accounts-password`, OAuth provider configuration, 2FA, and
+  HttpOnly-cookie token storage.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-accounts
+  ```
+
+### Security
+
+- **`meteor-security`**: Use when auditing or hardening a Meteor 3 app.
+  Covers method and publication guards, `browser-policy` CSP recipes,
+  rate limiting, and `oauth-encryption`.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-security
+  ```
+
+### Testing
+
+- **`meteor-testing`**: Use when setting up tests with
+  `meteortesting:mocha`. Covers method and publication handler tests,
+  `DDP.connect` in `--full-app` mode, and CI scripts.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-testing
+  ```
+
+### Ops
+
+- **`meteor-deployment`**: Use when deploying a Meteor 3 app. Covers
+  `meteor build`, Galaxy, Docker, env vars, `settings.json`, and
+  Meteor-Node version pairing.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-deployment
+  ```
 <!-- SKILLS:END -->
 
 ## Bundles

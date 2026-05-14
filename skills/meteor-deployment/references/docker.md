@@ -1,0 +1,81 @@
+# Docker
+
+## Multi-stage Dockerfile
+
+```dockerfile
+# --- build stage ---------------------------------------------------------
+FROM node:22-bookworm AS builder
+
+# Build deps for native npm packages (sharp, sqlite, etc.)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 make g++ git ca-certificates curl \
+  && rm -rf /var/lib/apt/lists/*
+
+# Install Meteor for the build
+RUN curl -sSL https://install.meteor.com/ | sh
+
+WORKDIR /app
+COPY . .
+
+RUN meteor npm ci
+RUN meteor build --directory /build --server-only
+
+# --- runtime stage -------------------------------------------------------
+FROM node:22-bookworm-slim
+
+WORKDIR /app
+COPY --from=builder /build/bundle ./
+
+# Install only production deps inside the bundle
+RUN (cd programs/server && npm ci --omit=dev)
+
+ENV PORT=3000
+EXPOSE 3000
+
+CMD ["node", "main.js"]
+```
+
+Match the `node:` tag to the Meteor's bundled Node (3.3=20, 3.4=22,
+3.5=24). On M-series Macs targeting x86_64 Linux, add
+`--architecture os.linux.x86_64` to `meteor build`.
+
+`--server-only` skips the client bundle (smaller image; CDN serves the
+client). Drop it if the same Node process should serve the client too.
+
+## Build and run
+
+```bash
+docker build -t my-app:latest .
+
+docker run --rm -p 3000:3000 \
+  -e ROOT_URL=https://app.example.com \
+  -e MONGO_URL=mongodb+srv://user:pass@cluster.mongodb.net/myapp \
+  -e METEOR_SETTINGS="$(cat settings.json)" \
+  my-app:latest
+```
+
+## Native deps
+
+If a native dep (`sharp`, `canvas`, `sqlite3`) fails inside the runtime
+image, copy its prebuilt binaries from the builder rather than
+recompiling:
+
+```dockerfile
+COPY --from=builder /app/node_modules/sharp ./programs/server/node_modules/sharp
+```
+
+For workers shipped by transitive deps (e.g. `thread-stream` from Mongo),
+see the `meteor-modern-build-stack` skill: when using rspack, route the
+dep through `Meteor.compileWithMeteor`.
+
+## Healthcheck
+
+```dockerfile
+HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+  CMD node -e "fetch('http://localhost:'+(process.env.PORT||3000)).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+```
+
+Meteor returns 200 on `/` once the server is ready.
+
+---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/tutorials/deployment/deployment.md

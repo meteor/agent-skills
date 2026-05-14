@@ -1,0 +1,73 @@
+# Password flows
+
+## Forgot password (client)
+
+```javascript
+Accounts.forgotPassword({ email }, (err) => {
+  if (err) console.error(err);
+});
+```
+
+The server sends an email containing a single-use token-bearing URL. The
+URL pattern is controlled by `Accounts.urls.resetPassword`; the message
+template is controlled by `Accounts.emailTemplates.resetPassword.*`.
+
+```javascript
+Accounts.urls.resetPassword = (token, extraParams) =>
+  Meteor.absoluteUrl(`reset/${token}`);
+
+Accounts.emailTemplates.resetPassword.subject = () => "Reset your password";
+Accounts.emailTemplates.resetPassword.from = () => "no-reply@example.com";
+Accounts.emailTemplates.resetPassword.text = (user, url) =>
+  `Click to reset: ${url}`;
+```
+
+`Accounts.urls.*` setters accept async functions in Meteor 3.x. Both
+`Accounts.emailTemplates.*.from` and the global `Accounts.emailTemplates.from`
+must be set; missing `from` triggers a server warning in 3.5+.
+
+## Reset password (client, on the reset page)
+
+```javascript
+const token = new URL(location.href).pathname.split("/").pop();
+Accounts.resetPassword(token, newPassword, (err) => {
+  if (err) console.error(err);
+});
+```
+
+After success, the user is logged in.
+
+## Change password (authenticated user)
+
+```javascript
+Accounts.changePassword(oldPassword, newPassword, (err) => {
+  if (err) console.error(err);
+});
+```
+
+## Verify email
+
+```javascript
+Accounts.verifyEmail(token, (err) => {
+  if (err) console.error(err);
+});
+```
+
+The link is sent via `Accounts.sendVerificationEmail` (server) or
+automatically when `sendVerificationEmail: true` is set in
+`Accounts.config`. Customize the URL with `Accounts.urls.verifyEmail`.
+
+## Server APIs (async)
+
+- `await Accounts.createUserAsync(options)`
+- `await Accounts.setPasswordAsync(userId, newPassword, options?)`
+- `Accounts.sendVerificationEmail(userId, email?)`
+- `Accounts.sendEnrollmentEmail(userId, email?)`
+- `Accounts.sendResetPasswordEmail(userId, email?)`
+
+`createUserAsync` is the only one currently exposed with an `Async`
+suffix; the others remain callback-/sync-style on the server but are safe
+to `await` no-op since they return promises in Meteor 3.x.
+
+---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/accounts.md
