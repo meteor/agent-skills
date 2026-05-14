@@ -5,10 +5,13 @@ description: >
   callAsync, *Async Mongo methods, removed Fibers, ReferenceError on
   top-level globals after upgrade, Iron Router controllers silently not
   running, lost reactivity in Blaze helpers after async rewrites, "publish
-  function returned a Promise", and Atmosphere packages failing to resolve
-  after the upgrade. Use this skill when the user asks about upgrading
-  Meteor, asks about sync to async rewrites, asks about iterators with
-  await, or asks about replacing or forking third-party packages.
+  function returned a Promise", Atmosphere packages failing to resolve,
+  WebApp.handlers replacing WebApp.connectHandlers under Express 5,
+  Meteor.EnvironmentVariable context lost in async, and rawCollection
+  callbacks no longer firing. Use this skill when the user asks about
+  upgrading Meteor, asks about sync to async rewrites, asks about iterators
+  with await, asks about Express middleware migration, or asks about
+  replacing or forking third-party packages.
 metadata:
   author: meteor
   version: "0.2.0"
@@ -62,6 +65,11 @@ in phases. Do not flip the framework version flag first.
 | `sub.added` writes never reach the client            | `references/publications.md`           |
 | Atmosphere package fails to resolve or build         | `references/package-triage.md`         |
 | `forEach`/`map`/`filter` with `await` skips items    | `references/js-iterators.md`           |
+| Middleware on `WebApp.connectHandlers` not firing    | `references/webapp-express.md`         |
+| Route uses an unnamed wildcard, no longer matches    | `references/webapp-express.md`         |
+| `rawCollection` callback never fires                 | `references/other-breaking-changes.md` |
+| `EnvironmentVariable.withValue` context is `undefined` in an async handler | `references/other-breaking-changes.md` |
+| `meteor reset` did not wipe the local Mongo          | `references/other-breaking-changes.md` |
 
 ## Anti-patterns
 
@@ -100,6 +108,8 @@ client cleanup.
 - `references/publications.md`: cursor internals and the publish API.
 - `references/package-triage.md`: Atmosphere dependency strategy.
 - `references/js-iterators.md`: iterators that contain `await`.
+- `references/webapp-express.md`: WebApp / Express 5 API renames and Express 5 routing changes.
+- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, Node 22 baseline.
 - `references/eval-cases.md`: smoke-test prompts.
 
 ## Further reading (optional)
