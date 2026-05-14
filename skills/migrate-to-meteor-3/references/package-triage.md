@@ -1,0 +1,94 @@
+# Atmosphere package triage
+
+Atmosphere packages are the largest single source of friction in a 2.x to
+3.x migration. Many are unmaintained, depend on Fibers, or pin
+`api.versionsFrom('1.x')`. Decide for every package: replace, fork, or remove.
+
+## Triage matrix
+
+| Situation                                                    | Action                                                            |
+|--------------------------------------------------------------|-------------------------------------------------------------------|
+| Maintained package with a 3.x-compatible release             | Update.                                                           |
+| Maintained package, no 3.x release yet                       | Open an issue. Track on the project tracker.                      |
+| Unmaintained package, npm replacement exists                 | Replace. Move the call sites to the npm API.                      |
+| Unmaintained package, no replacement, source available       | Fork. Apply minimal changes to ship on 3.x.                       |
+| Unmaintained package, no replacement, you do not need it     | Remove. Inline the small piece you depended on.                   |
+
+## Before the framework upgrade
+
+1. Inventory `.meteor/packages`. List every non-core package.
+2. Look up each on Packosphere or its GitHub repo. Note the latest version
+   and whether it ships a 3.x release.
+3. For packages with no 3.x release, search community forks. Several
+   ecosystem groups maintain community forks of common Atmosphere packages.
+4. For packages still missing, decide replace vs fork vs remove now,
+   before the framework flip.
+
+Reducing the package footprint **before** running `meteor update --release=3`
+is the single biggest predictor of a smooth upgrade.
+
+## Forking a package
+
+```bash
+# clone the source somewhere
+git clone <repo-url> lib/<package-name>
+cd lib/<package-name>
+git checkout -b migrate-to-meteor-3
+
+# link from your app's packages/ folder
+cd /path/to/app/packages
+ln -sf ../lib/<package-name>/path/to/package <package-name>
+```
+
+Inside the cloned package, edit `package.js`:
+
+```javascript
+Package.describe({
+  name: '<package-name>',
+  version: '<bump>',
+  /* ... */
+});
+
+Package.onUse(function (api) {
+  api.versionsFrom(['2.x', '3.0']);                  // dual-version
+  api.use([
+    'ecmascript',
+    'mongo@1.16.0 || 2.0.0',                         // multi-version refs
+    /* ... */
+  ]);
+  api.mainModule('main.js');                         // replaces api.addFiles + api.export
+});
+```
+
+Common edits inside the package code:
+
+- Server-side sync Mongo: rewrite to `*Async`.
+- `Meteor._sleepForMs` and Fibers helpers: rewrite to native async.
+- Implicit globals at file top level: convert to `const` or `export`.
+
+## API replacements common across packages
+
+| Removed in 3.x       | Replacement                                          |
+|----------------------|------------------------------------------------------|
+| `api.addFiles(f)`    | `api.mainModule(f)` with `import` / `export` inside. |
+| `api.export(name)`   | `export { name }` from the main module.              |
+| `_ensureIndex`       | `createIndex` (server-side).                         |
+| `HTTP.get`           | native `fetch`.                                      |
+| Sync Mongo methods   | `*Async` siblings on the server.                     |
+
+## Custom validators in package methods
+
+Schemas validators that pre-3 packages bundled often need an upgrade for
+breaking changes in major versions (typically array shorthand and decimal
+options). Keep the schema definitions next to the collection definitions
+so a single audit pass covers them.
+
+## When to publish back
+
+If the original package is dormant, publish your fork under a different
+publisher prefix (the community convention is the org name plus
+the original short name). Submit a pull request to the original repo as
+well; sometimes the maintainer re-engages.
+
+---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/v3-migration-docs/guide/package-replacements.md

@@ -1,0 +1,117 @@
+# Publications and cursor internals
+
+Most publish functions return a cursor and Meteor handles the rest. Apps
+that grew on Meteor 2.x sometimes drove publications imperatively with
+`this.added` / `this.changed` / `this.removed`, often dipping into the
+cursor's internal `_cursorDescription` for the collection name. That
+internal API is unreliable on Meteor 3 and may return `undefined`,
+silently breaking the publication.
+
+## Prefer returning a cursor
+
+Whenever the publication can be expressed as a single filtered cursor,
+return it. Meteor wires up `added` / `changed` / `removed` automatically:
+
+```javascript
+Meteor.publish('posts.recent', function (limit) {
+  return Posts.find({}, { limit, sort: { createdAt: -1 } });
+});
+```
+
+The publish function is **synchronous**. Returning a Promise breaks the
+publication; Meteor logs "publish function returned a Promise".
+
+## Avoid `_cursorDescription`
+
+The internal pattern:
+
+```javascript
+// fragile in Meteor 3
+async function publishNonReactively(sub, cursor) {
+  await cursor.forEachAsync((doc) => {
+    sub.added(cursor._cursorDescription.collectionName, doc._id, doc);
+  });
+  sub.ready();
+}
+```
+
+`_cursorDescription.collectionName` is internal and not guaranteed.
+Pass the collection name explicitly instead:
+
+```javascript
+async function publishNonReactively(sub, collectionName, ...cursors) {
+  for (const cursor of cursors) {
+    await cursor.forEachAsync((doc) => {
+      sub.added(collectionName, doc._id, doc);
+    });
+  }
+  sub.ready();
+}
+
+// usage:
+Meteor.publish('posts.featured', function () {
+  return publishNonReactively(this, 'posts', Posts.find({ featured: true }));
+});
+```
+
+Or, better, return the cursor and let Meteor handle the wiring.
+
+## Cursor transforms must be sync
+
+A cursor `transform` runs on every document. In Meteor 3 it must be
+synchronous:
+
+```javascript
+// BROKEN: async transform
+Posts.find({}, {
+  transform: async (doc) => {
+    doc.author = await Users.findOneAsync(doc.authorId);
+    return doc;
+  },
+});
+```
+
+Yields the error "publish function returned a Promise" or returns
+undefined documents. Two options:
+
+1. Keep the transform synchronous. Run the join in a separate publication
+   or on the client.
+2. Drop to the low-level publish API and join inside an
+   `observeChangesAsync` handler.
+
+## Low-level publish API
+
+```javascript
+Meteor.publish('feed', async function () {
+  const handle = await Posts.find().observeChangesAsync({
+    added:   (id, doc) => this.added('posts', id, doc),
+    changed: (id, doc) => this.changed('posts', id, doc),
+    removed: (id)      => this.removed('posts', id),
+  });
+  this.ready();
+  this.onStop(() => handle.stop());
+});
+```
+
+Always pair `observeChangesAsync` with `this.onStop(handle.stop)`. Without
+the teardown, the observer leaks.
+
+## Authorization
+
+Filter inside the publish body. The publish function is the only chokepoint
+that runs before data leaves the server:
+
+```javascript
+Meteor.publish('items.mine', function () {
+  if (!this.userId) return this.ready();
+  return Items.find(
+    { ownerId: this.userId },
+    { fields: { title: 1, qty: 1 } },
+  );
+});
+```
+
+Always project (`fields`). Returning a whole document leaks columns.
+
+---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/meteor.md
