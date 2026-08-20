@@ -102,8 +102,10 @@ in phases. Do not flip the framework version flag first.
   package-triage on 2.x first.
 - Do not global-replace `findOne` with `findOneAsync`. Many callers need
   rewriting, not just `await`.
-- Do not use async Mongo on the client inside Blaze helpers or
-  `Tracker.autorun`. Sync minimongo is the reactive path.
+- Do not mechanically rewrite client Minimongo calls to async. Both APIs work
+  on the client. Prefer sync calls in naturally synchronous Blaze and Tracker
+  code; use async calls in shared or already-async flows. Wrap reactive reads
+  after an `await` with `Tracker.withComputation`.
 - Do not rely on Iron Router controller naming-convention lookup. Pass
   `controller:` explicitly on every route.
 - Do not mix `await` and `.then()` in the same function. Pick one.

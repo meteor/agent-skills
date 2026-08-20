@@ -57,13 +57,21 @@ route definition.
 Prompt:
 
 ```
-After migrating my Blaze helpers to async, the page renders once and never
-updates when the underlying user document changes. Worked in Meteor 2.
+After migrating this Blaze helper, the page renders once and never updates
+when the underlying user document changes:
+
+  async user() {
+    await Meteor.callAsync('profiles.prepare', this.userId);
+    return Meteor.users.findOneAsync(this.userId);
+  }
 ```
 
-Pass if the agent identifies that `findOneAsync` does not set up Tracker
-dependencies and recommends keeping sync minimongo on the client inside
-helpers, or `Tracker.withComputation` for genuinely async helpers.
+Pass if the agent explains that client Minimongo supports both sync and async
+APIs, and that the query loses the computation because it runs after the first
+`await`. Accept either simplifying the helper to synchronous Minimongo when
+the preparation step is unnecessary, or wrapping the later query with
+`Tracker.withComputation`. Fail if it claims all async Minimongo queries are
+nonreactive.
 
 ## Case 5: forEach with await skips items
 

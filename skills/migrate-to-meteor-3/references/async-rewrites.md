@@ -17,8 +17,10 @@ framework boundary.
 5. Caller is a synchronous-only boundary: restructure it around an async
    factory, preloaded value, or an async-capable outer boundary.
 6. Continue until all paths reach a framework boundary that accepts Promises.
-7. Client-side Minimongo: leave sync calls alone. Switching client Mongo to
-   async loses Tracker reactivity. See `client-reactivity.md`.
+7. Client-side Minimongo supports both sync and async APIs. Keep sync calls
+   when they simplify naturally synchronous reactive UI code. Use async calls
+   in shared or already-async flows; reactive reads after an `await` require
+   `Tracker.withComputation`. See `client-reactivity.md`.
 8. Inside a method or publication, prefer `this.userId` over
    `Meteor.userId()`. The async server context can lose the implicit user.
 
