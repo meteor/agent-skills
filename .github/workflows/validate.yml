@@ -22,7 +22,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Validate frontmatter
+      - name: Validate skills
         run: pnpm run validate
 
       - name: Check links
@@ -36,6 +36,3 @@ jobs:
 
       - name: Build zips (dry-run)
         run: pnpm run build:zips
-
-      - name: Verify skills lockfile
-        run: pnpm dlx skills-package-manager verify

@@ -2,7 +2,7 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: bootstrapping. The first public skill ships in the next release. See the proposal repo for the roadmap.
+> Status: beta. Ten Meteor 3 skills are available below; the first tagged release is in preparation.
 
 ## Install
 

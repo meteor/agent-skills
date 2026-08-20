@@ -5,13 +5,15 @@ The full authoring contract is in [`AGENTS.md`](./AGENTS.md). Read it first.
 ## Local checks
 
 ```bash
-pnpm install
-pnpm run validate       # frontmatter, folder names, body size, trigger phrases
+pnpm install --frozen-lockfile
+pnpm run validate       # metadata, consistency, body size, trigger phrases
 pnpm run check-links    # relative + v3-docs links
+pnpm run catalog:check  # README catalog and bundles
 pnpm test               # unit tests for the toolchain
+pnpm run build:zips     # release artifacts
 ```
 
-All three must pass before opening a PR.
+All checks must pass before opening a PR.
 
 ## Adding a skill
 
@@ -36,9 +38,10 @@ npx skills add ./ --skill <your-skill-name>
 # Mark pass/fail in the PR description.
 ```
 
-The PR is not ready to merge until every eval case passes for at least two
-distinct agents.
+The PR is not ready to merge until an outside contributor runs every eval
+case against Claude Code or Cursor and records the results in the PR.
 
 ## Reporting an issue
 
-Open a GitHub issue using one of the templates. See `.github/ISSUE_TEMPLATE/` (plan 07).
+Open a GitHub issue with the skill name, agent client, model, prompt, observed
+result, and expected result.

@@ -2,7 +2,8 @@
 // Validate every SKILL.md under skills/ against skill.schema.json and the
 // Meteor-specific rules in AGENTS.md.
 
-import { readFileSync, readdirSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { dirname, join, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import matter from "gray-matter";
@@ -21,6 +22,8 @@ const TRIGGER_PATTERNS = [
 ];
 
 const BODY_BYTE_CAP = 8 * 1024;
+const PLACEHOLDER_PATTERN = /\b(?:TODO|FIXME|TBD)\b/;
+const PROHIBITED_EM_DASH = String.fromCodePoint(0x2014);
 
 let ajv;
 function getAjv() {
@@ -43,6 +46,55 @@ function findSkillDirs(root, { singleSkill = false } = {}) {
     .map((e) => join(root, e.name));
 }
 
+function isPublishable(name) {
+  return !name.startsWith("_") && !name.startsWith(".");
+}
+
+function walkMarkdown(dir, out = []) {
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const full = join(dir, entry.name);
+    if (entry.isDirectory()) {
+      walkMarkdown(full, out);
+    } else if (entry.isFile() && entry.name.endsWith(".md")) {
+      out.push(full);
+    }
+  }
+  return out;
+}
+
+export function inspectPublishedContent(text) {
+  const findings = [];
+  if (PLACEHOLDER_PATTERN.test(text)) {
+    findings.push({
+      code: "E_PLACEHOLDER",
+      message: "published Markdown contains TODO, FIXME, or TBD",
+    });
+  }
+  if (text.includes(PROHIBITED_EM_DASH)) {
+    findings.push({
+      code: "E_PROHIBITED_EM_DASH",
+      message: "published Markdown contains a prohibited em-dash character",
+    });
+  }
+  return findings;
+}
+
+function configuredBundlesForSkill(bundles, skillName) {
+  return Object.entries(bundles?.bundles ?? {})
+    .filter(([, skillNames]) => skillNames.includes(skillName))
+    .map(([bundleName]) => bundleName)
+    .sort();
+}
+
+function listRepoTrackedFiles() {
+  return execFileSync("git", ["ls-files", "-z", "--", "skills"], {
+    cwd: repoRoot,
+    encoding: "utf8",
+  })
+    .split("\0")
+    .filter(Boolean);
+}
+
 function countTriggerPhrases(description) {
   return TRIGGER_PATTERNS.reduce(
     (count, re) => (re.test(description) ? count + 1 : count),
@@ -54,16 +106,36 @@ export async function validateSkills({
   root = join(repoRoot, "skills"),
   singleSkill = false,
   skillFileName = "SKILL.md",
+  bundles,
+  trackedFiles = [],
 } = {}) {
   const a = getAjv();
   const validate = a.getSchema("skill");
   const findings = [];
   const seenNames = new Map();
+  const publishableNames = new Set();
+  const bundleConfig =
+    bundles ??
+    (resolve(root) === resolve(repoRoot, "skills")
+      ? JSON.parse(readFileSync(join(repoRoot, "bundles.json"), "utf8"))
+      : null);
+
+  for (const trackedFile of trackedFiles) {
+    if (trackedFile.startsWith("skills/") && trackedFile.endsWith(".zip")) {
+      findings.push({
+        code: "E_TRACKED_ZIP",
+        folder: "skills",
+        file: trackedFile,
+        message: `built ZIP artifact is tracked by git: ${trackedFile}`,
+      });
+    }
+  }
 
   const dirs = findSkillDirs(root, { singleSkill });
   for (const dir of dirs) {
     const folder = basename(dir);
     const file = join(dir, skillFileName);
+    const publishable = isPublishable(folder);
     let raw;
     try {
       raw = readFileSync(file, "utf8");
@@ -76,6 +148,30 @@ export async function validateSkills({
       });
       continue;
     }
+
+    if (publishable) {
+      const evalCases = join(dir, "references", "eval-cases.md");
+      if (!existsSync(evalCases)) {
+        findings.push({
+          code: "E_MISSING_EVAL_CASES",
+          folder,
+          file: evalCases,
+          message: "published skill is missing references/eval-cases.md",
+        });
+      }
+
+      for (const markdownFile of walkMarkdown(dir)) {
+        const text = readFileSync(markdownFile, "utf8");
+        for (const contentFinding of inspectPublishedContent(text)) {
+          findings.push({
+            ...contentFinding,
+            folder,
+            file: markdownFile,
+          });
+        }
+      }
+    }
+
     const parsed = matter(raw);
     const data = parsed.data;
     const body = parsed.content;
@@ -100,6 +196,28 @@ export async function validateSkills({
         file,
         message: `frontmatter name "${data.name}" does not equal folder "${folder}"`,
       });
+    }
+
+    if (publishable) {
+      publishableNames.add(data.name);
+      if (bundleConfig) {
+        const declaredBundles = [...(data.metadata.bundle ?? [])].sort();
+        const configuredBundles = configuredBundlesForSkill(
+          bundleConfig,
+          data.name,
+        );
+        if (
+          JSON.stringify(declaredBundles) !==
+          JSON.stringify(configuredBundles)
+        ) {
+          findings.push({
+            code: "E_BUNDLE_MISMATCH",
+            folder,
+            file,
+            message: `metadata.bundle ${JSON.stringify(declaredBundles)} does not match bundles.json ${JSON.stringify(configuredBundles)}`,
+          });
+        }
+      }
     }
 
     const triggers = countTriggerPhrases(data.description ?? "");
@@ -134,11 +252,29 @@ export async function validateSkills({
     }
   }
 
+  if (bundleConfig) {
+    const configuredSkillNames = new Set(
+      Object.values(bundleConfig.bundles ?? {}).flat(),
+    );
+    for (const skillName of configuredSkillNames) {
+      if (!publishableNames.has(skillName)) {
+        findings.push({
+          code: "E_BUNDLE_UNKNOWN_SKILL",
+          folder: skillName,
+          file: join(repoRoot, "bundles.json"),
+          message: `bundles.json references unknown published skill "${skillName}"`,
+        });
+      }
+    }
+  }
+
   return findings;
 }
 
 async function main() {
-  const findings = await validateSkills();
+  const findings = await validateSkills({
+    trackedFiles: listRepoTrackedFiles(),
+  });
   if (findings.length === 0) {
     console.log("validate-skills: OK");
     process.exit(0);

@@ -2,7 +2,10 @@ import { describe, it, expect, beforeAll } from "@rstest/core";
 import { writeFileSync, readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
-import { validateSkills } from "../scripts/validate-skills.mjs";
+import {
+  inspectPublishedContent,
+  validateSkills,
+} from "../scripts/validate-skills.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = join(here, "fixtures");
@@ -22,6 +25,14 @@ describe("validateSkills", () => {
   it("accepts a valid fixture", async () => {
     const findings = await validateSkills({
       root: join(fixturesDir, "valid"),
+    });
+    expect(findings).toEqual([]);
+  });
+
+  it("accepts bundle metadata that matches bundles.json", async () => {
+    const findings = await validateSkills({
+      root: join(fixturesDir, "valid"),
+      bundles: { bundles: { essentials: ["good-skill"] } },
     });
     expect(findings).toEqual([]);
   });
@@ -57,5 +68,46 @@ describe("validateSkills", () => {
       skillFileName: "SKILL.md.hydrated",
     });
     expect(findings.map((f) => f.code)).toContain("E_BODY_TOO_LARGE");
+  });
+
+  it("rejects a published skill without evaluation cases", async () => {
+    const findings = await validateSkills({
+      root: join(fixturesDir, "invalid/missing-eval-cases"),
+      singleSkill: true,
+    });
+    expect(findings.map((f) => f.code)).toContain("E_MISSING_EVAL_CASES");
+  });
+
+  it("rejects bundle metadata that differs from bundles.json", async () => {
+    const findings = await validateSkills({
+      root: join(fixturesDir, "valid"),
+      bundles: { bundles: { fullstack: ["good-skill"] } },
+    });
+    expect(findings.map((f) => f.code)).toContain("E_BUNDLE_MISMATCH");
+  });
+
+  it("rejects unknown skills in bundles.json", async () => {
+    const findings = await validateSkills({
+      root: join(fixturesDir, "valid"),
+      bundles: {
+        bundles: { essentials: ["good-skill", "unknown-skill"] },
+      },
+    });
+    expect(findings.map((f) => f.code)).toContain("E_BUNDLE_UNKNOWN_SKILL");
+  });
+
+  it("rejects tracked ZIP artifacts", async () => {
+    const findings = await validateSkills({
+      root: join(fixturesDir, "valid"),
+      trackedFiles: ["skills/good-skill.zip"],
+    });
+    expect(findings.map((f) => f.code)).toContain("E_TRACKED_ZIP");
+  });
+
+  it("detects placeholders and prohibited em-dash characters", () => {
+    const text = `TODO${String.fromCodePoint(0x2014)}replace this`;
+    const codes = inspectPublishedContent(text).map((f) => f.code);
+    expect(codes).toContain("E_PLACEHOLDER");
+    expect(codes).toContain("E_PROHIBITED_EM_DASH");
   });
 });

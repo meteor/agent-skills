@@ -31,6 +31,9 @@ jobs:
       - name: Check links
         run: pnpm run check-links
 
+      - name: Catalog in sync
+        run: pnpm run catalog:check
+
       - name: Unit tests
         run: pnpm test
 
