@@ -40,11 +40,12 @@ Read [`references/audit-method.md`](references/audit-method.md) before gathering
 
 For every publishable folder under `skills/`:
 
-1. Read the frontmatter description, tagline, Meteor range, version, and documentation sync date.
+1. Read the frontmatter description, tagline, kind, area, bundle membership, Meteor range, version, and documentation sync date.
 2. List the outcomes and symptoms promised by `SKILL.md`.
 3. Map each promise to its supporting reference and evaluation case.
-4. Note overlap with neighboring skills and promises without behavioral coverage.
-5. Exclude folders beginning with `_` and internal `.github/skills/`.
+4. Compare naming, classification, routing, structure, references, and evaluation style with the closest neighboring skills. Treat useful local variation as intentional unless it conflicts with the repository contract or behavior.
+5. Note overlap with neighboring skills, promises without behavioral coverage, and classifications that do not match the skill's actual outcome or installation audience.
+6. Exclude folders beginning with `_` and internal `.github/skills/`.
 
 ## Classify findings
 

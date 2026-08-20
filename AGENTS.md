@@ -84,10 +84,27 @@ license: MIT
 - `description` is <=1024 characters and contains at least two trigger phrases. Trigger phrases include: `Use when`, `Use this skill when`, `Use this Skill when`, `Triggers on`, any `ask about` or `asks about` substring.
 - `metadata.tagline` is 16-200 characters. Rendered verbatim into the README catalog.
 - `metadata.kind` is one of `knowledge`, `tool`, `workflow`.
+- `metadata.area` is one of `auth`, `build`, `data`, `migration`, `ops`, `security`, or `testing`. `meta` is reserved for the non-publishable template.
 - `metadata.meteor` is a semver range. Default for v1: `">=3.0"`.
 - `metadata.author` is always the literal string `meteor`. Non-Meteor-org skills do not belong in this repo.
 - Body (everything after the closing `---`) is <=8 KB. Larger content moves into `references/`.
 - Published skill folders contain only `SKILL.md`, `references/`, `scripts/`, and `assets/`. Audit reports, raw results, reviewer guides, and maintainer files stay outside the distributable folder.
+
+## Catalog classification
+
+Treat a published skill's name, `metadata.kind`, `metadata.area`, bundle membership, Meteor range, and routing scope as stable classification. Preserve them during maintenance unless verified behavior no longer fits the classification and the user authorized that scope change. A classification change requires reviewing neighboring skill descriptions and evaluation cases, updating both `metadata.bundle` and `bundles.json` when bundle membership changes, and regenerating the catalog.
+
+Choose classifications for a new skill from the closest existing skills and these definitions:
+
+| Field | Meaning |
+|-------|---------|
+| `kind: knowledge` | Meteor-specific decisions, patterns, and examples are the primary value. |
+| `kind: tool` | A bundled deterministic script or tool is essential to the outcome. |
+| `kind: workflow` | An ordered multi-step operation or lifecycle is the primary value. |
+| `area` | The closest existing framework domain listed in the schema. Add an area only when no current domain fits, then update this contract and the schema in the same change. |
+| `bundle` | An installation audience that needs the complete skill, not merely a shared keyword or topic. |
+
+Do not recategorize or restructure existing skills only to make them visually uniform. Preserve their useful local patterns unless they conflict with this contract or prevent the requested behavioral change.
 
 ## Trigger phrases
 

@@ -41,8 +41,16 @@
         },
         "area": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 64
+          "enum": [
+            "auth",
+            "build",
+            "data",
+            "meta",
+            "migration",
+            "ops",
+            "security",
+            "testing"
+          ]
         },
         "tagline": {
           "type": "string",

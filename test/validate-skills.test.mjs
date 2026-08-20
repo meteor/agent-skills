@@ -46,6 +46,36 @@ describe("validateSkills", () => {
     expect(findings).toEqual([]);
   });
 
+  it("rejects an unknown catalog area", async () => {
+    await withTempRoot(async (root) => {
+      const skillDir = join(root, "meteor-example");
+      mkdirSync(join(skillDir, "references"), { recursive: true });
+      writeFileSync(
+        join(skillDir, "SKILL.md"),
+        `---
+name: meteor-example
+description: Use when testing catalog classification. Triggers on an unknown skill area.
+metadata:
+  author: meteor
+  version: "0.1.0"
+  kind: knowledge
+  meteor: ">=3.0"
+  area: unknown
+  tagline: "Test rejection of an unknown catalog area."
+---
+
+# Example
+`,
+      );
+      writeFileSync(join(skillDir, "references", "eval-cases.md"), "# Cases\n");
+      const findings = await validateSkills({
+        root: skillDir,
+        singleSkill: true,
+      });
+      expect(findings.map((finding) => finding.code)).toContain("E_SCHEMA");
+    });
+  });
+
   it("rejects missing name with E_SCHEMA", async () => {
     const findings = await validateSkills({
       root: join(fixturesDir, "invalid/missing-name"),

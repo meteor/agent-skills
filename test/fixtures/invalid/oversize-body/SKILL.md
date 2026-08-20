@@ -7,7 +7,7 @@ metadata:
   version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
-  area: test
+  area: testing
   tagline: "Fixture tagline for the body-size rule."
 ---
 
