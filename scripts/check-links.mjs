@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Walk every Markdown file in skills/ and verify:
+// Walk published and maintainer skill Markdown and verify:
 //   1. Relative Markdown links resolve on disk.
 //   2. Each "Source:" footer points at a real path on meteor/meteor@devel.
 
@@ -10,7 +10,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
 
-const RELATIVE_LINK = /\[[^\]]+\]\((\.\/[^)\s]+|\.\.\/[^)\s]+)\)/g;
+const RELATIVE_LINK = /\[[^\]]+\]\((?!https?:\/\/|mailto:|#)([^)\s]+)\)/g;
 const SOURCE_FOOTER =
   /^Source:\s*(https:\/\/github\.com\/meteor\/meteor\/blob\/devel\/[^\s]+)\s*$/m;
 
@@ -58,13 +58,14 @@ export async function checkLinks({
     if (!ignoreLocal) {
       const fileDir = dirname(file);
       for (const match of text.matchAll(RELATIVE_LINK)) {
-        const target = normalize(join(fileDir, match[1]));
+        const relativePath = match[1].split("#", 1)[0].split("?", 1)[0];
+        const target = normalize(join(fileDir, relativePath));
         if (!existsSync(target)) {
           findings.push({
             code: "E_LINK_LOCAL",
             file,
             target,
-            message: `relative link not found: ${match[1]}`,
+            message: `relative link not found: ${relativePath}`,
           });
         }
       }
@@ -98,7 +99,10 @@ export async function checkLinks({
 }
 
 async function main() {
-  const findings = await checkLinks();
+  const findings = [
+    ...(await checkLinks()),
+    ...(await checkLinks({ root: join(repoRoot, ".github", "skills") })),
+  ];
   if (findings.length === 0) {
     console.log("check-links: OK");
     process.exit(0);

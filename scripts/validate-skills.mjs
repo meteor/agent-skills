@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Validate every SKILL.md under skills/ against skill.schema.json and the
-// Meteor-specific rules in AGENTS.md.
+// Validate published skills and internal maintainer skills against the
+// repository rules in AGENTS.md.
 
 import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -24,6 +24,26 @@ const TRIGGER_PATTERNS = [
 const BODY_BYTE_CAP = 8 * 1024;
 const PLACEHOLDER_PATTERN = /\b(?:TODO|FIXME|TBD)\b/;
 const PROHIBITED_EM_DASH = String.fromCodePoint(0x2014);
+const MAINTAINER_SKILL_NAME = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
+const MAINTAINER_DESCRIPTION_MIN = 32;
+const MAINTAINER_DESCRIPTION_MAX = 1024;
+const PUBLISHED_SKILL_ENTRIES = new Set([
+  "SKILL.md",
+  "references",
+  "scripts",
+  "assets",
+]);
+const AUDIT_REPORT_MARKERS = [
+  "Agent-skills revision:",
+  "Meteor remote:",
+  "Meteor revision:",
+  "Meteor release context:",
+  "Audit mode:",
+  "Previous audit report:",
+  "## Source coverage",
+  "## Skill claim matrix",
+  "## Maintenance handoff",
+];
 
 let ajv;
 function getAjv() {
@@ -67,15 +87,148 @@ export function inspectPublishedContent(text) {
   if (PLACEHOLDER_PATTERN.test(text)) {
     findings.push({
       code: "E_PLACEHOLDER",
-      message: "published Markdown contains TODO, FIXME, or TBD",
+      message: "skill Markdown contains TODO, FIXME, or TBD",
     });
   }
   if (text.includes(PROHIBITED_EM_DASH)) {
     findings.push({
       code: "E_PROHIBITED_EM_DASH",
-      message: "published Markdown contains a prohibited em-dash character",
+      message: "skill Markdown contains a prohibited em-dash character",
     });
   }
+  return findings;
+}
+
+export async function validateMaintainerSkills({
+  root = join(repoRoot, ".github", "skills"),
+} = {}) {
+  const findings = [];
+
+  if (!existsSync(root)) {
+    return [
+      {
+        code: "E_MAINTAINER_ROOT",
+        folder: ".github/skills",
+        file: root,
+        message: "maintainer skill root does not exist",
+      },
+    ];
+  }
+
+  for (const dir of findSkillDirs(root)) {
+    const folder = basename(dir);
+    const file = join(dir, "SKILL.md");
+    let raw;
+
+    try {
+      raw = readFileSync(file, "utf8");
+    } catch (err) {
+      findings.push({
+        code: "E_MISSING_SKILL_MD",
+        folder,
+        file,
+        message: `SKILL.md not found in ${dir}`,
+      });
+      continue;
+    }
+
+    let parsed;
+    try {
+      parsed = matter(raw);
+    } catch (err) {
+      findings.push({
+        code: "E_MAINTAINER_FRONTMATTER",
+        folder,
+        file,
+        message: `invalid frontmatter: ${err.message}`,
+      });
+      continue;
+    }
+
+    const { name, description } = parsed.data;
+    if (typeof name !== "string" || !MAINTAINER_SKILL_NAME.test(name)) {
+      findings.push({
+        code: "E_MAINTAINER_NAME",
+        folder,
+        file,
+        message: "name must be lowercase-kebab-case and at most 64 characters",
+      });
+    } else if (name !== folder) {
+      findings.push({
+        code: "E_FOLDER_MISMATCH",
+        folder,
+        file,
+        message: `frontmatter name "${name}" does not equal folder "${folder}"`,
+      });
+    }
+
+    if (
+      typeof description !== "string" ||
+      description.length < MAINTAINER_DESCRIPTION_MIN ||
+      description.length > MAINTAINER_DESCRIPTION_MAX ||
+      !/\bUse when\b/i.test(description)
+    ) {
+      findings.push({
+        code: "E_MAINTAINER_DESCRIPTION",
+        folder,
+        file,
+        message: `description must be ${MAINTAINER_DESCRIPTION_MIN}-${MAINTAINER_DESCRIPTION_MAX} characters and contain "Use when"`,
+      });
+    }
+
+    const bodyBytes = Buffer.byteLength(parsed.content, "utf8");
+    if (bodyBytes > BODY_BYTE_CAP) {
+      findings.push({
+        code: "E_BODY_TOO_LARGE",
+        folder,
+        file,
+        message: `body is ${bodyBytes} bytes; cap is ${BODY_BYTE_CAP}`,
+      });
+    }
+
+    for (const markdownFile of walkMarkdown(dir)) {
+      const text = readFileSync(markdownFile, "utf8");
+      for (const contentFinding of inspectPublishedContent(text)) {
+        findings.push({
+          ...contentFinding,
+          folder,
+          file: markdownFile,
+        });
+      }
+    }
+  }
+
+  return findings;
+}
+
+export async function validateAuditReports({
+  root = join(repoRoot, "audits", "skill-gaps"),
+} = {}) {
+  if (!existsSync(root)) return [];
+
+  const findings = [];
+  for (const file of walkMarkdown(root)) {
+    const text = readFileSync(file, "utf8");
+    for (const contentFinding of inspectPublishedContent(text)) {
+      findings.push({
+        ...contentFinding,
+        folder: "audits/skill-gaps",
+        file,
+      });
+    }
+
+    for (const marker of AUDIT_REPORT_MARKERS) {
+      if (!text.includes(marker)) {
+        findings.push({
+          code: "E_AUDIT_REPORT_FORMAT",
+          folder: "audits/skill-gaps",
+          file,
+          message: `audit report is missing "${marker}"`,
+        });
+      }
+    }
+  }
+
   return findings;
 }
 
@@ -150,6 +303,17 @@ export async function validateSkills({
     }
 
     if (publishable) {
+      for (const entry of readdirSync(dir, { withFileTypes: true })) {
+        if (!PUBLISHED_SKILL_ENTRIES.has(entry.name)) {
+          findings.push({
+            code: "E_UNEXPECTED_SKILL_ENTRY",
+            folder,
+            file: join(dir, entry.name),
+            message: `unexpected top-level skill entry "${entry.name}"`,
+          });
+        }
+      }
+
       const evalCases = join(dir, "references", "eval-cases.md");
       if (!existsSync(evalCases)) {
         findings.push({
@@ -272,9 +436,13 @@ export async function validateSkills({
 }
 
 async function main() {
-  const findings = await validateSkills({
-    trackedFiles: listRepoTrackedFiles(),
-  });
+  const findings = [
+    ...(await validateSkills({
+      trackedFiles: listRepoTrackedFiles(),
+    })),
+    ...(await validateMaintainerSkills()),
+    ...(await validateAuditReports()),
+  ];
   if (findings.length === 0) {
     console.log("validate-skills: OK");
     process.exit(0);

@@ -36,4 +36,12 @@ describe("checkLinks", () => {
     });
     expect(findings.map((f) => f.code)).not.toContain("E_LINK_REMOTE");
   });
+
+  it("accepts repository maintainer skill links", async () => {
+    const findings = await checkLinks({
+      root: join(here, "..", ".github", "skills"),
+      fetchImpl: rstest.fn().mockResolvedValue({ ok: true, status: 200 }),
+    });
+    expect(findings.map((f) => f.code)).not.toContain("E_LINK_LOCAL");
+  });
 });

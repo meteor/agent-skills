@@ -2,6 +2,34 @@
 
 This document is the contract for everyone writing a skill in this repo. Plan 01 created it; subsequent plans must not break it without updating it here first.
 
+## Maintainer skills
+
+Repository maintenance workflows live under `.github/skills/`. They help contributors maintain the published catalog but are not included in release ZIPs or the README catalog.
+
+| Skill | Use when |
+|-------|----------|
+| [`skill-maintenance`](.github/skills/skill-maintenance/SKILL.md) | Creating, reviewing, or updating a published skill while preserving repository conventions. |
+| [`skill-gap-audit`](.github/skills/skill-gap-audit/SKILL.md) | Comparing Meteor documentation and source changes with current skill coverage. |
+
+### Audit and maintenance workflow
+
+`skill-gap-audit` is read-only by default. It produces an evidence-backed report and does not change published skills. Confirmed findings move to `skill-maintenance` only when the user requests implementation.
+
+```text
+skill-gap-audit
+-> confirmed findings
+-> authorized implementation scope
+-> skill-maintenance
+-> repository validation
+-> release ZIP verification
+```
+
+When one request explicitly asks to audit and fix, complete the audit first, preserve its evidence, then load `skill-maintenance` and implement only confirmed findings within the requested scope. Do not implement uncertain findings or create proposed skills without explicit user approval.
+
+`pnpm run validate` enforces frontmatter, naming, body size, and prohibited-content rules for both published and maintainer skills. It also checks required revision and handoff fields in committed gap-audit reports. `pnpm run check-links` checks links in both skill locations. The ZIP test suite verifies that `.github/skills/` remains outside release artifacts.
+
+Committed gap-audit records live under `audits/skill-gaps/`. Each record identifies the audited agent-skills revision, Meteor remote and revision, release context, audit mode, and previous audit baseline. These reports are immutable maintenance evidence and are never included in distributable skills. An incremental audit uses the latest applicable committed record from Git history; if no reliable record exists, run a full audit.
+
 ## What is a skill
 
 A skill is a folder under `skills/` that helps an AI coding assistant work on Meteor 3 applications. A skill has:
@@ -59,6 +87,7 @@ license: MIT
 - `metadata.meteor` is a semver range. Default for v1: `">=3.0"`.
 - `metadata.author` is always the literal string `meteor`. Non-Meteor-org skills do not belong in this repo.
 - Body (everything after the closing `---`) is <=8 KB. Larger content moves into `references/`.
+- Published skill folders contain only `SKILL.md`, `references/`, `scripts/`, and `assets/`. Audit reports, raw results, reviewer guides, and maintainer files stay outside the distributable folder.
 
 ## Trigger phrases
 

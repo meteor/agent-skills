@@ -2,6 +2,12 @@
 
 The full authoring contract is in [`AGENTS.md`](./AGENTS.md). Read it first.
 
+## Maintaining existing skills
+
+Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare the catalog with a Meteor checkout and produce a read-only evidence report. Use [`skill-maintenance`](./.github/skills/skill-maintenance/SKILL.md) only after implementation is requested. An explicit audit-and-fix request may use both in sequence, with the audit preserved before edits begin.
+
+Store committed audit records under `audits/skill-gaps/`. Do not overwrite an earlier audit. A new audit records its predecessor and the old and new Meteor revisions so later drift checks remain reproducible.
+
 ## Local checks
 
 ```bash
