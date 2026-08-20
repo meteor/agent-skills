@@ -115,3 +115,53 @@ old-atmosphere-package needs api.versionsFrom('1.5') and there is no
 Pass if the agent walks through the triage matrix (replace, fork, remove)
 and describes how to fork minimally, update `api.versionsFrom`, and link
 from `lib/` into `packages/`.
+
+## Case 8: async propagation through callers
+
+Prompt:
+
+```javascript
+function findOrder(id) {
+  return Orders.findOne(id);
+}
+
+function calculateTotal(id) {
+  return findOrder(id).total;
+}
+
+function buildInvoice(id) {
+  return { total: calculateTotal(id) };
+}
+
+Meteor.methods({
+  createInvoice(id) {
+    return buildInvoice(id);
+  },
+});
+```
+
+"Migrate this call chain to Meteor 3. Do not change only the Mongo call."
+
+Pass if the agent traces the complete caller chain, replaces `findOne` with
+`findOneAsync`, awaits the result before reading `.total`, propagates Promise
+handling through `buildInvoice`, and stops at the method boundary. Accept
+direct Promise forwarding where no resolved value is consumed. Fail if any
+caller still treats a Promise as the resolved value.
+
+## Case 9: synchronous constructor boundary
+
+Prompt:
+
+```javascript
+class Invoice {
+  constructor(orderId) {
+    this.order = Orders.findOne(orderId);
+  }
+}
+```
+
+"Migrate this class to Meteor 3 while preserving construction correctness."
+
+Pass if the agent does not mark the constructor async. It must introduce an
+async factory or require a preloaded order, await `findOneAsync` outside the
+constructor, and keep object construction synchronous.

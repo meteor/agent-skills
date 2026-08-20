@@ -1,20 +1,106 @@
 # Sync-to-async rewrite mechanics
 
-Meteor 3 removed the synchronous Mongo API on the server. Every callsite must
-switch to the `*Async` sibling and `await` the result. The async-ness
-propagates up the call stack until it hits a `Meteor.methods` handler, a
-publish function, an `Express`-style middleware, or another framework
-boundary that already supports async.
+Meteor 3 removed the synchronous Mongo API on the server. Replace each sync
+Mongo call with its `*Async` sibling. Every caller that consumes the resulting
+value must await it. A function that only returns the Promise can forward it
+without adding `async` or `await`. Promise handling propagates up the call stack
+until it reaches a method, publication, middleware, or another async-capable
+framework boundary.
 
 ## Decision flow
 
-1. Server-side code: rewrite sync Mongo to `*Async` and `await` the result.
-2. Mark the containing function `async`.
-3. Mark every caller `async`. Stop at the framework boundary.
-4. Client-side Minimongo: leave sync calls alone. Switching client Mongo to
+1. Rewrite the leaf server API to its `*Async` sibling.
+2. Find every caller of the changed function, including indirect callers.
+3. Caller consumes the resolved value: mark it `async` and add `await`.
+4. Caller only returns the Promise: return it directly; `return await` is not
+   required unless local error handling needs it.
+5. Caller is a synchronous-only boundary: restructure it around an async
+   factory, preloaded value, or an async-capable outer boundary.
+6. Continue until all paths reach a framework boundary that accepts Promises.
+7. Client-side Minimongo: leave sync calls alone. Switching client Mongo to
    async loses Tracker reactivity. See `client-reactivity.md`.
-5. Inside a method or publication, prefer `this.userId` over
+8. Inside a method or publication, prefer `this.userId` over
    `Meteor.userId()`. The async server context can lose the implicit user.
+
+## Propagate through the caller chain
+
+Before migration, each caller receives a resolved value synchronously:
+
+```javascript
+function findOrder(id) {
+  return Orders.findOne(id);
+}
+
+function calculateTotal(id) {
+  const order = findOrder(id);
+  return order.lines.reduce((total, line) => total + line.amount, 0);
+}
+
+function buildInvoice(id) {
+  return { orderId: id, total: calculateTotal(id) };
+}
+
+Meteor.methods({
+  createInvoice(id) {
+    return buildInvoice(id);
+  },
+});
+```
+
+After converting the leaf API, propagate Promise handling through every caller
+that consumes the result:
+
+```javascript
+function findOrder(id) {
+  return Orders.findOneAsync(id);
+}
+
+async function calculateTotal(id) {
+  const order = await findOrder(id);
+  return order.lines.reduce((total, line) => total + line.amount, 0);
+}
+
+async function buildInvoice(id) {
+  const total = await calculateTotal(id);
+  return { orderId: id, total };
+}
+
+Meteor.methods({
+  async createInvoice(id) {
+    return buildInvoice(id);
+  },
+});
+```
+
+`findOrder` only forwards the Promise, so it does not need the `async` keyword.
+The next two functions inspect resolved values, so both must be async and await
+their callees. The method is the framework boundary and can return the final
+Promise. When independent calls exist at one level, use `Promise.all` instead
+of introducing unnecessary sequential waits.
+
+## Synchronous-only boundaries
+
+Constructors cannot be async. Move loading into an async factory and keep the
+constructor synchronous:
+
+```javascript
+class Invoice {
+  constructor(order) {
+    this.order = order;
+  }
+
+  static async create(orderId) {
+    const order = await Orders.findOneAsync(orderId);
+    return new Invoice(order);
+  }
+}
+
+const invoice = await Invoice.create(orderId);
+```
+
+Apply the same rule to callbacks whose caller does not await returned Promises.
+Do not add `async` blindly; move the asynchronous work to a boundary that can
+wait for it.
 
 ## Server rewrites
 
@@ -55,8 +141,11 @@ The Fibers-era helpers are gone:
 
 - `TypeError: Collection.findOne is not a function`: server-side sync API
   removed. Use `findOneAsync` and `await`.
-- `Method returns undefined` or returns a `Promise`: the caller is not
-  awaiting. Mark it `async` and `await` the call.
+- Application code receives a Promise where it expects a document: the
+  consuming caller is not awaiting. Mark that caller `async` and await the
+  call.
+- `Meteor.call` returns `undefined` on the client: use
+  `await Meteor.callAsync(...)` or provide a callback.
 - `ReferenceError: Fiber is not defined`: a package or app file still
   references Fibers. Remove the dependency and rewrite the function.
 

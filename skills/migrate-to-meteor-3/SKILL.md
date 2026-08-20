@@ -11,13 +11,13 @@ description: >
   context lost in async, rawCollection callbacks no longer firing,
   meteor/* imports losing TypeScript types after upgrade, useTracker and
   useSubscribe not re-running after upgrade. Use this skill when the user
-  asks about upgrading Meteor, asks about sync to async rewrites, asks
-  about iterators with await, asks about Express middleware migration,
-  asks about zodern:types, or asks about replacing or forking third-party
-  packages.
+  asks about upgrading Meteor, asks about sync to async rewrites or async
+  propagation through caller stacks, asks about iterators with await, asks
+  about Express middleware migration, asks about zodern:types, or asks about
+  replacing or forking third-party packages.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -41,11 +41,13 @@ in phases. Do not flip the framework version flag first.
    logs every sync-API call that needs an async sibling, giving you a
    to-do list before the framework flip.
 3. Migrate server-side sync Mongo calls to `*Async` siblings while still
-   on 2.x. See `references/async-rewrites.md` and
-   `references/call-vs-callAsync.md`. A community jscodeshift codemod
-   automates the easy cases, but it misses non-standard collection
-   imports (for example, `meteor/<publisher>:collections`). Review the
-   diff by hand.
+   on 2.x. Trace each changed function through every server-side caller:
+   await where the caller consumes the value, forward Promises deliberately,
+   and restructure sync-only boundaries. Stop only at an async-capable
+   framework boundary. See `references/async-rewrites.md` and
+   `references/call-vs-callAsync.md`. A community jscodeshift codemod automates
+   the easy cases, but it misses non-standard collection imports (for example,
+   `meteor/<publisher>:collections`). Review the diff by hand.
 4. Audit Atmosphere packages. Find replacements or fork outdated ones;
    pin `api.versionsFrom(['2.x', '3.0'])`. See
    `references/package-triage.md`.
@@ -70,6 +72,7 @@ in phases. Do not flip the framework version flag first.
 |------------------------------------------------------|----------------------------------------|
 | `TypeError: Collection.findOne is not a function`    | `references/async-rewrites.md`         |
 | `Method returns undefined` or returns a `Promise`    | `references/async-rewrites.md`         |
+| Downstream caller receives or reads from a `Promise` | `references/async-rewrites.md`         |
 | `Meteor.call` callback never fires                   | `references/call-vs-callAsync.md`      |
 | `ReferenceError: X is not defined` at startup        | `references/module-system.md`          |
 | Template renders, no data, Minimongo empty           | `references/module-system.md`          |

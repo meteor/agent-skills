@@ -38,6 +38,10 @@ npx skills add ./ --skill <your-skill-name>
 # Mark pass/fail in the PR description.
 ```
 
+Run the prompt before opening any reviewer guide under `test/evals/`. Do not
+copy reviewer guides into the target project or expose them in the agent
+conversation. Compare the response with the guide only after the run ends.
+
 The PR is not ready to merge until an outside contributor runs every eval
 case against Claude Code or Cursor and records the results in the PR.
 
