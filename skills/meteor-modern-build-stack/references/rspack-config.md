@@ -34,6 +34,24 @@ module.exports = defineConfig(Meteor => ({
 
 ## Helpers
 
+### `extendConfig`
+
+Deep-merge reusable or conditional Rspack configuration fragments without
+replacing sibling nested keys:
+
+```javascript
+module.exports = defineConfig(Meteor => ({
+  ...Meteor.extendConfig(
+    { resolve: { alias: { '@ui': '/imports/ui' } } },
+    Meteor.isClient ? { module: { rules: [clientRule] } } : {},
+  ),
+}));
+```
+
+Use direct properties for one small config. Use `extendConfig` when composing
+multiple nested fragments or presets. Inspect verbose final config to confirm
+the merge result.
+
 ### `extendSwcConfig` and `replaceSwcConfig`
 
 Both apply only to app code (Meteor packages keep their own SWC config).

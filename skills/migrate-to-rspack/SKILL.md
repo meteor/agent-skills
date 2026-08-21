@@ -10,6 +10,7 @@ description: >
   CommonJS default-import interop, _build / build-assets / build-chunks
   folders, module.exports in a client graph, Node built-ins in browser code,
   .meteorignore hiding mainModule handoff files, dynamic chunks under ROOT_URL,
+  meteor.modules for CSS or HTML, resolve.symlinks in a monorepo,
   resolve.alias migration, meteor update --npm in CI/Docker.
   Use this skill when the user asks about converting an app to Rspack,
   asks about a build plugin's Rspack replacement, or asks about CI/Docker
@@ -17,7 +18,7 @@ description: >
   meteor-modern-build-stack instead.
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.4"
   area: migration
@@ -73,7 +74,10 @@ the installed version; the integration may validate `package.json` directly.
    `references/code-migrations.md`.
 6. Is the app server-only? Set only `mainModule.server`. Rspack still
    bundles the server; client is skipped.
-7. Run `meteor add rspack` and watch the verbose `[Transpiler]` log for
+7. Does the app keep CSS or HTML outside its entry folder, or import app-local
+   symlinks? Preserve the boundary with `meteor.modules` or
+   `resolve.symlinks: false`; see the references.
+8. Run `meteor add rspack` and watch the verbose `[Transpiler]` log for
    remaining `(app)` failures.
 
 ## Required: entry points
@@ -210,16 +214,8 @@ Preferred reproducible flow:
 2. Commit `package.json` and the lockfile.
 3. Run `meteor npm ci` followed by `meteor build` in CI.
 
-If the pipeline intentionally repairs missing npm bumps, use the documented
-defensive fallback in the same step as the build:
-
-```dockerfile
-RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor build [...]
-```
-
-The fallback mutates dependency state during the build, so do not substitute
-it for a reviewed and committed lockfile. The wrapper keeps the step
-compatible with older Meteor versions that lack `--npm` (added in 3.4).
+See `references/troubleshooting.md` for the recovery-only Docker fallback when
+a pipeline intentionally repairs missing npm bumps during the build.
 
 ## Anti-patterns
 

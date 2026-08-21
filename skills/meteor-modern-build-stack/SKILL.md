@@ -7,7 +7,7 @@ description: >
   rspack Atmosphere package. Triggers on package.json "meteor": { "modern":
   true }, .swcrc, swc.config.js, [Transpiler] Used Babel Fallback logs,
   rspack.config.js, defineConfig from @meteorjs/rspack, Meteor.compileWith*
-  helpers, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
+  helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
   Meteor.splitVendorChunk, Meteor.persistDevFiles, Meteor.disablePlugins,
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
   RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS for OOM, modern/legacy archs.
@@ -17,7 +17,7 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.3"
   area: build
@@ -132,7 +132,7 @@ Use `defineConfig` from `@meteorjs/rspack`. The function receives a
 `Meteor` parameter with build flags and helpers. See
 `references/rspack-config.md` for the full table and the most useful
 helpers (`extendSwcConfig`, `compileWithRspack`, `compileWithMeteor`,
-`splitVendorChunk`, `persistDevFiles`, `disablePlugins`,
+`extendConfig`, `splitVendorChunk`, `persistDevFiles`, `disablePlugins`,
 `enablePortableBuild`, `setCache`).
 
 ## .meteorignore

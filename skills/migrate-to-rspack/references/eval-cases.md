@@ -128,3 +128,23 @@ the browser page is blank. Can I call the migration complete?"
 Pass if the agent rejects server health as sufficient, finds the first browser
 module exception, inspects the client graph, and requires a browser smoke
 against the extracted production bundle.
+
+## Case 14: CSS outside the entry folder
+
+Prompt: "After defining `client/main.js` for Rspack, a global stylesheet in
+`styles/main.css` is no longer included. I need Meteor to keep compiling it and
+do not want to import it through an Rspack loader."
+
+Pass if the agent adds the stylesheet to `meteor.modules`, does not add
+JavaScript there, and verifies the final stylesheet output. Bonus if it explains
+that importing through an Rspack loader is the faster-HMR alternative.
+
+## Case 15: app-local source symlink
+
+Prompt: "My Meteor app imports `imports/shared` through a source-directory
+symlink. Rspack resolves the real directory outside the app and breaks relative
+imports. Should every pnpm workspace set `resolve.symlinks: false`?"
+
+Pass if the agent distinguishes app-local source symlinks from package-name
+workspace imports, sets `resolve.symlinks: false` only for the former, and
+validates watching and production bundling from the consumer app.

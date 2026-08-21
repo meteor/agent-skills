@@ -159,6 +159,26 @@ Limits:
 For dynamic aliases by env, use `swc.config.js` (a function that returns
 the SWC config).
 
+## Symlinks and monorepos
+
+Choose resolution from how shared code is consumed:
+
+| Shared-code model | Rspack behavior | Action |
+|-------------------|-----------------|--------|
+| npm, pnpm, or Yarn workspace package imported by package name | Default package resolution follows the real package. | Keep the default. |
+| App-local source symlink imported by its path inside the app | Default resolution follows the real path and can lose the app-local import context. | Set `resolve.symlinks: false`. |
+
+```javascript
+module.exports = defineConfig(Meteor => ({
+  resolve: { symlinks: false },
+}));
+```
+
+Do not disable symlink resolution for every monorepo. Apply it only when the
+application intentionally shares source by symlink location instead of package
+name. Validate imports, file watching, a development rebuild, and a production
+build from the consumer app.
+
 ## Reserved build folders
 
 Do not commit, edit, or import from:

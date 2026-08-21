@@ -87,6 +87,25 @@ app.
 
 Skeleton: `meteor create --babel`.
 
+## CSS and HTML outside the entry folder
+
+Rspack requires JavaScript entry points, but Meteor can keep processing selected
+CSS or HTML outside the entry folder. List those paths under `meteor.modules`:
+
+```json
+{
+  "meteor": {
+    "modules": ["styles/main.css", "imports/shell.html"]
+  }
+}
+```
+
+Use this when a Meteor HTML or stylesheet compiler must retain ownership. Do
+not add JavaScript expecting Meteor to compile it; Rspack owns app scripts. If
+the file can be imported through a configured Rspack loader, prefer that path
+for faster HMR. Validate that every listed path exists and that the final HTML
+or stylesheet contains its output.
+
 ## CSS (default)
 
 Built in. Any imported CSS file is processed and added to the HTML

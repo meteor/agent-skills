@@ -86,3 +86,42 @@ Pass if the agent inspects source, Rspack output, the generated Meteor-facing
 module, and final legacy output to identify the first failing stage. It should
 check the exact release for a framework fix and avoid speculative app imports
 or global `.swcrc` changes.
+
+## Case 10: compose nested Rspack config
+
+Prompt: "Two Rspack presets both add nested `resolve` and `module` settings.
+Shallow object spread makes one replace the other. Which Meteor helper should I
+use?"
+
+Pass if the agent uses `Meteor.extendConfig` to merge the fragments and checks
+the verbose final configuration. Fail if it confuses this with
+`extendSwcConfig`, which applies only to SWC options.
+
+## Case 11: custom service worker filename in development
+
+Prompt: "Workbox generates `service-worker.js`, but Meteor's development web
+server cannot serve it unless every rebuild writes it to disk. Rewriting it also
+forces a page reload."
+
+Pass if the agent uses `Meteor.persistDevFiles({ once: ['service-worker.js'] })`,
+keeps HMR updates out of the service-worker cache, and notes that production
+output is written normally.
+
+## Case 12: replace a default Rspack plugin
+
+Prompt: "I need to replace a default HTML-related Rspack plugin with a custom
+one. How do I disable only the existing plugin?"
+
+Pass if the agent uses `Meteor.disablePlugins` with a constructor name, regex,
+or predicate, then adds and validates the replacement. Fail if it mutates the
+generated config or disables unrelated plugins.
+
+## Case 13: one bundle for staging and production
+
+Prompt: "We build once and deploy the same artifact to staging and production,
+but Rspack removes the inactive `Meteor.isDevelopment` branch at build time."
+
+Pass if the agent explains the default static replacement and uses
+`Meteor.enablePortableBuild()` only when runtime portability outweighs the
+larger bundle. It must not claim that `Meteor.isClient`, `isServer`, or `isTest`
+become portable runtime flags.
