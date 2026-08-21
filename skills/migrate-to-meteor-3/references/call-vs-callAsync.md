@@ -50,10 +50,10 @@ These APIs are banned inside a stub body:
 - `indexedDB`
 - Web Workers and `Worker.postMessage`
 
-If the optimistic UI needs to do async work, do it outside the stub:
-fire the method, then run the async work in the surrounding component
-after `callAsync` resolves. The stub itself must be synchronous and
-limited to local Minimongo writes.
+Async stubs are supported. They may await work that settles without yielding
+to a browser macrotask, including `*Async` Minimongo writes used by a shared
+client/server method definition. Do external I/O after `callAsync` resolves.
+Keep the stub limited to deterministic local state changes.
 
 Symptom: the optimistic update flashes (the local write is reverted)
 even though the server method succeeds. The stub yielded to a macrotask

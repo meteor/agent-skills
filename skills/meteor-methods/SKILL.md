@@ -8,13 +8,13 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.1.0"
+  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-21"
 license: MIT
 ---
 
@@ -79,6 +79,7 @@ the local Minimongo; the server's authoritative result reverts any divergence.
 ```javascript
 // client/methods.js
 import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
 Meteor.methods({
   addItem(payload) {
     Items.insert({
@@ -91,8 +92,12 @@ Meteor.methods({
 });
 ```
 
-The client stub is synchronous because client Minimongo is synchronous.
-Do not `await` inside it.
+Synchronous stubs are simplest when they only need synchronous Minimongo.
+Async stubs are also supported by `callAsync` and are useful when the same
+method definition runs on client and server with `*Async` collection calls.
+An async stub may await microtask-based local work, but it must not wait on
+`fetch`, timers, IndexedDB, workers, or other browser macrotask APIs. Run
+external I/O outside the stub.
 
 ## Rate limiting
 
@@ -125,7 +130,9 @@ generic `Error`; `Meteor.Error` payload travels in full.
   review.
 - Reusing a method for both authenticated and unauthenticated calls. Split
   into two methods.
-- Returning Promises out of the client stub. Stubs are sync.
+- Awaiting browser macrotask APIs such as `fetch` or timers inside a client
+  stub. Async stubs are valid, but those APIs let unrelated code run before
+  the optimistic simulation finishes.
 - Calling `Meteor.user()` inside an async method body. Use `this.userId`.
 
 ## See also

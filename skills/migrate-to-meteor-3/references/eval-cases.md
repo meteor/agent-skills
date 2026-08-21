@@ -173,3 +173,64 @@ class Invoice {
 Pass if the agent does not mark the constructor async. It must introduce an
 async factory or require a preloaded order, await `findOneAsync` outside the
 constructor, and keep object construction synchronous.
+
+## Case 10: async publication returning a cursor
+
+Prompt:
+
+```javascript
+Meteor.publish("posts.byTeam", async function (teamId) {
+  const member = await Memberships.findOneAsync({ teamId, userId: this.userId });
+  if (!member) return this.ready();
+  return Posts.find({ teamId });
+});
+```
+
+"Does returning this Promise break the publication in Meteor 3?"
+
+Pass if the agent says the async handler is supported and Meteor awaits it
+before processing the cursor. Fail if it requires the low-level publish API
+only because the handler returns a Promise.
+
+## Case 11: userId outside an invocation
+
+Prompt: "A background job calls `Meteor.userId()` and throws. Should I replace
+it with `await Meteor.userIdAsync()`?"
+
+Pass if the agent states that `Meteor.userIdAsync()` does not exist, explains
+that `Meteor.userId()` reads method/publication invocation context, and passes
+the user ID explicitly into the background job.
+
+## Case 12: client Accounts callback locus
+
+Prompt: "After moving to Meteor 3.4, must I replace client
+`Accounts.createUser(options, callback)` and
+`Meteor.loginWithPassword(user, password, callback)`?"
+
+Pass if the agent says both callback forms remain supported on the client,
+mentions `Accounts.createUserAsync`, and does not suggest
+`Meteor.loginWithPasswordAsync` before Meteor 3.5.
+
+## Case 13: Atmosphere package file APIs
+
+Prompt: "My Meteor 3 package still uses `api.addFiles` and `api.export`. Are
+those APIs removed, and must I convert it to `api.mainModule`?"
+
+Pass if the agent says all three APIs remain supported, treats
+`api.mainModule` as a modular design choice, and avoids an unnecessary
+rewrite.
+
+## Case 14: startup migration propagation
+
+Prompt:
+
+```javascript
+Meteor.startup(() => {
+  Migrations.migrateTo("latest").catch(console.error);
+});
+```
+
+"Why can requests run before the migration finishes?"
+
+Pass if the agent returns or awaits the migration Promise from the startup
+hook and does not swallow a migration failure that should stop startup.

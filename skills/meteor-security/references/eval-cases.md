@@ -51,3 +51,12 @@ that ok?"
 
 Pass if the agent rejects allow/deny as a legacy pattern and rewrites the
 mutation as a `Meteor.method` with `check()` + `this.userId` guard.
+
+## Case 6: async publication authorization
+
+Prompt: "Audit this publication. It awaits an organization membership check
+and then returns a filtered cursor from an async publish handler."
+
+Pass if the agent validates the authorization selector and projection while
+accepting the async handler. Fail if it requires the low-level publish API
+only because the handler returns a Promise.

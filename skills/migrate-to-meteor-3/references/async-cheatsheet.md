@@ -16,7 +16,7 @@ Quick lookup for the sync-to-async rewrite Meteor 3 requires on the server.
 | RPC                    | `Meteor.call('m', ...args, cb)` | `await Meteor.callAsync('m', ...args)`  |
 | RPC with options       | `Meteor.apply(...)`             | `await Meteor.applyAsync(...)`          |
 | User identity (server) | `Meteor.user()`                 | `await Meteor.userAsync()`              |
-| Accounts create        | `Accounts.createUser(o, cb)`    | `await Accounts.createUserAsync(o)`     |
+| Accounts create (server) | `Accounts.createUser(o)`      | `await Accounts.createUserAsync(o)`     |
 | Accounts password set  | `Accounts.setPassword(...)`     | `await Accounts.setPasswordAsync(...)`  |
 | Accounts add email     | `Accounts.addEmail(uid, addr)`  | `await Accounts.addEmailAsync(uid, addr)` |
 | Email                  | `Email.send(opts)`              | `await Email.sendAsync(opts)`           |
@@ -24,8 +24,9 @@ Quick lookup for the sync-to-async rewrite Meteor 3 requires on the server.
 | Asset, text            | `Assets.getText(path)`          | `await Assets.getTextAsync(path)`       |
 | Asset, binary          | `Assets.getBinary(path)`        | `await Assets.getBinaryAsync(path)`     |
 
-Minimongo on the client keeps the synchronous API. None of these rewrites
-apply to the client.
+Client Minimongo keeps its synchronous API. Client RPC may still move from a
+callback to `callAsync`, and `Accounts.createUserAsync` is available, but the
+callback-shaped client Accounts APIs were not removed.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/v3-migration-docs/migrating-to-async-in-v2/index.md

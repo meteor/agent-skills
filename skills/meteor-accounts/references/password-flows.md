@@ -61,13 +61,12 @@ automatically when `sendVerificationEmail: true` is set in
 
 - `await Accounts.createUserAsync(options)`
 - `await Accounts.setPasswordAsync(userId, newPassword, options?)`
-- `Accounts.sendVerificationEmail(userId, email?)`
-- `Accounts.sendEnrollmentEmail(userId, email?)`
-- `Accounts.sendResetPasswordEmail(userId, email?)`
+- `await Accounts.sendVerificationEmail(userId, email?)`
+- `await Accounts.sendEnrollmentEmail(userId, email?)`
+- `await Accounts.sendResetPasswordEmail(userId, email?)`
 
-`createUserAsync` is the only one currently exposed with an `Async`
-suffix; the others remain callback-/sync-style on the server but are safe
-to `await` no-op since they return promises in Meteor 3.x.
+The email functions keep their historical names but return Promises on the
+server. Await them so delivery or configuration failures propagate.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/accounts.md

@@ -18,8 +18,23 @@ Meteor.publish('posts.recent', function (limit) {
 });
 ```
 
-The publish function is **synchronous**. Returning a Promise breaks the
-publication; Meteor logs "publish function returned a Promise".
+Meteor 3 supports both conventional and async publish handlers. Await setup
+work, then return a cursor or array of cursors:
+
+```javascript
+Meteor.publish('posts.byTeam', async function (teamId) {
+  const membership = await Memberships.findOneAsync({
+    teamId,
+    userId: this.userId,
+  });
+  if (!membership) return this.ready();
+  return Posts.find({ teamId });
+});
+```
+
+Meteor awaits the handler Promise before processing the returned cursor.
+Use the low-level API only when the result cannot be expressed as a returned
+cursor, such as per-document async joins or a custom external data source.
 
 ## Avoid `_cursorDescription`
 
@@ -71,8 +86,8 @@ Posts.find({}, {
 });
 ```
 
-Yields the error "publish function returned a Promise" or returns
-undefined documents. Two options:
+Produces Promise-shaped documents or publication/serialization failures.
+Two options:
 
 1. Keep the transform synchronous. Run the join in a separate publication
    or on the client.
@@ -93,8 +108,8 @@ Meteor.publish('feed', async function () {
 });
 ```
 
-Always pair `observeChangesAsync` with `this.onStop(handle.stop)`. Without
-the teardown, the observer leaks.
+Always stop an `observeChangesAsync` handle from `this.onStop`. Without the
+teardown, the observer leaks.
 
 ## Authorization
 
@@ -111,7 +126,8 @@ Meteor.publish('items.mine', function () {
 });
 ```
 
-Always project (`fields`). Returning a whole document leaks columns.
+Project `fields` whenever the collection contains columns the subscriber
+must not receive.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/meteor.md

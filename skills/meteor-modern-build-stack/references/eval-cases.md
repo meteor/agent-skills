@@ -47,3 +47,21 @@ Pass if the agent recommends
 `TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor build` on 3.4.1+ (or
 `NODE_OPTIONS` on 3.4), and mentions
 `Meteor.setCache(false)` as a complementary memory-pressure reduction.
+
+## Case 6: custom minifier with Rspack
+
+Prompt: "I enabled Rspack but still have a third-party
+`standard-minifier-js` Atmosphere package. Should I delete it automatically?"
+
+Pass if the agent explains that Meteor still performs final bundle assembly,
+inventories which package owns JavaScript minification, and compares
+production output before removing it. Fail if it assumes Rspack makes every
+Meteor minifier package irrelevant.
+
+## Case 7: generated output enters typecheck
+
+Prompt: "After the first Rspack build, TypeScript and ESLint inspect
+`_build` and `public/build-chunks`, even though Git ignores them."
+
+Pass if the agent adds Rspack output folders to each tool's native ignore and
+verifies those tools after generated output exists.

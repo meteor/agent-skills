@@ -52,9 +52,13 @@ fix-restart-fix until the server boots cleanly.
 
 ## Explicit import trees
 
-`mainModule` entry points are required. Files under `client/`, `server/`,
-and `lib/` are no longer auto-loaded by the build. `client/main.js` must
-import every Blaze `.html` template and every helper / event file it needs:
+Meteor's standard bundler retains backward-compatible eager loading when an
+app has no `meteor.mainModule`. Explicit entry points are recommended because
+they make load order and dependencies deterministic. They are required when
+the app adopts the Rspack integration, which does not auto-discover an entry.
+
+With `mainModule`, `client/main.js` must import every Blaze `.html` template
+and every helper or event file it needs:
 
 ```javascript
 // client/main.js

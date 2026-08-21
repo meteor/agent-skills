@@ -38,9 +38,9 @@ For every `Meteor.publish(...)`:
 - [ ] `this.userId` filter when data is user-specific.
 - [ ] `fields` projection limiting columns.
 - [ ] `limit` and `sort` on unbounded collections.
-- [ ] If returning a Promise, the publication uses the low-level
-      `this.added` / `this.changed` / `this.removed` API rather than the
-      cursor-return form. Cursor `transform` callbacks remain synchronous.
+- [ ] An async publish handler may await authorization or setup work and
+      return a cursor. Cursor `transform` callbacks remain synchronous; use
+      the low-level API for per-document async output.
 
 ```javascript
 Meteor.publish("items.mine", function () {

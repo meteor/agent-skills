@@ -104,6 +104,27 @@ Apply the same rule to callbacks whose caller does not await returned Promises.
 Do not add `async` blindly; move the asynchronous work to a boundary that can
 wait for it.
 
+## Async framework boundaries
+
+Meteor methods and publish handlers may return Promises. Meteor also awaits a
+Promise returned by a server `Meteor.startup` hook. Propagate critical startup
+work to that boundary instead of starting it and returning `undefined`:
+
+```javascript
+Meteor.startup(async () => {
+  try {
+    await Migrations.migrateTo("latest");
+  } catch (error) {
+    console.error("Migration failed", error);
+    throw error;
+  }
+});
+```
+
+Do not catch and swallow a failure that must stop startup. Browser event
+systems usually do not await an async handler, so catch rejected method calls
+inside the handler or deliberately forward them to application error state.
+
 ## Server rewrites
 
 ```javascript

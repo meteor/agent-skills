@@ -50,9 +50,20 @@ Could not find rspack.config.js, rspack.config.ts, rspack.config.mjs, or rspack.
 
 Root cause: the npm-side deps required by the current Meteor version are
 not in the lockfile because `meteor update --npm` was not committed after
-the local Meteor upgrade.
+the local Meteor upgrade. Also check the release contract: Meteor 3.4 uses
+`@meteorjs/rspack` v1, while Meteor 3.4.1 uses v2.
 
-Fix in the same step as `meteor build`:
+Preferred fix: run the update locally, review it, and commit the lockfile:
+
+```bash
+meteor update --npm
+meteor npm install
+git add package.json package-lock.json
+git commit -m "update rspack npm dependencies"
+```
+
+CI can then run `meteor npm ci && meteor build`. If the pipeline must repair
+an incomplete upgrade defensively, use this fallback in the build step:
 
 ```dockerfile
 RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor build [...]
@@ -61,15 +72,9 @@ RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor bu
 The `2>/dev/null || true` keeps the step compatible with older Meteor
 versions that lack `--npm` (3.4 introduced it).
 
-Each Docker step or CI stage is isolated. If `meteor update --npm` runs in
-one step and `meteor build` in another, the npm bumps will not carry over.
-Either run both in the same step or commit the bumps locally:
-
-```bash
-meteor update --npm
-git add package.json package-lock.json
-git commit -m "bump rspack npm deps after meteor update"
-```
+Each Docker step or CI stage is isolated. Uncommitted npm bumps from one
+stage do not carry into another. Prefer the committed dependency changes;
+the fallback is a recovery mechanism, not the reproducible default.
 
 ## thread-stream worker error
 

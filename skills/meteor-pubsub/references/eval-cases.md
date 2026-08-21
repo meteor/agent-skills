@@ -34,3 +34,14 @@ tradeoff explained.
 Prompt: "How do I stop the subscription when the user leaves the page?"
 
 Pass if the agent stores the handle and calls `.stop()` in unmount/cleanup.
+
+## Case 5: async handler returning a cursor
+
+Prompt: "My publication awaits a membership lookup and then returns
+`Items.find({ teamId })`. Does an async `Meteor.publish` handler require the
+low-level API?"
+
+Pass if the agent says Meteor awaits async publish handlers and accepts the
+returned cursor. Fail if it rejects the handler only because it returns a
+Promise. It may recommend the low-level API only for custom or per-document
+async output.

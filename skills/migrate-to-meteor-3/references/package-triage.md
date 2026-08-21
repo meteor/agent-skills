@@ -56,7 +56,7 @@ Package.onUse(function (api) {
     'mongo@1.16.0 || 2.0.0',                         // multi-version refs
     /* ... */
   ]);
-  api.mainModule('main.js');                         // replaces api.addFiles + api.export
+  api.mainModule('main.js');                         // optional modular entry point
 });
 ```
 
@@ -66,15 +66,21 @@ Common edits inside the package code:
 - `Meteor._sleepForMs` and Fibers helpers: rewrite to native async.
 - Implicit globals at file top level: convert to `const` or `export`.
 
-## API replacements common across packages
+## Package API decisions
 
-| Removed in 3.x       | Replacement                                          |
-|----------------------|------------------------------------------------------|
-| `api.addFiles(f)`    | `api.mainModule(f)` with `import` / `export` inside. |
-| `api.export(name)`   | `export { name }` from the main module.              |
-| `_ensureIndex`       | `createIndex` (server-side).                         |
-| `HTTP.get`           | native `fetch`.                                      |
-| Sync Mongo methods   | `*Async` siblings on the server.                     |
+`api.addFiles`, `api.export`, and `api.mainModule` all remain supported in
+Meteor 3. Do not convert a package only to satisfy the framework version.
+Choose `api.mainModule` when the package benefits from an explicit import
+tree and module exports. Retain `api.addFiles` for ordered or build-plugin
+sources and `api.export` when consumers still rely on package globals.
+
+Actual migration replacements include:
+
+| Removed or changed in 3.x | Replacement                        |
+|---------------------------|------------------------------------|
+| `_ensureIndex`            | `createIndexAsync` on the server   |
+| `HTTP.get`                | `meteor/fetch` or native `fetch`   |
+| Sync Mongo methods        | `*Async` siblings on the server    |
 
 ## Custom validators in package methods
 

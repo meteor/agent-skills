@@ -12,13 +12,13 @@ description: >
   vs HttpOnly cookies.
 metadata:
   author: meteor
-  version: "0.1.0"
+  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-21"
 license: MIT
 ---
 
@@ -65,12 +65,7 @@ import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
 
 async function signUp({ email, password }) {
-  // Accounts.createUser is callback-shaped on the client; wrap it.
-  await new Promise((resolve, reject) => {
-    Accounts.createUser({ email, password }, (err) =>
-      err ? reject(err) : resolve(),
-    );
-  });
+  await Accounts.createUserAsync({ email, password });
 }
 
 async function signIn({ email, password }) {
@@ -78,8 +73,9 @@ async function signIn({ email, password }) {
 }
 ```
 
+Client `Accounts.createUser(options, callback)` also remains supported.
 `Meteor.loginWithPasswordAsync` was added in Meteor 3.5; on older 3.x use
-the callback form of `Meteor.loginWithPassword`.
+the callback form of `Meteor.loginWithPassword` or wrap it in a Promise.
 
 On the server use `await Accounts.createUserAsync(options)` and
 `await Accounts.setPasswordAsync(userId, newPassword)`.
@@ -188,7 +184,8 @@ Accounts.emailTemplates.resetPassword.text = (user, url) =>
 
 `accounts-2fa` adds TOTP. The login flow:
 
-1. Client calls `Meteor.loginWithPasswordAsync(user, password)`.
+1. Client calls `Meteor.loginWithPasswordAsync(user, password)` on Meteor
+   3.5+, or the callback form of `Meteor.loginWithPassword` on older 3.x.
 2. Server rejects with `error.error === 'no-2fa-code'`.
 3. Client prompts for a code, retries with
    `Meteor.loginWithPasswordAnd2faCode(user, password, code, cb)`.

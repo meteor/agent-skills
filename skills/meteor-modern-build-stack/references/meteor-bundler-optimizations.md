@@ -151,6 +151,12 @@ Replaces Terser in production builds. Same flag (`"modern": true`). Opt out:
 }
 ```
 
+This flag controls Meteor's standard minifier path. If `.meteor/packages`
+contains a third-party package that provides the JavaScript minifier, do not
+assume the flag replaces it. Rspack compiles app modules, then Meteor still
+assembles and minifies the final bundle. Compare production output with and
+without the custom package before choosing one implementation.
+
 ## Watcher (`@parcel/watcher`)
 
 Native cross-OS file watcher. Opt out:

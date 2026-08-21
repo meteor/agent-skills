@@ -181,16 +181,29 @@ these names, rename:
 }
 ```
 
+`.gitignore` is not a tool ignore. Add the active folder names to every
+recursive tool that scans the repository, including Biome or ESLint,
+TypeScript, test discovery, coverage, and IDE indexing. Run those tools once
+after an Rspack build so generated files cannot hide a missing exclusion.
+
 ## Verifying a migration
 
-1. `"meteor": { "modern": true }` is set and dev runs clean (no
-   `(app)` Babel fallbacks).
-2. `meteor add rspack` succeeds and `rspack.config.js` appears.
-3. `meteor reset` then `meteor run` builds both client and server.
-4. Verbose mode shows app code running through Rspack/SWC; only
-   Atmosphere `(package)` files run through the Meteor bundler.
-5. `meteor build --architecture os.linux.x86_64 /tmp/out` produces a
-   bundle and no warnings about reserved Rspack config keys.
+Verify from a clean clone, not only from a developer tree with cached files
+or ignored settings:
+
+1. `meteor npm ci` installs the committed lockfile without changing it.
+2. `"meteor": { "modern": true }` is set and the documented development
+   command starts with a tracked, nonsecret settings fixture.
+3. `meteor add rspack` has produced a committed `rspack.config.*` and the
+   required npm dependency changes.
+4. Verbose mode shows app code running through Rspack/SWC; only Atmosphere
+   `(package)` files run through the Meteor bundler.
+5. Server tests, browser-backed client tests, and the app's E2E command pass.
+6. Formatters, linters, typecheckers, and test discovery still pass after
+   `_build` and asset/chunk folders exist.
+7. `meteor build --architecture os.linux.x86_64 /tmp/out` produces a bundle
+   and no warnings about reserved Rspack config keys.
+8. `git status --short` remains clean after the complete sequence.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md

@@ -88,12 +88,19 @@ meteor reset --db      # clears build cache AND local Mongo
 Update any CI or development scripts that rely on `meteor reset` wiping
 the database.
 
-## Node v22 baseline
+## Release-specific Node baseline
 
-Meteor 3 runs on Node 22. Dependencies that pinned to Node 14 or 16 must
-be upgraded or replaced. Audit `package.json` for any `engines.node`
-constraint and any package whose latest release pre-dates Node 18 active
-support.
+Meteor 3 does not have one Node baseline across every minor release:
+
+| Meteor release | Bundled Node |
+|----------------|--------------|
+| 3.0 through 3.3 | Node 20     |
+| 3.4             | Node 22     |
+| 3.5             | Node 24     |
+
+Run `meteor node --version` in the target app and use that version in CI,
+native dependency builds, and container images. Audit `engines.node` and
+native packages whenever the target Meteor release changes Node major.
 
 ## "Cannot enlarge memory array" during `meteor update`
 

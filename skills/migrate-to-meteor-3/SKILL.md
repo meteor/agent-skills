@@ -17,13 +17,13 @@ description: >
   replacing or forking third-party packages.
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
   tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
   bundle: ["migration"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-21"
 license: MIT
 ---
 
@@ -59,7 +59,8 @@ in phases. Do not flip the framework version flag first.
 8. Replace iterators that contain `await` (`forEach`, `map`, `filter`)
    with `for...of` or `Promise.all`. See `references/js-iterators.md`.
 9. Audit publications using internal cursor APIs (`_cursorDescription`,
-   manual `sub.added`). Prefer returning cursors directly.
+   manual `sub.added`). Both synchronous and async publish handlers may
+   return cursors; keep cursor transforms synchronous.
    See `references/publications.md`.
 10. For TypeScript projects, install `zodern:types` and update
     `tsconfig.json`. See `references/typescript-migration.md`.
@@ -111,6 +112,10 @@ in phases. Do not flip the framework version flag first.
 - Do not mix `await` and `.then()` in the same function. Pick one.
 - Do not assume implicit globals work. Every top-level identifier in 3.x
   must be `const`, `let`, or `export`-ed.
+- Do not invent async replacements. `Meteor.userId()` remains synchronous
+  inside methods and publications; there is no `Meteor.userIdAsync()`.
+- Do not rewrite `api.addFiles` or `api.export` only because the app moved to
+  Meteor 3. They remain supported for Atmosphere packages.
 
 ## Effort shape
 
@@ -136,7 +141,7 @@ client cleanup.
 - `references/package-triage.md`: Atmosphere dependency strategy.
 - `references/js-iterators.md`: iterators that contain `await`.
 - `references/webapp-express.md`: WebApp / Express 5 API renames and Express 5 routing changes.
-- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, Node 22 baseline, "Cannot enlarge memory array" on upgrade, `Meteor.bindEnvironment` for external callbacks, monkey-patching from `Meteor.startup`.
+- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, release-specific Node versions, "Cannot enlarge memory array" on upgrade, `Meteor.bindEnvironment` for external callbacks, monkey-patching from `Meteor.startup`.
 - `references/typescript-migration.md`: `zodern:types`, `tsconfig.json` updates for existing TS projects.
 - `references/react-migration.md`: Suspense-aware `react-meteor-data`, `useTracker(key, fn)`, `useSubscribe` suspends.
 - `references/eval-cases.md`: smoke-test prompts.

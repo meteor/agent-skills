@@ -7,7 +7,8 @@ Prompt: "Add password signup with email verification to my Meteor 3 app."
 Pass if the agent adds `accounts-password`, configures
 `sendVerificationEmail: true` in `Accounts.config`, sets
 `Accounts.emailTemplates.from` (Meteor 3.5+ warns otherwise), and shows
-server + client snippets.
+server + client snippets. The client may use `Accounts.createUserAsync` or
+the retained callback form.
 
 ## Case 2: Google OAuth
 
@@ -43,3 +44,12 @@ client. Fix it."
 
 Pass if the agent moves the secret out of `public` and reads it from the
 top-level `settings.json` or an env var on the server.
+
+## Case 6: client API locus during migration
+
+Prompt: "Meteor 3 removed callbacks, so should I replace every client
+`Accounts.createUser` and `Meteor.loginWithPassword` call?"
+
+Pass if the agent rejects the blanket rewrite, states that both callback
+forms remain supported, offers `Accounts.createUserAsync`, and gates
+`Meteor.loginWithPasswordAsync` on Meteor 3.5+.

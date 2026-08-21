@@ -9,13 +9,13 @@ description: >
   reactive data fetching.
 metadata:
   author: meteor
-  version: "0.1.0"
+  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Author and debug publications/subscriptions (publish strategies, low-level `added/changed/removed`, authorization, reactive joins)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-21"
 license: MIT
 ---
 
@@ -32,9 +32,11 @@ filter rows before they reach the client.
 2. Is the data user-specific? Filter by `this.userId` inside the publish
    function. Without that filter, documents leak across users.
 3. Can the publication be expressed as a single cursor? Return it directly.
-4. Does the publication need to join data, run aggregations, or react to
-   external sources? Drop to the low-level `this.added` / `this.changed` /
-   `this.removed` API.
+4. Does it need one async lookup before choosing a cursor? Use an async
+   publish handler, await the lookup, then return the cursor.
+5. Does it need per-document async joins, custom aggregation output, or an
+   external reactive source? Drop to the low-level `this.added` /
+   `this.changed` / `this.removed` API.
 
 ## Scaffold
 
@@ -53,7 +55,23 @@ Meteor.publish("items.mine", function () {
 });
 ```
 
-Always project (`fields`). Returning the whole document leaks columns.
+Project `fields` whenever the collection contains columns the subscriber
+must not receive.
+
+Async publish handlers may also return a cursor:
+
+```javascript
+Meteor.publish("items.byTeam", async function (teamId) {
+  const member = await Memberships.findOneAsync({
+    teamId,
+    userId: this.userId,
+  });
+  if (!member) return this.ready();
+  return Items.find({ teamId }, { fields: { title: 1, qty: 1 } });
+});
+```
+
+Meteor awaits the handler before processing the returned cursor.
 
 ## Subscribing
 
@@ -109,15 +127,17 @@ Meteor.publish("feed", async function () {
 });
 ```
 
-Note: cursor `transform` functions remain synchronous. Any async join
-must use the low-level API.
+Note: cursor `transform` functions remain synchronous. Use a separate
+publication or the low-level API for per-document async joins.
 
 ## Anti-patterns
 
 - Publish without a `this.userId` filter when data is user-specific.
-- Publish without `fields` projection. Always project.
-- Return a Promise from `Meteor.publish`. Publications expect a cursor, an
-  array of cursors, or use of the low-level API.
+- Publish sensitive or unnecessary columns. Add a `fields` projection when
+  the full document is not part of the publication contract.
+- Confuse an async publish handler with an async cursor transform. Meteor
+  awaits the handler Promise, but each transform callback must return a
+  document synchronously.
 - Use cursor transforms for async joins. Transforms are synchronous; the
   low-level API is the right tool.
 - Subscribe to large unbounded collections. Page the data with `limit`/`skip`.
