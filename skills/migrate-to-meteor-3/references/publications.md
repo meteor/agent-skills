@@ -36,6 +36,40 @@ Meteor awaits the handler Promise before processing the returned cursor.
 Use the low-level API only when the result cannot be expressed as a returned
 cursor, such as per-document async joins or a custom external data source.
 
+## Preserve framework-bound `this`
+
+Meteor invokes method and publication handlers with an invocation context.
+Arrow functions ignore that binding, so an arrow that reads `this.userId`,
+`this.connection`, `this.ready()`, `this.added()`, or another context member is
+incorrect even when its body is otherwise async-compatible.
+
+Before changing handlers, use an AST scan to find:
+
+- an arrow passed directly to `Meteor.publish`;
+- an arrow-valued property in an object passed to `Meteor.methods`;
+- a `ThisExpression` owned by that outer arrow.
+
+Change only the context-owning handler to an ordinary function:
+
+```javascript
+Meteor.publish('items.mine', function () {
+  if (!this.userId) return this.ready();
+  return Items.find({ ownerId: this.userId });
+});
+
+Meteor.methods({
+  async 'items.create'(input) {
+    return Items.insertAsync({ ...input, ownerId: this.userId });
+  },
+});
+```
+
+Do not rewrite an arrow that never uses framework context merely because it is
+a handler. Preserve nested arrows inside an ordinary handler when they
+intentionally capture the handler's `this`. Validate one authenticated and one
+unauthenticated call or subscription so the test proves the bound context, not
+only compilation.
+
 ## Avoid `_cursorDescription`
 
 The internal pattern:

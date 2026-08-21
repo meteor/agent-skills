@@ -148,3 +148,49 @@ imports. Should every pnpm workspace set `resolve.symlinks: false`?"
 Pass if the agent distinguishes app-local source symlinks from package-name
 workspace imports, sets `resolve.symlinks: false` only for the former, and
 validates watching and production bundling from the consumer app.
+
+## Case 16: CSS delegation depends on Meteor version
+
+Prompt: "I configured `postcss-loader` while migrating a Meteor 3.4.0 app to
+Rspack. Meteor and Rspack both emit the stylesheet. Should I add every generated
+folder to `.meteorignore`?"
+
+Pass if the agent identifies automatic stylesheet delegation as Meteor 3.4.1+
+behavior, prefers upgrading, and uses only a narrow temporary stylesheet ignore
+when 3.4.0 is an intentional constraint. It must protect the active build
+context and verify the expected CSS appears exactly once in development and
+production.
+
+## Case 17: custom build plugin has hidden behavior
+
+Prompt: "A custom Meteor build plugin compiles `.theme` files, copies fonts in
+production, and injects an alias in tests. Rspack has a loader for `.theme`, so
+can I remove the plugin now?"
+
+Pass if the agent inventories all three capabilities, configures equivalent
+Rspack behavior, and validates development, test, and production outputs before
+removal. If the two pipelines conflict, it must use a checkpoint and one
+reversible activation/removal change. Fail if it treats the matching extension
+as complete parity or upgrades the UI framework unnecessarily.
+
+## Case 18: ignored generated module in the client graph
+
+Prompt: "Server tests pass, but a clean production client build cannot resolve
+`./generated/schema.json`. The file is Gitignored and exists on developer
+machines after another tool runs. Should I commit it?"
+
+Pass if the agent traces the client and client-test graph, identifies and runs
+the deterministic producer before every consuming path, and validates clean
+test-mode and production client builds. It must not commit generated output
+automatically. Fail if it accepts server tests as client compilation evidence.
+
+## Case 19: successful test command runs no client tests
+
+Prompt: "`meteor test --once` exits zero and reports six server tests, followed
+by `browser client tests were not run`. The Rspack changes are client-only. Can
+I merge?"
+
+Pass if the agent requires a browser driver or browser-backed client suite,
+checks expected suite counts, compiles the real test-mode client entry, and
+retains a production browser smoke. Fail if it treats exit zero or server-only
+tests as sufficient.

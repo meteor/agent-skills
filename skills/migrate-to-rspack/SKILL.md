@@ -18,7 +18,7 @@ description: >
   meteor-modern-build-stack instead.
 metadata:
   author: meteor
-  version: "0.4.0"
+  version: "0.5.0"
   kind: knowledge
   meteor: ">=3.4"
   area: migration
@@ -58,8 +58,9 @@ the installed version; the integration may validate `package.json` directly.
 1. Does the app define client and server entry points in `package.json`
    `meteor.mainModule`? If no, define them. Required.
 2. Trace the client and client-test graphs. Do they reach CommonJS export
-   assignments, Node built-ins, or server-only local package entries? If yes,
-   repair the boundary before activation. See
+   assignments, Node built-ins, server-only local package entries, or missing
+   generated inputs in a clean checkout? If yes, repair the boundary before
+   activation. See
    `references/client-graph-preflight.md`.
 3. Does the app code contain nested imports (ES `import` inside an `if`,
    function, or other block)? If yes, move them to top level or convert
@@ -67,7 +68,8 @@ the installed version; the integration may validate `package.json` directly.
    Atmosphere packages.
 4. Does the app rely on a Meteor build plugin (`less`, `fourseven:scss`,
    `coffeescript`, `zodern:melte`, `jorgenvatle:vite`)? Plan an Rspack
-   loader replacement. See `references/framework-and-css.md`.
+   loader replacement and prove capability parity before removal. See
+   `references/framework-and-css.md`.
 5. Does the app rely on bare default imports from CommonJS packages
    (`import x from "some-cjs"`)? Decide between rewriting to
    `import * as x` or restoring Meteor-style interop in `.swcrc`. See
@@ -158,8 +160,9 @@ assemble the final bundle. Resolve renamed contexts before auditing ignores.
 
 ## Replacing build plugins
 
-Most Meteor build plugins are deprecated under Rspack because the same
-problem is solved by an Rspack loader.
+Most app-file build plugins move to Rspack loaders. Prove capability parity
+before removal; make conflicting activation and removal one reversible change.
+See `references/framework-and-css.md`.
 
 | Old plugin                | Replacement                                                          |
 |---------------------------|----------------------------------------------------------------------|
@@ -222,8 +225,6 @@ a pipeline intentionally repairs missing npm bumps during the build.
 - Add Rspack before fixing Babel fallbacks. Find them with
   `"meteor": { "modern": { "transpiler": { "verbose": true } } }` and fix
   them while still on the optimization-only stack.
-- Keep `jorgenvatle:vite` or `zodern:melte` alongside `rspack`. Remove the
-  old plugin; the integration replaces it.
 - Restore CJS interop globally in `.swcrc` to avoid migrating a handful of
   imports. Trades real bundle-size wins for short-term convenience.
 - Commit `_build/`, `public/build-assets/`, `public/build-chunks/`,

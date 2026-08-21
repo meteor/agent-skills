@@ -10,6 +10,7 @@ results. Run the applicable rows after Rspack activation.
 | Development rebuild | Interactive app | A source edit triggers the expected HMR or full reload. |
 | Server tests | Server tests exist | Expected suites execute; reject zero-test output. |
 | Client tests | Client tests exist | Browser bundle compiles and expected suites execute. |
+| Test-mode compilation | Client or test-only entry exists | The configured client test root and generated inputs compile through Meteor and Rspack. |
 | Production build | Always | Command exits nonzero on failure and the expected artifact exists. |
 | Extracted bundle boot | Deployable app | Server reaches readiness from the production artifact. |
 | Browser against production bundle | Client app | The real page starts; HTTP 200 from the server alone is insufficient. |
@@ -17,6 +18,7 @@ results. Run the applicable rows after Rspack activation.
 | Non-root `ROOT_URL` | Subpath deployment | Assets and chunks load without duplicated or missing prefixes. |
 | Legacy web architecture | Still supported | A legacy-targeted browser or equivalent bundle smoke starts. |
 | Custom loader | Custom loader exists | Representative input passes parsing, transformation, and code generation through the actual loader entry. |
+| Generated input | Client graph reaches generated source or data | A documented producer recreates it from a clean checkout before every consuming path. |
 | Long watch session | Memory grows over time | Memory reaches a stable range across repeated rebuilds. |
 | Shutdown and restart | Queues, migrations, workers | Critical async work follows the documented drain or failure policy. |
 

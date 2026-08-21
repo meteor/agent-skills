@@ -16,6 +16,27 @@ Follow static imports, re-exports, and literal `require()` calls. Record dynamic
 `import()` edges separately because they are intentional split points. Do not
 classify a module only from `client/`, `server/`, or `imports/` in its path.
 
+## Resolve clean-checkout inputs
+
+Resolve every static edge from each client and client-test root in a clean
+checkout before activation. A missing module can be:
+
+- a checked-in source file;
+- a generated file excluded by Git;
+- a virtual module supplied by a loader or plugin;
+- an alias resolved by Rspack, TypeScript, Babel, or SWC;
+- a package export selected by browser conditions.
+
+Do not require every import target to exist as a physical file. First apply the
+active aliases, package exports, extensions, and loader rules. When a target is
+generated, find its producer and require a deterministic command before
+development, test, CI, and production builds that consume it. Do not commit
+generated output automatically. Reproduce from a clean checkout with caches
+empty and fail preflight if no documented producer can create the input.
+
+Server unit tests do not prove this graph compiles. Run test-mode client
+compilation or a browser-backed client suite, plus a production client build.
+
 ## Flag risky client-reachable modules
 
 | Finding | Interpretation | Action |

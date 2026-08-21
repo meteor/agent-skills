@@ -13,7 +13,7 @@ description: >
   and forking packages.
 metadata:
   author: meteor
-  version: "0.5.0"
+  version: "0.6.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -57,8 +57,10 @@ in phases. Do not flip the framework version flag first.
 8. Replace iterators that contain `await` (`forEach`, `map`, `filter`)
    with `for...of` or `Promise.all`. See `references/js-iterators.md`.
 9. Audit publications using internal cursor APIs (`_cursorDescription`,
-   manual `sub.added`). Both synchronous and async publish handlers may
-   return cursors; keep cursor transforms synchronous.
+   manual `sub.added`) and framework handlers that read invocation `this`.
+   Both synchronous and async publish handlers may return cursors; keep cursor
+   transforms synchronous and use ordinary functions when Meteor must bind
+   `this`.
    See `references/publications.md`.
 10. For TypeScript projects, install `zodern:types` and update
     `tsconfig.json`. See `references/typescript-migration.md`.
@@ -84,6 +86,7 @@ in phases. Do not flip the framework version flag first.
 | Blaze helper returns a `Promise`                     | `references/client-reactivity.md`      |
 | Cursor `transform` errors with "returned a Promise"  | `references/publications.md`           |
 | `sub.added` writes never reach the client            | `references/publications.md`           |
+| Method or publication loses `this.userId`            | `references/publications.md`           |
 | Atmosphere package fails to resolve or build         | `references/package-triage.md`         |
 | `forEach`/`map`/`filter` with `await` skips items    | `references/js-iterators.md`           |
 | Middleware on `WebApp.connectHandlers` not firing    | `references/webapp-express.md`         |
@@ -115,25 +118,20 @@ in phases. Do not flip the framework version flag first.
   must be `const`, `let`, or `export`-ed.
 - Do not invent async replacements. `Meteor.userId()` remains synchronous
   inside methods and publications; there is no `Meteor.userIdAsync()`.
+- Do not use an arrow as a method or publication handler when it reads
+  framework-bound `this`. An arrow ignores the invocation context Meteor
+  supplies.
 - Do not rewrite `api.addFiles` or `api.export` only because the app moved to
   Meteor 3. They remain supported for Atmosphere packages.
 
 ## See also
 
-- `references/async-rewrites.md`: sync-to-async rewrite mechanics.
-- `references/call-vs-callAsync.md`: RPC migration.
-- `references/removed-functions.md`: removed API inventory.
-- `references/async-cheatsheet.md`: quick lookup table.
-- `references/module-system.md`: strict mode, implicit globals, explicit imports, Iron Router controller trap.
-- `references/client-reactivity.md`: Tracker reactivity inside async code.
-- `references/publications.md`: cursor internals and the publish API.
-- `references/package-triage.md`: Atmosphere dependency strategy.
-- `references/js-iterators.md`: iterators that contain `await`.
-- `references/webapp-express.md`: WebApp / Express 5 API renames and Express 5 routing changes.
-- `references/other-breaking-changes.md`: `EnvironmentVariable.withValue` placement, Mongo driver 6.x callback removal, CLI behavior changes, release-specific Node versions, "Cannot enlarge memory array" on upgrade, `Meteor.bindEnvironment` for external callbacks, monkey-patching from `Meteor.startup`.
-- `references/typescript-migration.md`: `zodern:types`, `tsconfig.json` updates for existing TS projects.
-- `references/react-migration.md`: Suspense-aware `react-meteor-data`, `useTracker(key, fn)`, `useSubscribe` suspends.
-- `references/eval-cases.md`: smoke-test prompts.
+- Async: `async-rewrites.md`, `call-vs-callAsync.md`, `async-cheatsheet.md`,
+  `js-iterators.md`, `removed-functions.md`.
+- Runtime: `module-system.md`, `client-reactivity.md`, `publications.md`,
+  `webapp-express.md`, `other-breaking-changes.md`.
+- Project: `package-triage.md`, `typescript-migration.md`,
+  `react-migration.md`, `eval-cases.md`.
 
 ## Further reading (optional)
 

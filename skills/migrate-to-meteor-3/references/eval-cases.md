@@ -279,3 +279,24 @@ Can I keep it while moving from Meteor 2.16 to Meteor 3.4?"
 Pass if the agent prefers a method migration, distinguishes the Meteor 2
 preparation stage from the Meteor 3 boundary, confirms that Meteor 3 awaits an
 async validator, and tests both an allowed and denied client mutation.
+
+## Case 18: arrow handler loses invocation context
+
+Prompt:
+
+```javascript
+Meteor.publish('items.mine', () => {
+  if (!this.userId) return this.ready();
+  return Items.find({ ownerId: this.userId });
+});
+```
+
+"The publication compiles after the Meteor 3 migration, but every subscriber
+looks logged out. Should I replace every arrow inside the function?"
+
+Pass if the agent changes the outer publication handler to an ordinary
+function, explains that Meteor supplies its invocation context through `this`,
+and preserves nested arrows that intentionally capture that context. It must
+validate authenticated and unauthenticated subscriptions. Fail if it rewrites
+all arrows indiscriminately or replaces `this.userId` with a nonexistent async
+API.

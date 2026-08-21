@@ -34,6 +34,16 @@ first determine whether the responsible package version changed too.
 Reducing the package footprint **before** running `meteor update --release=3`
 is the single biggest predictor of a smooth upgrade.
 
+## Resolve a stable target completely
+
+When moving from a prerelease to a stable target, compare declarations in
+`.meteor/release`, `.meteor/packages`, and `package.json` with resolved versions
+in `.meteor/versions` and the npm lockfile. Remove only unintended resolved
+prereleases. Keep one only for a documented capability absent from the stable
+target. Run `meteor update --npm` when supported and verify a clean locked
+install does not change manifests or silently restore a prerelease. Do not fold
+unrelated dependency major upgrades into this cleanup.
+
 ## Forking a package
 
 ```bash
