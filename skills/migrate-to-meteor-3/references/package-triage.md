@@ -16,13 +16,20 @@ Atmosphere packages are the largest single source of friction in a 2.x to
 
 ## Before the framework upgrade
 
-1. Inventory `.meteor/packages`. List every non-core package.
-2. Look up each on Packosphere or its GitHub repo. Note the latest version
+1. Save `.meteor/packages`, `.meteor/versions`, `package.json`, and the npm
+   lockfile as a resolution checkpoint.
+2. Inventory `.meteor/packages`. List every non-core package.
+3. Look up each on Packosphere or its GitHub repo. Note the latest version
    and whether it ships a 3.x release.
-3. For packages with no 3.x release, search community forks. Several
+4. For packages with no 3.x release, search community forks. Several
    ecosystem groups maintain community forks of common Atmosphere packages.
-4. For packages still missing, decide replace vs fork vs remove now,
+5. For packages still missing, decide replace vs fork vs remove now,
    before the framework flip.
+
+Review the resolved version diff after every package operation. Keep critical
+schema, accounts, router, collection-hook, and build-plugin major upgrades in
+separate commits when possible. If behavior changes after the release flip,
+first determine whether the responsible package version changed too.
 
 Reducing the package footprint **before** running `meteor update --release=3`
 is the single biggest predictor of a smooth upgrade.

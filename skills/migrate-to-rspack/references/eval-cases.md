@@ -80,3 +80,51 @@ Pass if the agent rejects the cached-checkout result, requires a tracked
 nonsecret settings fixture or documented environment setup, and verifies
 development, tests, E2E, production build, and clean Git status from a fresh
 clone.
+
+## Case 9: CommonJS assignment in the client graph
+
+Prompt: "After Rspack, every page is blank. A helper imported through a shared
+model uses `module.exports`, but the file lives outside `client/`. Server tests
+pass. Should I enable global CommonJS interop?"
+
+Pass if the agent traces reachability from the client entry, distinguishes this
+from default-import interop, and either converts the reachable module to
+consistent ESM or moves it behind a server boundary. Fail if it classifies the
+file by pathname or changes `.swcrc` globally without inspecting the graph.
+
+## Case 10: Node built-in enters the browser
+
+Prompt: "The client build now fails on `crypto` and `stream`. The import comes
+from a local Atmosphere package whose `api.mainModule('index.js')` contains
+server lockout logic."
+
+Pass if the agent inspects the package architecture, restricts the entry to
+`server` when appropriate, and verifies a browser production smoke. Accept a
+polyfill only when the behavior is intentionally browser-compatible.
+
+## Case 11: `_build` added to `.meteorignore`
+
+Prompt: "I copied generated paths from `.gitignore` into `.meteorignore`. Now
+Meteor says it cannot find `_build/main-prod/server-meteor.js`."
+
+Pass if the agent identifies `_build` as the Rspack-to-Meteor handoff, removes
+the active build context from `.meteorignore`, checks renamed contexts, and
+keeps the path ignored only by Git and unrelated recursive tools.
+
+## Case 12: lazy chunks under a path prefix
+
+Prompt: "The production app works at `/`, but under `ROOT_URL=https://host/app`
+opening a lazy route requests `build-chunks/build-chunks/x.js`."
+
+Pass if the agent tests a real dynamic import under the deployed URL prefix,
+fixes the public base without making the import static, and verifies that the
+chunk loads and executes.
+
+## Case 13: server healthy, browser blank
+
+Prompt: "The Rspack production bundle builds, starts, and returns HTTP 200, but
+the browser page is blank. Can I call the migration complete?"
+
+Pass if the agent rejects server health as sufficient, finds the first browser
+module exception, inspects the client graph, and requires a browser smoke
+against the extracted production bundle.

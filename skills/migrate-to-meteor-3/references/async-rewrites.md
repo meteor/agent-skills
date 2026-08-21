@@ -100,9 +100,39 @@ class Invoice {
 const invoice = await Invoice.create(orderId);
 ```
 
-Apply the same rule to callbacks whose caller does not await returned Promises.
-Do not add `async` blindly; move the asynchronous work to a boundary that can
-wait for it.
+Apply the same rule to callbacks. Audit timers, event emitters, streams, cron
+and queue libraries, hooks, observers, middleware, and package callbacks.
+Confirm from source or documentation whether the owner awaits a returned
+Promise. If it does not, handle rejection inside the callback or bridge the work
+to an awaited application lifecycle. Treat `void task().catch(report)` as
+intentional fire-and-forget only when the failure policy is explicit. Force one
+controlled rejection at each critical boundary to verify its behavior.
+
+## Audit operation semantics after codemods
+
+Do not validate a mechanical rewrite only by checking that the new method ends
+in `Async`. Compare the operation and arguments with the original call.
+
+- Flag read methods such as `findOneAsync` when an options argument contains
+  update operators such as `$set`, `$unset`, `$push`, `$pull`, or `$inc`.
+- Flag write methods whose selector, modifier, or options shape matches a read.
+- Flag changed async calls whose Promise is neither awaited, returned, caught,
+  nor deliberately detached with a documented failure policy.
+- Exercise each changed write path and read the record back from the database.
+
+Do not auto-edit a computed argument shape that cannot be resolved statically.
+Report it for review.
+
+## `allow` and `deny` during a staged migration
+
+Prefer replacing `Collection.allow` and `Collection.deny` with authenticated
+methods. When legacy rules must survive, treat them as a version boundary. Keep
+validators compatible with the active Meteor 2 release during preparation,
+then convert database reads inside validators to async functions for Meteor 3.
+Meteor 3 awaits Promise-returning validators, as documented by the
+[collection API](https://docs.meteor.com/api/collections). Test one allowed and
+one denied client mutation after the release flip. Validators without database
+access may remain synchronous.
 
 ## Async framework boundaries
 
@@ -180,6 +210,12 @@ The Fibers-era helpers are gone:
 const res  = await fetch(url, { headers });
 const data = await res.json();
 ```
+
+Fetch resolves for HTTP error statuses. Check `res.ok` or the expected status
+before treating the request as successful. Review body serialization, response
+parsing, redirects, cookies, timeout or cancellation via `AbortSignal`, proxy
+behavior, and custom TLS or CA configuration. Preserve the error contract that
+callers expect. Test success, non-2xx, malformed response, and network failure.
 
 `Meteor.defer(fn)` for fire-and-forget work survives, but for bulk fan-out
 prefer `await Promise.all(items.map(processOne))`.

@@ -2,22 +2,18 @@
 name: migrate-to-meteor-3
 description: >
   Use when migrating a Meteor 2.x application to Meteor 3.x. Triggers on
-  callAsync, *Async Mongo methods, removed Fibers, ReferenceError on
-  top-level globals after upgrade, Iron Router controllers silently not
-  running, lost reactivity in Blaze helpers after async rewrites, "publish
-  function returned a Promise", "Method stub took too long", Atmosphere
-  packages failing to resolve, WebApp.handlers replacing
-  WebApp.connectHandlers under Express 5, Meteor.EnvironmentVariable
-  context lost in async, rawCollection callbacks no longer firing,
-  meteor/* imports losing TypeScript types after upgrade, useTracker and
-  useSubscribe not re-running after upgrade. Use this skill when the user
-  asks about upgrading Meteor, asks about sync to async rewrites or async
-  propagation through caller stacks, asks about iterators with await, asks
-  about Express middleware migration, asks about zodern:types, or asks about
-  replacing or forking third-party packages.
+  callAsync, *Async Mongo, removed Fibers, implicit-global ReferenceError,
+  lost Blaze reactivity, a publish function returning a Promise, a scheduler
+  dropping a Promise, a read API receiving update modifiers, async allow/deny,
+  an Iron Router controller not running, "Method stub took too long",
+  Atmosphere resolution, Express 5 WebApp handlers, lost async context,
+  rawCollection callbacks, meteor/* TypeScript types, useTracker, and
+  useSubscribe. Use this skill when the user asks about upgrading Meteor,
+  async caller propagation, iterators with await, zodern:types, or replacing
+  and forking packages.
 metadata:
   author: meteor
-  version: "0.4.0"
+  version: "0.5.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -47,10 +43,12 @@ in phases. Do not flip the framework version flag first.
    framework boundary. See `references/async-rewrites.md` and
    `references/call-vs-callAsync.md`. A community jscodeshift codemod automates
    the easy cases, but it misses non-standard collection imports (for example,
-   `meteor/<publisher>:collections`). Review the diff by hand.
+   `meteor/<publisher>:collections`). Review the diff by hand, then audit
+   callback Promise ownership and collection argument shapes.
 4. Audit Atmosphere packages. Find replacements or fork outdated ones;
    pin `api.versionsFrom(['2.x', '3.0'])`. See
-   `references/package-triage.md`.
+   `references/package-triage.md`. Save `.meteor/versions` and npm lockfile
+   checkpoints so package-major changes remain distinguishable from Meteor.
 5. Upgrade to Meteor 3.x.
 6. Sweep implicit globals; rewrite to `const` or `export` / `import`.
    See `references/module-system.md`.
@@ -74,6 +72,9 @@ in phases. Do not flip the framework version flag first.
 | `TypeError: Collection.findOne is not a function`    | `references/async-rewrites.md`         |
 | `Method returns undefined` or returns a `Promise`    | `references/async-rewrites.md`         |
 | Downstream caller receives or reads from a `Promise` | `references/async-rewrites.md`         |
+| Cron, hook, timer, or event callback drops a Promise | `references/async-rewrites.md`         |
+| Read method receives `$set`, `$push`, or another modifier | `references/async-rewrites.md`     |
+| `allow` / `deny` validator needs an async database read | `references/async-rewrites.md`      |
 | `Meteor.call` callback never fires                   | `references/call-vs-callAsync.md`      |
 | `ReferenceError: X is not defined` at startup        | `references/module-system.md`          |
 | Template renders, no data, Minimongo empty           | `references/module-system.md`          |
@@ -116,18 +117,6 @@ in phases. Do not flip the framework version flag first.
   inside methods and publications; there is no `Meteor.userIdAsync()`.
 - Do not rewrite `api.addFiles` or `api.export` only because the app moved to
   Meteor 3. They remain supported for Atmosphere packages.
-
-## Effort shape
-
-The mechanical work splits roughly:
-
-- Server async conversion: 40 percent.
-- Implicit globals to explicit imports: 25 percent.
-- Package replacements and API upgrades: 20 percent.
-- Client reactivity regressions from async: 15 percent.
-
-Plan for two phases: pre-upgrade work on 2.x, then the version flip and
-client cleanup.
 
 ## See also
 

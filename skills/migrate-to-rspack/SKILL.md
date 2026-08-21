@@ -8,14 +8,16 @@ description: >
   jorgenvatle:vite / zodern:melte build plugins with Rspack loaders,
   "Error: 'import' and 'export' cannot be used outside of module code",
   CommonJS default-import interop, _build / build-assets / build-chunks
-  folders, resolve.alias migration, meteor update --npm in CI/Docker.
+  folders, module.exports in a client graph, Node built-ins in browser code,
+  .meteorignore hiding mainModule handoff files, dynamic chunks under ROOT_URL,
+  resolve.alias migration, meteor update --npm in CI/Docker.
   Use this skill when the user asks about converting an app to Rspack,
   asks about a build plugin's Rspack replacement, or asks about CI/Docker
   errors after upgrading. For setup and rspack.config.js helpers, use
   meteor-modern-build-stack instead.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.4"
   area: migration
@@ -27,10 +29,9 @@ license: MIT
 
 # Migrate an existing app to Rspack
 
-Rspack integration delegates app-code compilation to Rspack while Meteor
-keeps building Atmosphere packages and assembling the final bundle. The
-migration work is the app code's responsibility; Meteor packages do not
-need to change.
+Rspack compiles app code while Meteor builds Atmosphere packages and assembles
+the final bundle. Do not rewrite packages merely because Rspack is enabled, but
+audit their architecture declarations and browser-incompatible dependencies.
 
 Prerequisite: Meteor 3.4+. Strongly recommended to enable
 `"meteor": { "modern": true }` first (Meteor 3.3+) and fix Babel fallbacks,
@@ -48,26 +49,31 @@ Match `@meteorjs/rspack` to the Meteor release, not to
 
 The three package version lines are independent. After changing the Meteor
 release, run `meteor update --npm`, inspect the npm changes, and commit both
-`package.json` and the lockfile.
+`package.json` and the lockfile. Verify the declared dependency spec as well as
+the installed version; the integration may validate `package.json` directly.
 
 ## Decision flow
 
 1. Does the app define client and server entry points in `package.json`
    `meteor.mainModule`? If no, define them. Required.
-2. Does the app code contain nested imports (ES `import` inside an `if`,
+2. Trace the client and client-test graphs. Do they reach CommonJS export
+   assignments, Node built-ins, or server-only local package entries? If yes,
+   repair the boundary before activation. See
+   `references/client-graph-preflight.md`.
+3. Does the app code contain nested imports (ES `import` inside an `if`,
    function, or other block)? If yes, move them to top level or convert
    them to dynamic `import()` / `require`. Required for app code; OK in
    Atmosphere packages.
-3. Does the app rely on a Meteor build plugin (`less`, `fourseven:scss`,
+4. Does the app rely on a Meteor build plugin (`less`, `fourseven:scss`,
    `coffeescript`, `zodern:melte`, `jorgenvatle:vite`)? Plan an Rspack
    loader replacement. See `references/framework-and-css.md`.
-4. Does the app rely on bare default imports from CommonJS packages
+5. Does the app rely on bare default imports from CommonJS packages
    (`import x from "some-cjs"`)? Decide between rewriting to
    `import * as x` or restoring Meteor-style interop in `.swcrc`. See
    `references/code-migrations.md`.
-5. Is the app server-only? Set only `mainModule.server`. Rspack still
+6. Is the app server-only? Set only `mainModule.server`. Rspack still
    bundles the server; client is skipped.
-6. Run `meteor add rspack` and watch the verbose `[Transpiler]` log for
+7. Run `meteor add rspack` and watch the verbose `[Transpiler]` log for
    remaining `(app)` failures.
 
 ## Required: entry points
@@ -142,6 +148,10 @@ Do not edit any file under those folders. Exclude them from IDE indexing and
 from every recursive formatter, linter, typechecker, test-discovery, and
 coverage scan. `.gitignore` does not configure those tools.
 
+Do not match the active build context in `.meteorignore` or `METEOR_IGNORE`.
+Rspack writes Meteor-facing entry modules there, then Meteor reads them to
+assemble the final bundle. Resolve renamed contexts before auditing ignores.
+
 ## Replacing build plugins
 
 Most Meteor build plugins are deprecated under Rspack because the same
@@ -159,40 +169,6 @@ problem is solved by an Rspack loader.
 
 Plugins acting only on Atmosphere package files can stay. Plugins acting on
 app-folder files (entry folder excluded) must move to Rspack.
-
-## Aliases
-
-```javascript
-// rspack.config.js
-const { defineConfig } = require('@meteorjs/rspack');
-
-module.exports = defineConfig(Meteor => ({
-  resolve: {
-    alias: {
-      '@ui': '/imports/ui',
-      '@api': '/imports/api',
-    },
-  },
-}));
-```
-
-Also update `tsconfig.json` for IDE and ESLint resolution:
-
-```json
-{
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@ui/*": ["imports/ui/*"],
-      "@api/*": ["imports/api/*"]
-    }
-  }
-}
-```
-
-Define `.swcrc` `jsc.paths` too if SWC needs to resolve the same alias
-during transpilation. SWC `paths` does not resolve `require()` calls; only
-`import`.
 
 ## CommonJS default-import interop
 
@@ -263,6 +239,8 @@ compatible with older Meteor versions that lack `--npm` (added in 3.4).
 ## See also
 
 - `references/code-migrations.md`
+- `references/client-graph-preflight.md`
+- `references/validation-matrix.md`
 - `references/framework-and-css.md`
 - `references/troubleshooting.md`
 - `references/eval-cases.md`

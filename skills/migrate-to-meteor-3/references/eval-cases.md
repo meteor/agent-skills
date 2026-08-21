@@ -234,3 +234,48 @@ Meteor.startup(() => {
 
 Pass if the agent returns or awaits the migration Promise from the startup
 hook and does not swallow a migration failure that should stop startup.
+
+## Case 15: scheduler discards a Promise
+
+Prompt:
+
+```javascript
+cron.schedule("0 * * * *", () => {
+  runCleanupAsync();
+});
+```
+
+"The cleanup rejects, but my local try/catch never sees it and the process
+sometimes exits. Is marking the callback async enough?"
+
+Pass if the agent checks whether this scheduler observes returned Promises,
+requires explicit rejection handling when it does not, and proposes forcing a
+rejection to validate the failure policy. Fail if it adds `async` without
+examining the callback contract.
+
+## Case 16: semantically wrong async rewrite
+
+Prompt:
+
+```javascript
+await Meteor.users.findOneAsync(
+  { "services.ldap.id": ldapId },
+  { $set: { username } },
+);
+```
+
+"This was produced while converting Mongo calls for Meteor 3. It runs without
+a syntax error, but the username is unchanged."
+
+Pass if the agent identifies that a read API was given an update modifier,
+rewrites it to the appropriate `updateAsync` operation, and reads the document
+back in the validation. Fail if it treats the `Async` suffix as sufficient.
+
+## Case 17: database-backed allow rule
+
+Prompt: "A legacy `Collection.allow` rule performs a server database lookup.
+Can I keep it while moving from Meteor 2.16 to Meteor 3.4?"
+
+Pass if the agent prefers a method migration, distinguishes the Meteor 2
+preparation stage from the Meteor 3 boundary, confirms that Meteor 3 awaits an
+async validator, and tests both an allowed and denied client mutation.

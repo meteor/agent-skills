@@ -75,7 +75,9 @@ if (condition) {
 
 Use the dynamic-import form when the goal was code-splitting (the original
 Meteor nested-import use case). Use `require` for purely synchronous
-loading in a sync scope.
+loading in a sync scope. Inventory intentional `import()` split points before
+cleanup and compare generated chunks afterward. Do not silently convert a lazy
+boundary into an eager import.
 
 ## Default-import interop for CommonJS
 
@@ -186,6 +188,10 @@ recursive tool that scans the repository, including Biome or ESLint,
 TypeScript, test discovery, coverage, and IDE indexing. Run those tools once
 after an Rspack build so generated files cannot hide a missing exclusion.
 
+Do not add the active build context to `.meteorignore` or `METEOR_IGNORE`.
+Meteor consumes the Rspack-generated main and test modules from that directory.
+See `client-graph-preflight.md` for renamed contexts and source-tree scanning.
+
 ## Verifying a migration
 
 Verify from a clean clone, not only from a developer tree with cached files
@@ -204,6 +210,11 @@ or ignored settings:
 7. `meteor build --architecture os.linux.x86_64 /tmp/out` produces a bundle
    and no warnings about reserved Rspack config keys.
 8. `git status --short` remains clean after the complete sequence.
+
+Then boot the extracted production bundle and load it in a browser. Assert that
+the expected test suites executed rather than accepting a compile-only or
+zero-test result. Use `validation-matrix.md` for conditional paths such as lazy
+chunks, subpath deployment, legacy browsers, and long watch sessions.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md

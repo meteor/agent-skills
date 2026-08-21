@@ -44,9 +44,11 @@ let Meteor/Node handle it instead of Rspack.
 Prompt: "`meteor build` runs out of memory after I added Rspack."
 
 Pass if the agent recommends
-`TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor build` on 3.4.1+ (or
-`NODE_OPTIONS` on 3.4), and mentions
-`Meteor.setCache(false)` as a complementary memory-pressure reduction.
+capturing the exact mode and release, distinguishes a one-shot build from a
+long watch session, audits large trees visible to Meteor, and tests one variable
+at a time. It may use `TOOL_NODE_FLAGS` on 3.4.1+ or `NODE_OPTIONS` on 3.4 as a
+temporary mitigation. It may test `Meteor.setCache(false)` separately. Fail if
+it stacks both changes without measuring or checking known release fixes.
 
 ## Case 6: custom minifier with Rspack
 
@@ -65,3 +67,22 @@ Prompt: "After the first Rspack build, TypeScript and ESLint inspect
 
 Pass if the agent adds Rspack output folders to each tool's native ignore and
 verifies those tools after generated output exists.
+
+## Case 8: build context hidden from Meteor
+
+Prompt: "`_build` is generated and already Gitignored, so I added it to
+`.meteorignore`. Now Meteor cannot find `server-meteor.js`."
+
+Pass if the agent removes the active build context from `.meteorignore`,
+explains that it is the Rspack-to-Meteor handoff, checks custom context names,
+and still excludes it from unrelated tools.
+
+## Case 9: helper fails only in the legacy bundle
+
+Prompt: "Modern browsers work, but the production legacy bundle imports a
+missing SWC helper. Should I add side-effect helper imports to app startup?"
+
+Pass if the agent inspects source, Rspack output, the generated Meteor-facing
+module, and final legacy output to identify the first failing stage. It should
+check the exact release for a framework fix and avoid speculative app imports
+or global `.swcrc` changes.

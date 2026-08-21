@@ -49,7 +49,10 @@ meteor npm install --save @swc/helpers
 
 Meteor's pipeline detects it and emits imports for shared helpers instead
 of inlining `_extends`, `_objectSpread`, etc. into every file. Preinstalled
-on new apps. No `.swcrc` change required.
+on new apps. No `.swcrc` change is normally required. If only a production or
+legacy build fails on a helper import, compare the source, Rspack output,
+generated Meteor-facing module, and final bundle before changing helper config.
+The later Meteor assembly can transform generated Rspack output too.
 
 ### Custom `.swcrc`
 
@@ -219,6 +222,13 @@ Subdirectory `.meteorignore` files are honored; for example one inside
 
 For per-command rules without committing the file, use the
 `METEOR_IGNORE` environment variable.
+
+Do not synchronize `.gitignore` and `.meteorignore` mechanically. Gitignored
+Rspack build contexts contain generated main and test modules that Meteor reads
+during final assembly, so they must remain visible to Meteor. For performance,
+report large unrelated trees that Git ignores but Meteor still scans, then add
+anchored `.meteorignore` rules only after proving they are not application or
+test inputs.
 
 ## Profiling
 
