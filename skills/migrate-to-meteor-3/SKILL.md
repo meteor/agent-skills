@@ -13,13 +13,13 @@ description: >
   and forking packages.
 metadata:
   author: meteor
-  version: "0.6.0"
+  version: "0.8.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
   tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
   bundle: ["migration"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -65,7 +65,8 @@ in phases. Do not flip the framework version flag first.
 10. For TypeScript projects, install `zodern:types` and update
     `tsconfig.json`. See `references/typescript-migration.md`.
 11. For React projects, decide whether to adopt the Suspense-aware
-    `react-meteor-data` import. See `references/react-migration.md`.
+    `react-meteor-data` import. See `references/react-migration.md`, then use
+    `meteor-react` for current hook, scaffold, and build guidance.
 
 ## Symptom router
 
@@ -132,6 +133,7 @@ in phases. Do not flip the framework version flag first.
   `webapp-express.md`, `other-breaking-changes.md`.
 - Project: `package-triage.md`, `typescript-migration.md`,
   `react-migration.md`, `eval-cases.md`.
+- Current Meteor React integration after the upgrade: `meteor-react`.
 
 ## Further reading (optional)
 

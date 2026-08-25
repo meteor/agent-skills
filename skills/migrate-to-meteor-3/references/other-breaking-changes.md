@@ -127,25 +127,37 @@ This is the same root cause as "the install just hangs forever" reports.
 
 ## `Meteor.bindEnvironment` for external callbacks
 
-Code that registers a callback with a non-Meteor library (a third-party
-SDK, a raw Node stream, a global event emitter) loses Meteor context.
-`this.userId`, `Meteor.user()`, `Meteor.EnvironmentVariable` values all
-read as `undefined` inside the callback.
+`Meteor.bindEnvironment` captures Meteor dynamic-variable values at the moment
+the wrapper is created and restores those values when the callback later runs.
+It does not discover the identity of a future method or publication
+invocation, and it does not change JavaScript's `this` binding.
 
-Wrap the callback with `Meteor.bindEnvironment`:
+Create the wrapper inside the invocation whose environment must be preserved.
+For identity, capture `this.userId` explicitly so a long-lived callback does
+not depend on implicit request context:
 
 ```javascript
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
-externalSdk.on('event', Meteor.bindEnvironment(async (payload) => {
-  // Meteor context is restored here. this.userId / Meteor.user() work.
-  await Posts.insertAsync({ payload, createdBy: Meteor.userId() });
-}));
+Meteor.methods({
+  startImport(jobId) {
+    check(jobId, String);
+    if (!this.userId) throw new Meteor.Error('not-authorized');
+
+    const userId = this.userId;
+    externalSdk.once(jobId, Meteor.bindEnvironment(async (payload) => {
+      await Posts.insertAsync({ payload, createdBy: userId });
+    }));
+  },
+});
 ```
 
-This is not new in Meteor 3, but it surfaces more often because async
-code paths are everywhere. If a callback used to work and now doesn't,
-suspect lost environment and reach for `bindEnvironment`.
+A wrapper created by top-level registration captures the top-level
+environment, which normally has no user invocation. For a global event emitter
+or background queue, put the authenticated identity in the job or event data
+and pass it explicitly. Use `bindEnvironment` only for dynamic variables that
+exist when the callback is registered.
 
 ## Monkey-patching from `Meteor.startup()`
 

@@ -300,3 +300,74 @@ and preserves nested arrows that intentionally capture that context. It must
 validate authenticated and unauthenticated subscriptions. Fail if it rewrites
 all arrows indiscriminately or replaces `this.userId` with a nonexistent async
 API.
+
+## Case 19: callback RPC to `callAsync`
+
+Prompt: "Migrate this client call without losing its error handling:
+`Meteor.call('orders.create', input, (error, id) => saveResult(error, id))`."
+
+Pass if the agent uses `await Meteor.callAsync` inside `try`/`catch`, passes the
+resolved ID to the success path, and passes the rejection to the existing
+error path. It should keep `Meteor.call` only when a callback-only consumer
+requires it.
+
+## Case 20: Express 5 WebApp route
+
+Prompt: "After Meteor 3.1, my `WebApp.connectHandlers` route with `/files/*`
+stopped matching. Migrate it to the current API."
+
+Pass if the agent moves new code to `WebApp.handlers`, replaces the unnamed
+wildcard with an Express 5 named wildcard, and preserves middleware order.
+Fail if it says the deprecated alias was removed outright.
+
+## Case 21: async EnvironmentVariable wrapper
+
+Prompt: "A package wraps `Meteor.publish` with
+`EnvironmentVariable.withValue`, but the value disappears in the async
+publication after upgrading to Meteor 3."
+
+Pass if the agent identifies wrapper placement as the boundary, keeps the
+value active when the handler is registered/invoked according to the Meteor 3
+pattern in `other-breaking-changes.md`, and validates the value after an
+`await`.
+
+## Case 22: raw Mongo callback
+
+Prompt: "This Meteor 2 code never calls its callback on Meteor 3:
+`Posts.rawCollection().findOne({ _id }, callback)`."
+
+Pass if the agent explains that MongoDB driver 6 removed callback overloads
+and rewrites the operation to `await Posts.rawCollection().findOne({ _id })`
+with `try`/`catch` at the owning async boundary.
+
+## Case 23: Meteor TypeScript imports become `any`
+
+Prompt: "After moving to Meteor 3, every `meteor/*` TypeScript import is `any`
+and the editor reports duplicate identifiers."
+
+Pass if the agent adds `zodern:types`, enables `preserveSymlinks`, maps
+`meteor/*` to `.meteor/local/types/packages.d.ts`, and restarts the TypeScript
+server. It must keep generated types out of source control.
+
+## Case 24: React Suspense is optional
+
+Prompt: "Must every Meteor 3 React component switch from
+`meteor/react-meteor-data` to the `/suspense` import?"
+
+Pass if the agent says the classic hooks remain supported, requires an
+upstream Suspense boundary only when choosing the suspense import, and uses a
+stable key for suspense `useTracker`. If it converts `useFind`, it must change
+the cursor-factory signature to the Suspense collection and find-argument
+tuple. Fail if it rewrites every client Minimongo read to an async API.
+
+## Case 25: `bindEnvironment` capture timing
+
+Prompt: "A global event emitter is wrapped with `Meteor.bindEnvironment` at
+server startup. Later, events created by logged-in methods still see no
+`Meteor.userId()`. Why?"
+
+Pass if the agent explains that the wrapper captured the startup environment,
+not a future method invocation. It should pass `this.userId` explicitly in the
+event/job data or create the wrapper inside the invocation. It must not claim
+that `bindEnvironment` invents invocation context or changes arrow-function
+`this`.

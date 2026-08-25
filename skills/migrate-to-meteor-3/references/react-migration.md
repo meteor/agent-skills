@@ -3,13 +3,13 @@
 Tight scope: what changes for an existing React-on-Meteor-2 app during
 the upgrade to Meteor 3. The broader React-on-Meteor data tutorial
 (`react-meteor-data`, full hook reference, suspense patterns for new
-apps) is out of scope here; a future `meteor-react-meteor-data` skill
-will cover it.
+apps) is out of scope here; use the `meteor-react` skill after the
+framework upgrade.
 
 ## What changes
 
 `react-meteor-data` gained a Suspense-aware import path in Meteor 3.
-The Suspense variants short-circuit the `isLoading` boolean by
+The Suspense variants replace the `isLoading` readiness function by
 suspending the component tree until data is ready.
 
 ```javascript
@@ -30,7 +30,7 @@ import { useTracker, useSubscribe } from 'meteor/react-meteor-data/suspense';
 
 function Posts() {
   useSubscribe('posts');                                  // suspends
-  const posts = useTracker('posts', () => Posts.find().fetch()); // key + fn
+  const posts = useTracker('posts', () => Posts.find().fetchAsync());
   return <List posts={posts} />;                          // no isLoading()
 }
 ```
@@ -50,11 +50,20 @@ is optional.
 
 ## `useFind`
 
-`useFind` is unchanged. Continue passing a cursor factory:
+Classic `useFind` is unchanged. Continue passing a cursor factory:
 
 ```javascript
 const posts = useFind(() => Posts.find({}));
 ```
+
+Suspense `useFind` has a different signature. Pass the collection and the
+argument tuple for `Collection.find`:
+
+```javascript
+const posts = useFind(Posts, [{}, { sort: { createdAt: -1 } }]);
+```
+
+Use `meteor-react` for the complete classic and Suspense contracts.
 
 ## Client-side Mongo
 
