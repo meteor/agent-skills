@@ -125,3 +125,22 @@ Pass if the agent explains the default static replacement and uses
 `Meteor.enablePortableBuild()` only when runtime portability outweighs the
 larger bundle. It must not claim that `Meteor.isClient`, `isServer`, or `isTest`
 become portable runtime flags.
+
+## Case 14: TypeScript Rspack config
+
+Prompt: "Will Meteor discover `rspack.config.ts`, or must I rename it to
+JavaScript?"
+
+Pass if the agent lists `.ts` as a supported project-level Rspack config name
+alongside `.js`, `.mjs`, and `.cjs`. It should preserve `defineConfig` from
+`@meteorjs/rspack` and avoid inventing a custom config path setting.
+
+## Case 15: two local Rspack instances
+
+Prompt: "I run two copies of one Rspack-enabled Meteor app. Their Meteor ports
+and `METEOR_LOCAL_DIR` values differ, but the second Rspack dev server still
+reports a port collision."
+
+Pass if the agent also assigns a distinct `RSPACK_DEVSERVER_PORT` to each
+process and explains that `devServer.port` in `rspack.config` is reserved by
+the Meteor integration.

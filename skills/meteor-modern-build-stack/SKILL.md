@@ -6,7 +6,7 @@ description: >
   in development, .meteorignore, and the Rspack bundler integration via the
   rspack Atmosphere package. Triggers on package.json "meteor": { "modern":
   true }, .swcrc, swc.config.js, [Transpiler] Used Babel Fallback logs,
-  rspack.config.js, defineConfig from @meteorjs/rspack, Meteor.compileWith*
+  rspack.config.js, rspack.config.ts, defineConfig from @meteorjs/rspack, Meteor.compileWith*
   helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
   Meteor.splitVendorChunk, Meteor.persistDevFiles, Meteor.disablePlugins,
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
@@ -17,13 +17,13 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.4.0"
+  version: "0.5.0"
   kind: knowledge
   meteor: ">=3.3"
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -38,8 +38,12 @@ The modern build stack is two independent tracks. Enable either or both.
    delegates app-code compilation to Rspack. Tree shaking, ESM, code
    splitting via HTTP, modern bundler plugins.
 
-New apps from `meteor create` ship both enabled. For existing apps, enable
-optimizations first, then add Rspack once the app code is standards-clean.
+Standard current `meteor create` application skeletons ship both enabled.
+Purposefully small or compatibility-oriented skeletons, including `minimal`
+and `legacy`, may omit Rspack or the modern flag. Inspect the generated
+`package.json` and `.meteor/packages` instead of inferring features only from
+the Meteor version. For existing apps, enable optimizations first, then add
+Rspack once the app code is standards-clean.
 
 ## Enable Meteor Bundler Optimizations
 
@@ -125,7 +129,7 @@ and final Meteor output before changing `.swcrc` or adding manual imports.
 ## Rspack config files
 
 ```text
-rspack.config.js | rspack.config.mjs | rspack.config.cjs
+rspack.config.js | rspack.config.ts | rspack.config.mjs | rspack.config.cjs
 ```
 
 Use `defineConfig` from `@meteorjs/rspack`. The function receives a

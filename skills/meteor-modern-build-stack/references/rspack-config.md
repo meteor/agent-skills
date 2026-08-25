@@ -1,8 +1,9 @@
 # Customizing `rspack.config.js`
 
 The `rspack` Atmosphere package generates a `rspack.config.js` at install
-time. Edit it with `defineConfig` from `@meteorjs/rspack`. Accept any of
-`rspack.config.js`, `.mjs`, or `.cjs`.
+time. Edit it with `defineConfig` from `@meteorjs/rspack`. Accepted names are
+`rspack.config.js`, `rspack.config.ts`, `rspack.config.mjs`, and
+`rspack.config.cjs`.
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');
