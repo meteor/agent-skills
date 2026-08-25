@@ -36,7 +36,8 @@ calling scope:
   migration through the component tree for no real gain.
 
 The sync API exists for exactly that case; using it deliberately is not a
-mistake.
+mistake. Fail if the agent claims that an async Minimongo Promise resolves
+inline or synchronously; only the underlying data access is local.
 
 ## Case 4: leaking columns
 
@@ -45,3 +46,23 @@ that to reach the client. What did I do wrong?"
 
 Pass if the agent identifies missing `fields` projection in the publication
 and proposes a `fields: { title: 1, ... }` allow-list.
+
+## Case 5: Meteor 3.5 reactivity driver
+
+Prompt: "After upgrading to Meteor 3.5, is oplog still the default for every
+reactive Mongo query? How can I force the old order?"
+
+Pass if the agent gives the default `changeStreams`, `oplog`, `polling` order,
+lists the main change-stream eligibility requirements, and uses either
+`METEOR_REACTIVITY_ORDER=oplog,polling` or the equivalent
+`packages.mongo.reactivity` setting. It must not claim that `disable-oplog`
+also disables change streams.
+
+## Case 6: case-insensitive email lookup
+
+Prompt: "On Meteor 3.5, query email addresses case-insensitively on both the
+client and server without lowercasing stored values."
+
+Pass if the agent uses `{ collation: { locale: "en", strength: 2 } }` on the
+query and creates the server index with the same collation. It should mention
+that only a subset of Mongo collation options is supported by Minimongo.

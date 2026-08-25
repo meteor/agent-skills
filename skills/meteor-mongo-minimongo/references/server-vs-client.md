@@ -11,7 +11,8 @@
 | Index              | `await c.createIndexAsync(...)`   | not applicable                  |
 
 Isomorphic code runs on both sides. Use the async API throughout; on the
-client it resolves synchronously.
+client the lookup is local but remains Promise-based, so code after `await`
+resumes in a later microtask.
 
 To explain a query, use the Mongo shell (`meteor mongo`) and run
 `db.<collection>.find(...).explain("executionStats")`. Meteor does not
