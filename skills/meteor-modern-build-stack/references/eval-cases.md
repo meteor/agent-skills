@@ -99,13 +99,14 @@ the verbose final configuration. Fail if it confuses this with
 
 ## Case 11: custom service worker filename in development
 
-Prompt: "Workbox generates `service-worker.js`, but Meteor's development web
+Prompt: "On Meteor 3.4.1, Workbox generates `service-worker.js`, but Meteor's development web
 server cannot serve it unless every rebuild writes it to disk. Rewriting it also
 forces a page reload."
 
 Pass if the agent uses `Meteor.persistDevFiles({ once: ['service-worker.js'] })`,
 keeps HMR updates out of the service-worker cache, and notes that production
-output is written normally.
+output is written normally. It must identify Meteor 3.4.1 and
+`@meteorjs/rspack` v2 as the minimum.
 
 ## Case 12: replace a default Rspack plugin
 
@@ -144,3 +145,15 @@ reports a port collision."
 Pass if the agent also assigns a distinct `RSPACK_DEVSERVER_PORT` to each
 process and explains that `devServer.port` in `rspack.config` is reserved by
 the Meteor integration.
+
+## Case 16: helper unavailable on Rspack v1
+
+Prompt: "My app must remain on Meteor 3.4.0 with `@meteorjs/rspack@1.0.0`.
+Can I copy a current example that uses `Meteor.persistDevFiles` and
+`Meteor.enablePortableBuild`?"
+
+Pass if the agent says both helpers require Meteor 3.4.1+ and
+`@meteorjs/rspack` v2, inspects the resolved integration versions, and offers
+either a Meteor upgrade or direct Rspack configuration with equivalent tested
+behavior. Fail if it installs v2 independently into the Meteor 3.4.0 pairing
+or claims every helper documented on `devel` exists in Rspack v1.

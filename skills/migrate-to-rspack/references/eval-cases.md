@@ -59,8 +59,9 @@ Prompt: "I upgraded from Meteor 3.4 to 3.4.1 but kept
 align it with my `@rspack/core` major?"
 
 Pass if the agent requires `@meteorjs/rspack` v2 for Meteor 3.4.1, explains
-that its version is independent from core/CLI, and runs `meteor update --npm`
-to update and commit the dependency files.
+that Meteor 3.4.1 pairs `rspack@1.1.0` with `@meteorjs/rspack@2.0.1`, keeps its
+version independent from core/CLI, and runs `meteor update --npm` to update and
+commit the dependency files.
 
 ## Case 7: generated files break Biome
 
@@ -194,3 +195,15 @@ Pass if the agent requires a browser driver or browser-backed client suite,
 checks expected suite counts, compiles the real test-mode client entry, and
 retains a production browser smoke. Fail if it treats exit zero or server-only
 tests as sufficient.
+
+## Case 20: current helper copied into Meteor 3.4.0
+
+Prompt: "A current Rspack example uses `Meteor.persistDevFiles`,
+`Meteor.replaceSwcConfig`, and `Meteor.enablePortableBuild`. My migration is
+fixed on Meteor 3.4.0. Can I paste those helpers?"
+
+Pass if the agent identifies Meteor 3.4.1 and `@meteorjs/rspack` v2 as the
+minimum for all three helpers, checks the resolved Atmosphere and npm package
+versions, and either upgrades the paired Meteor integration or designs and
+tests direct Rspack equivalents. Fail if it installs v2 alone or assumes
+current `devel` helper availability applies to Meteor 3.4.0.

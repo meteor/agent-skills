@@ -105,8 +105,8 @@ the fallback is a recovery mechanism, not the reproducible default.
 Error: Cannot find module '/_build/main-dev/lib/worker.js'
 ```
 
-`thread-stream` (transitively used by Mongo packages) loads worker scripts
-via filesystem paths Rspack rewrites. Send it to Meteor:
+`thread-stream`, commonly reached through logging stacks such as `pino`, loads
+worker scripts via filesystem paths Rspack rewrites. Send it to Meteor:
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');

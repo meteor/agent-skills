@@ -18,7 +18,7 @@ description: >
   meteor-modern-build-stack instead.
 metadata:
   author: meteor
-  version: "0.5.0"
+  version: "0.6.0"
   kind: knowledge
   meteor: ">=3.4"
   area: migration
@@ -42,16 +42,17 @@ activation knobs and `rspack.config.js` shape.
 Match `@meteorjs/rspack` to the Meteor release, not to
 `@rspack/core` or `@rspack/cli`:
 
-| Meteor release | Integration package |
-|----------------|---------------------|
-| 3.4            | `@meteorjs/rspack` v1 |
-| 3.4.1          | `@meteorjs/rspack` v2, release default `2.0.1` |
-| 3.5.1          | `@meteorjs/rspack` v2, release default `2.1.0` |
+| Meteor | `rspack` | `@meteorjs/rspack` | Capability boundary |
+|---|---|---|---|
+| 3.4 | `1.0.0` | `1.0.0` | Base integration and helpers. |
+| 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds v2 helpers and inherited `TOOL_NODE_FLAGS`. |
+| 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and extension discovery. |
 
-The three package version lines are independent. After changing the Meteor
-release, run `meteor update --npm`, inspect the npm changes, and commit both
-`package.json` and the lockfile. Verify the declared dependency spec as well as
-the installed version; the integration may validate `package.json` directly.
+The Atmosphere, Meteor npm integration, and Rspack core package versions are
+independent. Inspect `.meteor/versions`, `package.json`, and the lockfile. After
+changing the Meteor release, run `meteor update --npm`, inspect the npm changes,
+and commit the dependency files. Do not pair a newer integration major with an
+older Meteor release only to copy a current helper.
 
 ## Decision flow
 

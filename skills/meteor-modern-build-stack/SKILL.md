@@ -17,7 +17,7 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.5.0"
+  version: "0.6.0"
   kind: knowledge
   meteor: ">=3.3"
   area: build
@@ -100,10 +100,12 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
-`@meteorjs/rspack` follows the Meteor release, not the
-`@rspack/core` or `@rspack/cli` major. Meteor 3.4 uses integration v1;
-Meteor 3.4.1 uses v2. Run `meteor update --npm` after changing the Meteor
-release and commit its npm dependency changes.
+`rspack` and `@meteorjs/rspack` follow the Meteor release, not the
+`@rspack/core` or `@rspack/cli` major. Meteor 3.4 uses both integration
+packages at v1. Meteor 3.4.1 and 3.5 use `rspack@1.1.0` with
+`@meteorjs/rspack@2.0.1`; Meteor 3.5.1 uses `rspack@1.2.0` with
+`@meteorjs/rspack@2.1.0`. Inspect `.meteor/versions`, `package.json`, and the
+lockfile. Run `meteor update --npm` after changing the Meteor release.
 
 ## SWC config files
 
