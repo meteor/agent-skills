@@ -40,6 +40,12 @@ npx skills add meteor/agent-skills --all
 
 ### Data
 
+- **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, HMR, and reusable components).
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-blaze
+  ```
+
 - **`meteor-methods`**: Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`).
 
   ```bash
@@ -56,6 +62,12 @@ npx skills add meteor/agent-skills --all
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-pubsub
+  ```
+
+- **`meteor-react`**: Build and debug Meteor 3 React interfaces (Rspack scaffold, reactive data hooks, Suspense, Fast Refresh, and testing).
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-react
   ```
 
 ### Migration
@@ -156,6 +168,34 @@ Or via `bundles.json`:
 npx skills add meteor/agent-skills \
   $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
     | jq -r '.bundles["ops"] | map("--skill " + .) | join(" ")')
+```
+
+### `blaze`
+
+```bash
+npx skills add meteor/agent-skills --skill meteor-blaze
+```
+
+Or via `bundles.json`:
+
+```bash
+npx skills add meteor/agent-skills \
+  $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
+    | jq -r '.bundles["blaze"] | map("--skill " + .) | join(" ")')
+```
+
+### `react`
+
+```bash
+npx skills add meteor/agent-skills --skill meteor-react
+```
+
+Or via `bundles.json`:
+
+```bash
+npx skills add meteor/agent-skills \
+  $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
+    | jq -r '.bundles["react"] | map("--skill " + .) | join(" ")')
 ```
 <!-- BUNDLES:END -->
 
