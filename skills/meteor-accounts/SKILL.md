@@ -12,13 +12,13 @@ description: >
   vs HttpOnly cookies.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -47,7 +47,6 @@ import { Meteor } from "meteor/meteor";
 
 Meteor.startup(() => {
   Accounts.config({
-    forbidClientAccountCreation: true,
     sendVerificationEmail: true,
   });
 
@@ -58,6 +57,13 @@ Meteor.startup(() => {
 
 The `from` address is required; Meteor 3.5+ logs a server warning if you
 omit it.
+
+Do not set `forbidClientAccountCreation: true` when the client signup form
+calls `Accounts.createUser` or `Accounts.createUserAsync`. The server rejects
+that request with `403 Signups forbidden`. For invite-only or administrator
+provisioning, set the option on both client and server, remove the public
+signup UI, and call `Accounts.createUserAsync` only from trusted server code
+after its own authorization check.
 
 ```javascript
 // client/signin.js (Meteor 3.5+)
@@ -179,6 +185,34 @@ Accounts.emailTemplates.resetPassword.subject = () => "Reset your password";
 Accounts.emailTemplates.resetPassword.text = (user, url) =>
   `Reset link: ${url}`;
 ```
+
+## Passwordless
+
+Add `accounts-passwordless`. Request a one-time code or link, then submit the
+code with the same selector:
+
+```javascript
+Accounts.requestLoginTokenForUser(
+  {
+    selector: { email },
+    userData: { email },
+    options: { userCreationDisabled: false },
+  },
+  (error) => { if (error) console.error(error); },
+);
+
+Meteor.passwordlessLoginWithToken(
+  { email },
+  token,
+  (error) => { if (error) console.error(error); },
+);
+```
+
+Set `userCreationDisabled: true` for sign-in-only flows. Configure
+`tokenSequenceLength`, `loginTokenExpirationHours`, and the
+`Accounts.emailTemplates.sendLoginToken` template on the server. Treat the
+token-request method as an abuse-sensitive endpoint and rate-limit repeated
+requests.
 
 ## 2FA
 

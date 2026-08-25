@@ -22,9 +22,11 @@ Accounts.emailTemplates.resetPassword.text = (user, url) =>
   `Click to reset: ${url}`;
 ```
 
-`Accounts.urls.*` setters accept async functions in Meteor 3.x. Both
-`Accounts.emailTemplates.*.from` and the global `Accounts.emailTemplates.from`
-must be set; missing `from` triggers a server warning in 3.5+.
+`Accounts.urls.*` setters accept async functions in Meteor 3.x. A
+template-specific `Accounts.emailTemplates.<name>.from` overrides the global
+`Accounts.emailTemplates.from`; otherwise Meteor falls back to the global
+value. Configure at least one effective sender. Meteor 3.5+ logs a warning
+when it cannot resolve a `from` address.
 
 ## Reset password (client, on the reset page)
 

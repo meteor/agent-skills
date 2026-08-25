@@ -8,7 +8,8 @@ Pass if the agent adds `accounts-password`, configures
 `sendVerificationEmail: true` in `Accounts.config`, sets
 `Accounts.emailTemplates.from` (Meteor 3.5+ warns otherwise), and shows
 server + client snippets. The client may use `Accounts.createUserAsync` or
-the retained callback form.
+the retained callback form. Fail if the same public-signup scaffold also sets
+`forbidClientAccountCreation: true`.
 
 ## Case 2: Google OAuth
 
@@ -53,3 +54,33 @@ Prompt: "Meteor 3 removed callbacks, so should I replace every client
 Pass if the agent rejects the blanket rewrite, states that both callback
 forms remain supported, offers `Accounts.createUserAsync`, and gates
 `Meteor.loginWithPasswordAsync` on Meteor 3.5+.
+
+## Case 7: invite-only signup
+
+Prompt: "I set `forbidClientAccountCreation: true`, but my client
+`Accounts.createUserAsync` call returns 403. How should invite-only signup
+work?"
+
+Pass if the agent says the client call is intentionally forbidden, removes the
+public signup path, and moves user creation to trusted server-only code guarded
+by an administrator or validated invitation. Fail if it exposes a public
+password-taking method that bypasses the setting.
+
+## Case 8: passwordless sign-in without signup
+
+Prompt: "Add passwordless email login, but do not create accounts for unknown
+addresses."
+
+Pass if the agent adds `accounts-passwordless`, calls
+`Accounts.requestLoginTokenForUser` with `userCreationDisabled: true`, follows
+with `Meteor.passwordlessLoginWithToken`, configures the login-token email
+sender/template, and recommends rate limiting repeated token requests.
+
+## Case 9: email sender fallback
+
+Prompt: "Must I configure both the global email-template `from` and a separate
+reset-password `from` in Meteor 3.5?"
+
+Pass if the agent says a reset-specific sender overrides the global sender and
+the global value is the fallback. It must require at least one effective
+sender, not both.
