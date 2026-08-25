@@ -8,7 +8,7 @@ description: >
   Minimongo on the client.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
@@ -99,13 +99,22 @@ Meteor.startup(async () => {
 });
 ```
 
-The selector order in the query must match the index order. To verify, drop
-into the Mongo shell (`meteor mongo`) and run
+Choose compound-index key order from equality filters, sort fields, range
+filters, and usable index prefixes. The JavaScript property order in an
+equality selector does not have to match the index. Verify the chosen plan in
+the Mongo shell (`meteor mongo`) with
 `db.posts.find(...).explain("executionStats")`.
 
 ## Reactivity source: oplog or change streams
 
-Meteor 3.5 chooses a driver per reactive query from this default order:
+The core driver boundary is release-specific:
+
+| Meteor | Reactive behavior |
+|---|---|
+| 3.0 through 3.4 | Uses oplog when `MONGO_OPLOG_URL` is configured; otherwise polling. Core change streams and reactivity-order settings are unavailable. |
+| 3.5+ | Chooses a driver per query in the default order below. |
+
+Meteor 3.5+ defaults to:
 
 ```text
 changeStreams -> oplog -> polling
@@ -116,7 +125,7 @@ unordered observer, no `skip` or `limit`, and a selector Minimongo can compile.
 An ineligible query falls through to the next configured driver. Oplog is
 available only when `MONGO_OPLOG_URL` is configured.
 
-Override the app-wide order with
+On Meteor 3.5+, override the app-wide order with
 `METEOR_REACTIVITY_ORDER=oplog,polling` or:
 
 ```json
@@ -129,8 +138,9 @@ Override the app-wide order with
 }
 ```
 
-The `disable-oplog` package removes only the oplog step. It does not disable
-change streams. Use `reactivity: ["polling"]` to force polling.
+On Meteor 3.5+, the `disable-oplog` package removes only the oplog step. It
+does not disable change streams. Use `reactivity: ["polling"]` to force
+polling. On Meteor 3.0 through 3.4, do not add these settings; upgrade first.
 
 ## Collation (Meteor 3.5+)
 

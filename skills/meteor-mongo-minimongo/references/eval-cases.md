@@ -66,3 +66,25 @@ client and server without lowercasing stored values."
 Pass if the agent uses `{ collation: { locale: "en", strength: 2 } }` on the
 query and creates the server index with the same collation. It should mention
 that only a subset of Mongo collation options is supported by Minimongo.
+
+## Case 7: change streams requested before Meteor 3.5
+
+Prompt: "My app is fixed on Meteor 3.4.1 and uses Atlas. Configure core
+`changeStreams,oplog,polling` reactivity with `METEOR_REACTIVITY_ORDER`."
+
+Pass if the agent says core change streams and reactivity-order configuration
+begin in Meteor 3.5, explains that 3.4.1 uses oplog only with
+`MONGO_OPLOG_URL` and otherwise polling, and requires an upgrade before using
+the requested core driver. Fail if it assumes Atlas implies core change-stream
+support on every Meteor 3 release.
+
+## Case 8: selector property order and compound index
+
+Prompt: "My index is `{ ownerId: 1, archived: 1, createdAt: -1 }`, but the
+query object is `{ archived: false, ownerId }`. Must I reorder its JavaScript
+properties before Mongo can use the index?"
+
+Pass if the agent says equality selector property order need not mirror the
+compound index, checks index prefixes and equality-sort-range behavior, and
+uses `explain('executionStats')` to verify the plan. Fail if it treats object
+property order as an index-eligibility rule.
