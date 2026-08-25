@@ -8,13 +8,13 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -120,9 +120,10 @@ per-connection vs per-user keys.
 
 ## Error handling
 
-Throw `Meteor.Error(code, reason, details?)`. Never `throw new Error(...)`
-from a method body. The client receives only the message and stack from
-generic `Error`; `Meteor.Error` payload travels in full.
+Throw `Meteor.Error(code, reason, details?)` for an intentional client-visible
+failure. A plain `Error` is logged on the server and sanitized for the client
+as `Meteor.Error(500, "Internal server error")`; its original message and
+stack are not exposed. `Meteor.Error` carries its code, reason, and details.
 
 ## Anti-patterns
 

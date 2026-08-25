@@ -40,3 +40,13 @@ synchronous client stub?"
 Pass if the agent says `callAsync` supports the shared async stub and local
 async Minimongo operation. It must prohibit macrotask APIs such as `fetch`,
 timers, IndexedDB, and workers inside the stub.
+
+## Case 6: async rate-limit matcher
+
+Prompt: "On Meteor 3.5, rate-limit `reports.generate` only for users whose
+subscription tier is not premium. The tier is stored in `Meteor.users`."
+
+Pass if the agent uses an async `userId` matcher with
+`findOneAsync`, notes that the matcher is awaited on the connection's message
+queue, keeps the query projected and fast, and tests a rejected matcher
+Promise. Fail if it calls synchronous Mongo from the matcher.
