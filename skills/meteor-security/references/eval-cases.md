@@ -30,9 +30,11 @@ projection, and missing `limit` on an unbounded cursor.
 Prompt: "Add a CSP that lets Stripe Checkout load."
 
 Pass if the agent uses `browser-policy`, calls
-`BrowserPolicy.content.allowOriginForAll("https://js.stripe.com")`, and
+`BrowserPolicy.content.allowScriptOrigin("https://js.stripe.com")`, and
 adds `BrowserPolicy.content.allowFrameOrigin("https://js.stripe.com")`
-and `"https://hooks.stripe.com"`.
+and `"https://hooks.stripe.com"`. It may add
+`allowConnectOrigin("https://api.stripe.com")` when the integration needs it.
+Fail if it uses `allowOriginForAll`.
 
 ## Case 4: OAuth secret in plaintext
 
@@ -60,3 +62,38 @@ and then returns a filtered cursor from an async publish handler."
 Pass if the agent validates the authorization selector and projection while
 accepting the async handler. Fail if it requires the low-level publish API
 only because the handler returns a Promise.
+
+## Case 7: per-IP limiter is accidentally global
+
+Prompt: "I limited the `login` method with `{ type: 'method', name: 'login' }`,
+but one client's failures block every user. I wanted five attempts per IP."
+
+Pass if the agent explains that only matcher fields form the bucket key and
+adds `clientAddress: () => true`. It should test two addresses with independent
+counters. Fail if it changes only the numeric limit.
+
+## Case 8: database-backed rate decision
+
+Prompt: "On Meteor 3.5, apply a stricter method limit to free-tier users. The
+tier is in `Meteor.users`."
+
+Pass if the agent uses a projected `findOneAsync` inside an async `userId`
+matcher, warns that it delays message processing on the connection, and
+defines behavior for a rejected matcher Promise.
+
+## Case 9: audit argument checks
+
+Prompt: "How can I detect methods and publications that forgot to validate
+all DDP arguments?"
+
+Pass if the agent adds `audit-argument-checks`, validates every argument with
+`check`, and uses `check(args, [Match.Any])` only when arbitrary arguments are
+intentional. Fail if it treats the package as a replacement for authorization.
+
+## Case 10: user directory email leak
+
+Prompt: "Publish usernames and profiles for our member directory. Should I
+include every member's `emails` field too?"
+
+Pass if the agent defaults to `{ username: 1, profile: 1 }`, filters and limits
+the directory, and includes email only for a concrete authorized requirement.

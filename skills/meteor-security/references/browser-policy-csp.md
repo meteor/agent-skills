@@ -1,8 +1,10 @@
 # `browser-policy` CSP recipes
 
 `BrowserPolicy` is server-only. Call its functions at module top level or
-inside `Meteor.startup`. Runtime mutation does not take effect; Meteor
-fixes the policy on server boot.
+inside `Meteor.startup` so policy initialization is deterministic. The policy
+is process-global, not request-specific. Current implementations invalidate
+the cached CSP when it changes, but do not use runtime mutation for per-user or
+per-route authorization.
 
 ## Install
 
@@ -18,29 +20,42 @@ Pulls in both `browser-policy-content` (CSP) and `browser-policy-framing`
 ```javascript
 import { BrowserPolicy } from "meteor/browser-policy-common";
 
-BrowserPolicy.content.disallowInlineScripts();
+await BrowserPolicy.content.disallowInlineScripts();
 BrowserPolicy.content.disallowEval();
 BrowserPolicy.framing.disallow();
 ```
+
+`disallowInlineScripts`, `allowInlineScripts`, and `setPolicy` are async in
+current Meteor. Await them from an async startup callback when startup order
+matters.
 
 Removes `eval`, inline `<script>` blocks, and embedding by other sites.
 
 ## Stripe Checkout / Elements
 
 ```javascript
-BrowserPolicy.content.allowOriginForAll("https://js.stripe.com");
+BrowserPolicy.content.allowScriptOrigin("https://js.stripe.com");
 BrowserPolicy.content.allowFrameOrigin("https://js.stripe.com");
 BrowserPolicy.content.allowFrameOrigin("https://hooks.stripe.com");
+BrowserPolicy.content.allowConnectOrigin("https://api.stripe.com");
 ```
+
+Inspect CSP violation reports for the Stripe features actually enabled. Add a
+new origin only to the directive named by the violation.
 
 ## Google Maps / Fonts / GTM
 
 ```javascript
-BrowserPolicy.content.allowOriginForAll("https://maps.googleapis.com");
-BrowserPolicy.content.allowOriginForAll("https://fonts.googleapis.com");
-BrowserPolicy.content.allowOriginForAll("https://fonts.gstatic.com");
-BrowserPolicy.content.allowOriginForAll("https://www.googletagmanager.com");
+BrowserPolicy.content.allowScriptOrigin("https://maps.googleapis.com");
+BrowserPolicy.content.allowConnectOrigin("https://maps.googleapis.com");
+BrowserPolicy.content.allowStyleOrigin("https://fonts.googleapis.com");
+BrowserPolicy.content.allowFontOrigin("https://fonts.gstatic.com");
+BrowserPolicy.content.allowScriptOrigin("https://www.googletagmanager.com");
 ```
+
+Do not replace these calls with `allowOriginForAll`. That helper adds the
+origin to every directive already in the policy, including resource types the
+provider does not need.
 
 ## Inline styles (framework injects them)
 
@@ -63,7 +78,7 @@ BrowserPolicy.content.allowFrameAncestorsOrigin("https://example.com");
 ## Reset
 
 ```javascript
-BrowserPolicy.content.setPolicy(...)   // override entire content policy
+await BrowserPolicy.content.setPolicy(...) // override entire content policy
 BrowserPolicy.framing.allowAll()       // unset X-Frame-Options
 ```
 

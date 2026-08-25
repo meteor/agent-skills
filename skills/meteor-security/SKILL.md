@@ -11,13 +11,13 @@ description: >
   third-party script (Stripe, Google Maps, fonts).
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: security
   tagline: "Audit and harden Meteor 3 apps (`check()` coverage, `this.userId` guards, browser-policy CSP, rate limits, oauth-encryption)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -87,14 +87,19 @@ meteor add browser-policy
 ```javascript
 // server top-level or inside Meteor.startup
 import { BrowserPolicy } from "meteor/browser-policy-common";
+import { Meteor } from "meteor/meteor";
 
-BrowserPolicy.content.disallowInlineScripts();
-BrowserPolicy.content.disallowEval();
-BrowserPolicy.framing.disallow();
+Meteor.startup(async () => {
+  await BrowserPolicy.content.disallowInlineScripts();
+  BrowserPolicy.content.disallowEval();
+  BrowserPolicy.framing.disallow();
+});
 ```
 
-`BrowserPolicy` is server-only and reads its config at startup. Edits
-during runtime do not take effect. See
+`BrowserPolicy` is server-only. Configure it during module initialization or
+startup so every request receives one deterministic process-wide policy. The
+current implementation invalidates its cached CSP after a mutation, but do not
+mutate this global policy per request or per user. See
 `references/browser-policy-csp.md` for recipes (Stripe, Google Maps,
 fonts, inline-style allowance).
 
@@ -104,11 +109,20 @@ fonts, inline-style allowance).
 import { DDPRateLimiter } from "meteor/ddp-rate-limiter";
 
 DDPRateLimiter.addRule(
-  { type: "method", name: "login" },
+  {
+    type: "method",
+    name: "login",
+    clientAddress: () => true,
+  },
   5,
-  60000,                  // 5 attempts per 60s, per IP / connection
+  60000,                  // 5 attempts per 60s, per IP
 );
 ```
+
+Only matcher fields contribute to the rate-limit bucket key. Without
+`clientAddress`, `connectionId`, or `userId`, every matching caller shares one
+global bucket. Meteor 3.5+ permits async matcher functions for database-backed
+decisions; keep their queries fast because the connection waits for them.
 
 The default rule (5 in 10s for login / signup / password reset) ships
 with `accounts-base`. Remove with `Accounts.removeDefaultRateLimit()`
@@ -159,7 +173,11 @@ Meteor.methods({
 - `Meteor.settings.public.<secret>`. The client sees `public`. Move
   secrets to the top level of `settings.json`.
 - Publish the entire `Meteor.users` collection. Always project (e.g.
-  `fields: { username: 1, emails: 1, profile: 1 }`) and filter.
+  `fields: { username: 1, profile: 1 }`) and filter. Publish email only to
+  the owning user or another explicitly authorized audience.
+- Use `BrowserPolicy.content.allowOriginForAll` for a third-party script. It
+  grants the origin to every current content directive. Allow only the script,
+  frame, connect, image, style, or font directives the integration needs.
 - Methods that accept callback-shaped arguments. Functions cannot travel
   over DDP.
 - Call `Accounts.config({ oauthSecretKey })` inside `Meteor.startup`.

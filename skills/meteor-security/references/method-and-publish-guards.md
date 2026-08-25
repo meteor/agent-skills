@@ -65,13 +65,15 @@ Meteor.publish("users.public", function () {
   if (!this.userId) return this.ready();
   return Meteor.users.find(
     {},
-    { fields: { username: 1, emails: 1, profile: 1 } },
+    { fields: { username: 1, profile: 1 }, limit: 200 },
   );
 });
 ```
 
 Never publish `services.*`. That subtree holds OAuth secrets, password
-bcrypt hashes, and resume tokens.
+bcrypt hashes, and resume tokens. Do not publish every user's `emails` field by
+default. Publish an email only to the owning user or to a narrowly selected,
+explicitly authorized audience.
 
 ## Audit packages
 
