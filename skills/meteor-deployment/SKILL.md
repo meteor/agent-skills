@@ -5,13 +5,13 @@ description: >
   meteor deploy, Galaxy, DEPLOY_HOSTNAME, Docker, Kubernetes,
   settings.json, METEOR_SETTINGS, MONGO_URL, MONGO_OPLOG_URL, ROOT_URL,
   PORT, BIND_IP, MAIL_URL, hot code push, --architecture os.linux.x86_64,
-  --server-only, Node.js version mismatch (Meteor 3.3 = Node 20, 3.4 =
-  Node 22, 3.5 = Node 24). Use this skill when the user asks about
+  --server-only, Node.js version mismatch (Meteor 3.0 = Node 20, 3.1
+  through 3.4 = Node 22, 3.5 = Node 24). Use this skill when the user asks about
   shipping the app, asks about production config, or asks about
   containerizing.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: ops
@@ -29,11 +29,11 @@ Docker / Kubernetes / SSH-to-a-Node-host all work too.
 
 Match the Node version to the bundled Meteor Node:
 
-| Meteor  | Node |
-|---------|------|
-| 3.3     | 20   |
-| 3.4     | 22   |
-| 3.5     | 24   |
+| Meteor | Node major |
+|---|---|
+| 3.0 | 20 |
+| 3.1 through 3.4 | 22 |
+| 3.5+ | 24 |
 
 Mismatch causes runtime errors. Run `meteor node -v` to confirm.
 
@@ -54,7 +54,7 @@ Mismatch causes runtime errors. Run `meteor node -v` to confirm.
 |-------------------|--------------------------------------------------------------|
 | `ROOT_URL`        | Absolute external URL (e.g. `https://app.example.com`).      |
 | `MONGO_URL`       | `mongodb://...` connection string.                           |
-| `MONGO_OPLOG_URL` | Mongo replica oplog (self-hosted; Atlas uses change streams).|
+| `MONGO_OPLOG_URL` | Optional Mongo replica oplog URL.                       |
 | `PORT`            | Listen port. Default 3000.                                   |
 | `BIND_IP`         | Network interface. Default 0.0.0.0.                          |
 | `METEOR_SETTINGS` | JSON; populates `Meteor.settings`.                           |
@@ -63,6 +63,11 @@ Mismatch causes runtime errors. Run `meteor node -v` to confirm.
 `ROOT_URL` is the external URL the browser sees, not the cluster-internal
 service URL. OAuth redirects, `Meteor.absoluteUrl`, and CSP all rely on
 it.
+
+On Meteor 3.0 through 3.4, configure `MONGO_OPLOG_URL` for oplog-backed
+reactivity; without it, Meteor polls. Meteor 3.5+ can use core change streams
+without that variable and falls back to oplog or polling when needed. Atlas
+hosting alone does not add core change-stream support to an older Meteor app.
 
 ## `settings.json`
 

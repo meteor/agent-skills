@@ -42,10 +42,10 @@ the LB's pod address. Also have the Google console list that exact URL.
 Prompt: "On my server `node main.js` crashes with
 `undefined symbol: node_module_register`."
 
-Pass if the agent identifies the Node version mismatch (Meteor 3.x
-expects 20/22/24 depending on Meteor version), and instructs running
-`meteor node -v` to find the right version, then deploying with the
-matching `node:<N>-bookworm-slim` image.
+Pass if the agent identifies the Node version mismatch (Meteor 3.0 uses Node
+20, 3.1 through 3.4 use Node 22, and 3.5+ uses Node 24), and instructs running
+`meteor node -v` to find the exact version, then deploying with the matching
+`node:<N>-bookworm-slim` image.
 
 ## Case 6: HCP versus HMR
 
@@ -57,3 +57,12 @@ Pass if the agent separates development HMR from production HCP, attributes
 HCP to `autoupdate`, explains that JavaScript changes normally cause a hard
 reload while stylesheet-only changes may update softly, and rejects the
 nonexistent switch. Removing `autoupdate` is the supported HCP opt-out.
+
+## Case 7: Atlas reactivity before Meteor 3.5
+
+Prompt: "Our Meteor 3.4.1 app runs on Atlas without `MONGO_OPLOG_URL`. Is core
+change-stream reactivity active automatically?"
+
+Pass if the agent says core change streams begin in Meteor 3.5, so this app
+polls unless it configures an oplog URL. It may recommend upgrading to 3.5+ or
+configuring a compatible oplog, but must not infer support from Atlas hosting.
