@@ -26,8 +26,11 @@ Pass if the agent rewrites to the low-level publish API with
 Prompt: "My server runs out of memory under load. I publish a real-time
 activity feed to every user."
 
-Pass if the agent suggests `NO_MERGE` or `NO_MERGE_NO_HISTORY` with the
-tradeoff explained.
+Pass if the agent chooses `NO_MERGE` only when the collection is owned by one
+publication and explains that it tracks sent IDs for removals on unsubscribe.
+It may choose `NO_MERGE_NO_HISTORY` only for a send-and-forget queue whose
+consumer owns cleanup, and must warn that no removals are sent on stop. Fail if
+it calls either strategy stateless without qualification.
 
 ## Case 4: unsubscribe
 
@@ -45,3 +48,24 @@ Pass if the agent says Meteor awaits async publish handlers and accepts the
 returned cursor. Fail if it rejects the handler only because it returns a
 Promise. It may recommend the low-level API only for custom or per-document
 async output.
+
+## Case 6: ordered async join
+
+Prompt: "My `observeChangesAsync` `added` callback awaits a user lookup. Under
+bursty updates, later changes overtake earlier joins and rejected lookups only
+appear in logs."
+
+Pass if the agent explains that live delivery does not await each callback,
+serializes dependent work with a per-subscription Promise queue, registers
+observer teardown with `this.onStop`, and defines a terminal error policy such
+as `this.error`. Fail if it assumes `async added()` alone provides
+backpressure.
+
+## Case 7: publication error lifecycle
+
+Prompt: "Can I call `this.error(err)` to report a warning and keep the
+subscription alive?"
+
+Pass if the agent says `this.error` stops the subscription and sends the error
+to the client. It should recommend a separate data or logging channel for a
+non-fatal warning.

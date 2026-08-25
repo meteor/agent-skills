@@ -9,13 +9,13 @@ description: >
   reactive data fetching.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Author and debug publications/subscriptions (publish strategies, low-level `added/changed/removed`, authorization, reactive joins)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -98,9 +98,9 @@ Meteor.server.setPublicationStrategy(
 
 | Strategy             | When to use                                                                 |
 |----------------------|-----------------------------------------------------------------------------|
-| `SERVER_MERGE`       | Default. Server tracks per-client cursor state. Highest server memory cost. |
-| `NO_MERGE`           | Stateless. Server sends the full result on every change. Lower memory, more bandwidth. |
-| `NO_MERGE_NO_HISTORY`| Stateless and skips history. Use for read-only, append-only feeds.          |
+| `SERVER_MERGE`       | Default. Tracks merged document fields across publications and sends deltas. |
+| `NO_MERGE`           | Tracks sent document IDs so unsubscribe can remove them. Use when the collection is owned by one publication. |
+| `NO_MERGE_NO_HISTORY`| Remembers nothing and sends no removals on stop. Reserve for send-and-forget queues where stale client documents are intentional. |
 
 See `references/publication-strategies.md`.
 
@@ -129,6 +129,11 @@ Meteor.publish("feed", async function () {
 
 Note: cursor `transform` functions remain synchronous. Use a separate
 publication or the low-level API for per-document async joins.
+
+Live observer delivery does not wait for one async callback before later
+changes arrive. If ordering or backpressure matters, serialize the work with a
+per-subscription Promise queue. Attach an error policy and stop the observer
+from `this.onStop`; see `references/low-level-publish-api.md`.
 
 ## Anti-patterns
 
