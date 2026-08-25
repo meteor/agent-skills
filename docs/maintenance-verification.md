@@ -1,64 +1,112 @@
 # Maintenance verification guide
 
-This guide explains how verification works in this repository and how to
-choose the right level for a change. It is written for maintainers and
-reviewers who need to understand what each check proves, what evidence it
-produces, and where to look when something fails.
+Use this guide when you maintain a skill, audit Meteor changes, or prepare a
+contribution. Choose a recipe, run its commands, or copy its prompt into an
+agent working from the repository root.
 
-The repository uses several verification layers because no single check can
-answer every maintenance question. Schema validation can prove that a skill is
-well formed, but it cannot prove that an agent will make the right decision.
-A model comparison can show a behavioral difference, but it cannot prove that
-the release ZIP contains the intended files. Each layer has a distinct job.
+For schemas, digests, and report invariants, use the
+[evaluation contract](../.github/skills/skill-behavior-evaluation/references/evaluation-contract.md).
 
-## The verification model
-
-Every change starts with deterministic repository checks. Behavioral
-evaluation is added only when the change can affect an agent's decisions.
-Packaging checks come last because they verify the final distributable shape.
+## Choose a recipe
 
 ```mermaid
 flowchart TD
-  A[Change a skill or maintainer workflow] --> B[Review the factual source]
-  B --> C[Run static repository checks]
-  C --> D{Can agent behavior change?}
-  D -->|No| E[Check links, catalog, tests, and ZIPs]
-  D -->|Yes| F[Select a behavioral evaluation level]
-  F --> G{What needs to be demonstrated?}
-  G -->|Basic behavior| H[Current-skill smoke run]
-  G -->|Skill value| I[Current-skill vs without-skill]
-  G -->|Regression repair| J[Add previous-skill when useful]
-  G -->|Reliability or performance claim| K[Repeat each condition at least 3 times]
-  H --> E
-  I --> E
-  J --> E
-  K --> E
-  E --> L[Human review and PR evidence]
+  A[What changed?] --> B[Docs or wording]
+  A --> C[Skill behavior or routing]
+  A --> D[New Meteor core changes]
+  A --> E[New skill]
+  B --> F[Deterministic checks]
+  C --> G[Checks plus affected evaluations]
+  D --> H[Gap audit]
+  H --> I{Confirmed gap?}
+  I -->|Yes| G
+  I -->|No| J[Preserve audit]
+  E --> G
+  F --> K[Final review and ZIP inspection]
+  G --> K
 ```
 
-The question in the middle is intentionally about behavior, not file count.
-A large wording cleanup may need no model run. A one-line change to a version
-boundary, security rule, routing description, or migration decision usually
-does.
+### Documentation or wording only
 
-## What each verification does
+Use this for spelling, formatting, repaired links, or a source refresh that
+does not change an agent decision.
 
-| Verification | How to run it | What it demonstrates | What it does not demonstrate |
-|---|---|---|---|
-| Source review | Inspect Meteor `v3-docs`, implementation, tests, release history, and package history as appropriate | Guidance is based on reproducible Meteor evidence, including introduction versions and compatibility boundaries | That the skill expresses the evidence clearly or changes agent behavior |
-| Skill and audit validation | `pnpm run validate:skills` | Frontmatter, naming, metadata, body size, permitted files, and audit record requirements satisfy the repository contract | Links, catalog output, runtime behavior, or model decisions |
-| Evaluation validation | `pnpm run validate:evaluations` | Suites, fixtures, snapshots, and reports conform to their schemas and cross-reference one another consistently | That a model run actually produced a good answer unless the report contains honestly graded real-run evidence |
-| Composite validation | `pnpm run validate` | Both static validation layers pass together | Link health, generated catalog state, unit behavior, or ZIP contents |
-| Link checking | `pnpm run check-links` | Relative links resolve and `Source:` footers point to valid Meteor `devel` documentation paths | That the cited source supports every claim or proves the feature's introduction version |
-| Catalog checking | `pnpm run catalog:check` | Generated README skill and bundle sections match skill metadata and `bundles.json` | That a classification or bundle choice is conceptually correct |
-| Toolchain tests | `pnpm test` | Repository scripts and validators behave as their automated tests specify | Agent behavior or the completeness of manual review |
-| Behavioral evaluation | Follow `skill-behavior-evaluation` and run isolated agent conditions | The skill produces the expected observable decisions, response content, file changes, or commands for representative cases | General reliability from one repetition, full coverage of every manual case, or release packaging correctness |
-| ZIP build and inspection | `pnpm run build:zips` and inspect changed archives | Published skills contain the intended runtime files and exclude maintainer-only evidence | That the contained guidance is factually or behaviorally correct |
-| Human review | Review the diff, evidence, cases, reports, and changed ZIPs | The change is coherent, appropriately scoped, and understandable beyond what automated checks encode | A substitute for any deterministic check that can be run directly |
+```bash
+pnpm run validate
+pnpm run check-links
+pnpm run catalog:check
+pnpm test
+git diff --check
+```
 
-`pnpm run validate` is necessary for every change, but it is not shorthand for
-the complete verification process. The local check sequence used before a PR
-is:
+Prompt:
+
+> Review this documentation-only change with `skill-maintenance`. Verify the
+> source, links, metadata, and catalog. Do not run a model evaluation unless
+> guidance or routing changed. Report the commands run and any limitation.
+
+Build and inspect ZIPs when a published skill file changed.
+
+### Skill behavior or routing
+
+Use this for version boundaries, migration or security decisions, scaffolds,
+descriptions, routing, or a previously observed behavioral failure.
+
+```bash
+pnpm run validate
+pnpm run evaluation:snapshot-suite -- evaluations/skills/<skill>/cases.json
+# Run the affected isolated model conditions.
+pnpm run validate:evaluations
+pnpm run build:zips
+```
+
+Prompt:
+
+> Use `skill-behavior-evaluation` for `<skill>`. Run only affected
+> representative cases in fresh workspaces. Compare `current-skill` with
+> `without-skill`; add `previous-skill` only for a direct regression
+> comparison. Grade observable outcomes and create a new snapshot and dated
+> report without rewriting historical evidence.
+
+One repetition supports a behavioral observation. Reliability, time, or token
+claims require at least three repetitions for every compared condition.
+
+### New Meteor core changes
+
+Use an audit before editing published skills.
+
+> Use `skill-gap-audit` to compare this catalog with the current
+> `meteor/meteor` `devel` revision. Start from the latest applicable committed
+> audit, prioritize `v3-docs`, verify introduction versions from history or
+> package releases, and store a reproducible read-only audit. Do not modify
+> published skills.
+
+If a finding is confirmed and implementation is authorized:
+
+> Use `skill-maintenance` to implement only confirmed findings from
+> `<audit-path>`. Update the smallest coherent skill surface, bump independent
+> skill versions, maintain affected cases, and run the verification level
+> justified by the behavior change.
+
+Preserve earlier audits. An audit is evidence, not permission to expand scope.
+
+### New skill
+
+Follow [`CONTRIBUTING.md`](../CONTRIBUTING.md) and start from
+`skills/_template/`.
+
+> Use `skill-maintenance` to create `<skill-name>` for `<user-outcome>`.
+> Inspect neighboring skills and bundles, keep routing distinct, add canonical
+> and representative cases, and use `skill-behavior-evaluation` to test
+> selection and behavior. Do not create a skill if an existing one already
+> owns the outcome.
+
+Routing tests must cover the expected primary skill, allowed secondary skills,
+forbidden neighbors, and the intended handoff.
+
+### Final contribution review
+
+Run the complete local sequence before opening or updating a PR:
 
 ```bash
 pnpm install --frozen-lockfile
@@ -67,211 +115,117 @@ pnpm run check-links
 pnpm run catalog:check
 pnpm test
 pnpm run build:zips
+git diff --check
 ```
 
-## When a model run is warranted
+Prompt:
 
-Run a behavioral evaluation when a change affects at least one of these:
+> Perform a final maintenance review of this branch. Check factual evidence,
+> skill versions, routing and representative cases, current reports where
+> required, catalog state, and changed ZIP contents. Run the full local check
+> sequence. List blockers and limitations. Do not commit, tag, or push unless
+> explicitly requested.
 
-- a new published skill;
-- skill selection, description, routing boundary, or handoff behavior;
-- a version-sensitive capability or compatibility fallback;
-- a security, migration, or other high-risk decision;
-- a scaffold whose generated files or commands are part of the outcome;
-- a behavioral failure observed in a previous run;
-- a claim about skill value, reliability, time, or token usage.
+Changed ZIPs must contain only published runtime files. Maintainer skills,
+audits, evaluations, reports, and raw work stay outside release archives.
 
-A model run is normally unnecessary for spelling, formatting, repaired links,
-source refreshes that do not change guidance, or internal refactoring of a
-deterministic script whose tests fully cover the behavior.
+## Command map
 
-Use the smallest evaluation level that answers the maintenance question:
-
-| Maintenance question | Minimum useful evidence |
+| Command | What it verifies |
 |---|---|
-| Does the changed skill still handle its central case? | One isolated `current-skill` smoke run |
-| Does the skill add value over normal model knowledge? | Matched `current-skill` and `without-skill` runs |
-| Did this edit repair a known regression? | Rerun the affected matched conditions; add `previous-skill` when the old revision is needed for direct comparison |
-| Is the skill reliably better or faster? | At least three repetitions of every compared condition, with measurements recorded per run |
-| Does the correct skill get selected? | Routing cases covering the primary skill, allowed secondary skills, forbidden neighbors, and expected handoff |
+| `pnpm run validate:skills` | Skill metadata, body limits, allowed files, and audit records |
+| `pnpm run validate:evaluations` | Suites, fixtures, snapshots, reports, and cross-references |
+| `pnpm run validate` | Both static validation layers |
+| `pnpm run check-links` | Relative links and Meteor `v3-docs` paths |
+| `pnpm run catalog:check` | Generated README catalog and bundles |
+| `pnpm test` | Repository validators and helper scripts |
+| `pnpm run build:zips` | Published skill archives |
 
-One repetition supports a behavioral observation only. It must not be
-reported as a reliability, time, or token result.
+Static checks prove repository consistency, not agent behavior. Behavioral
+evaluation tests decisions; ZIP inspection tests packaging.
 
-## How behavioral evidence fits together
-
-The evaluation files form an evidence chain. Each file exists to keep one part
-of the comparison reviewable and reproducible.
+## Behavioral evidence
 
 ```mermaid
 flowchart LR
-  A[Canonical manual case<br/>skills/name/references/eval-cases.md]
-  B[Representative suite<br/>evaluations/skills/name/cases.json]
-  C[Starting fixture<br/>evaluations/fixtures]
-  D[Fixture SHA-256]
-  E[Content-addressed suite snapshot]
-  F[Fresh isolated run<br/>evaluations/.work]
-  G[Dated graded report<br/>evaluations/reports]
-  H[Static report validation]
-
-  A -->|exact case_ref| B
-  C --> D
-  B --> E
-  D --> F
-  E --> F
-  F --> G
-  G --> H
+  A[Manual case] -->|case_ref| B[Representative suite]
+  C[Fixture] --> D[Fresh matched runs]
+  B --> E[Suite snapshot]
+  E --> D
+  D --> F[Dated report]
+  F --> G[Static validation]
 ```
 
-### Canonical manual cases
+### What the terms mean and when to use them
 
-`skills/<name>/references/eval-cases.md` is the complete human-readable case
-inventory shipped with a skill. It covers more situations than are practical
-to run in every maintenance comparison.
-
-### Representative suites
-
-`evaluations/skills/<name>/cases.json` selects a small, high-signal subset.
-Every suite case points back to an exact manual heading through `case_ref`.
-Assertions describe observable outcomes rather than preferred wording.
-
-`evaluations/routing/cases.json` tests selection boundaries before a skill body
-is loaded. It is separate because routing quality depends primarily on names
-and descriptions, not the detailed instructions inside a selected skill.
-
-### Fixtures and their digests
-
-Workspace cases begin from small committed projects under
-`evaluations/fixtures/`. The fixture digest proves that compared conditions
-started from identical bytes. Advisory cases use the canonical empty-workspace
-digest.
-
-Generate or inspect a fixture digest with:
-
-```bash
-pnpm run evaluation:hash-fixture -- evaluations/fixtures/<skill>/<case>
-```
-
-### Suite snapshots
-
-A report must reference the exact suite used during the run. Before executing
-the model, create a content-addressed snapshot:
-
-```bash
-pnpm run evaluation:snapshot-suite -- evaluations/skills/<skill>/cases.json
-```
-
-The snapshot name is the SHA-256 of its contents. If the maintained suite
-changes later, historical reports continue to point at the original immutable
-assertions and prompts.
-
-### Raw work and reports
-
-Fresh workspaces, transcripts, event logs, and intermediate command output
-belong under ignored `evaluations/.work/`. They help local diagnosis but are not
-release content.
-
-A dated JSON report under `evaluations/reports/` records the reproducible part
-of completed runs: revisions, suite snapshot, fixture digest, client, model,
-conditions, assertion outcomes, evidence, limitations, and classification.
-Reports are immutable. A later run creates a new report rather than rewriting
-an earlier result.
-
-## Keeping comparisons fair
-
-For a matched comparison, hold these inputs constant:
-
-- prompt and assertion set;
-- starting fixture and fixture digest;
-- Meteor release and package context;
-- client, model, reasoning settings, and accessible project files;
-- repetition number.
-
-Change only the skill condition. `current-skill` includes the maintained skill;
-`without-skill` omits it. `previous-skill` includes one exact earlier revision.
-Never reuse a workspace mutated by another condition.
-
-Do not expose assertions, reviewer notes, expected solutions, or another
-condition's output to the agent. Grade the final response, changed files, and
-deterministic command results after the run.
-
-## Interpreting a failed evaluation
-
-A failed assertion does not automatically mean the skill is wrong. Diagnose
-the failure before editing:
-
-| Classification | Meaning | Appropriate response |
+| Term | What and why | Use it when |
 |---|---|---|
-| `skill-gap` | The skill lacks, hides, or misroutes valid required guidance | Update the smallest relevant skill surface, bump its version when behavior changes, and rerun affected cases |
-| `evaluation-gap` | The prompt or assertion does not represent the intended Meteor behavior | Repair the suite from authoritative evidence and rerun every affected condition |
-| `harness-gap` | Isolation, installation, fixture setup, execution, or evidence capture failed | Repair the harness and discard the invalid run from capability claims |
-| `no-gap` | Observable behavior satisfies the suite | Record the supported scope without expanding it into reliability claims |
-| `inconclusive` | Available evidence cannot distinguish the cause | Narrow the case or collect stronger evidence before changing the skill |
+| Behavioral evaluation | A controlled agent task with observable pass criteria; it tests decisions static checks cannot | Guidance, routing, scaffolds, or high-risk decisions change |
+| Manual case and representative suite | The skill ships the complete human case inventory; `cases.json` selects repeatable high-value cases and links back through `case_ref` | Adding or changing a behavioral capability |
+| Assertion | One checkable response, file, or command outcome; it keeps grading objective | Defining every representative case |
+| Fixture and digest | A minimal starting project plus a SHA-256 of its files; they prove compared agents received identical code | The task requires file edits or command evidence |
+| Suite snapshot | An immutable copy of the prompt and assertions used by a run; it keeps old evidence readable after the maintained suite changes | Before a run that will produce a report |
+| Condition | The only intentional difference between runs: `current-skill`, `without-skill`, or exact `previous-skill` | Comparing skill value or a regression |
+| Repetition | One fresh case and condition execution; repeated runs support stronger claims | Once for an observation, at least three times per condition for reliability, time, or tokens |
+| Routing case | A selection prompt with expected, allowed, and forbidden skills; it tests descriptions before bodies load | Names, descriptions, boundaries, or handoffs change |
+| Raw work | Ignored responses, logs, commands, and workspaces in `evaluations/.work/`; they support local diagnosis | Executing any model run |
+| Dated report | Committed grading tied to revisions, digests, client, model, and conditions; it preserves reproducible evidence | A completed real run supports the contribution |
 
-Do not weaken an assertion merely to make a run pass. The recent
-`EnvironmentVariable` maintenance case illustrates why this distinction
-matters: checking current Meteor documentation showed that the evaluation had
-encoded the wrapper boundary incorrectly. The right response was to correct
-the case as an `evaluation-gap`, update the skill from the source of truth, and
-preserve the older report as historical evidence.
+A smoke run uses `current-skill` once. A matched comparison adds
+`without-skill`; a regression comparison may also add `previous-skill`.
+Wording, formatting, and link-only changes normally need deterministic checks,
+not a model run or report.
 
-## Common maintenance examples
+Keep prompts, fixtures, model settings, Meteor context, and repetition numbers
+equal between compared conditions. Change only the condition. The agent sees
+the prompt and fixture, not the assertions or another condition's output. CI
+validates definitions and reports, but it does not invoke a model.
 
-### Documentation-only correction
+### Example: securing a Meteor method
 
-A reference has a broken link, but its guidance and routing remain unchanged.
-Run static validation, link checking, catalog checking, tests, and ZIP
-inspection. A model run adds little evidence.
+Suppose `meteor-methods` should help an agent secure an existing method:
 
-### Version-sensitive capability
+1. The canonical manual case describes the request and the complete pass
+   criteria in `skills/meteor-methods/references/eval-cases.md`.
+2. The representative suite selects that case and defines observable
+   assertions: validate input, require `this.userId`, derive ownership on the
+   server, use `insertAsync`, and pass `node --check`.
+3. The fixture contains a small insecure `methods.js`. Its digest identifies
+   the exact starting files.
+4. The suite is snapshotted before execution, preserving the exact prompt and
+   assertions used for this comparison.
+5. `current-skill` receives a fresh fixture plus `meteor-methods`;
+   `without-skill` receives a different fresh copy without that skill.
+6. Both agents receive the same prompt. Their responses and edited files go to
+   `evaluations/.work/`.
+7. After both runs finish, the grader checks the files and command result
+   against each assertion.
+8. The dated report records both outcomes and references the fixture digest
+   and suite snapshot. If the maintained suite changes later, the report still
+   points to the original test definition.
 
-A Meteor 3.5 feature is added to a skill that supports all Meteor 3 releases.
-Verify the introduction version from release history or versioned source,
-state the 3.0 through 3.4 fallback, add cases on both sides of the boundary,
-and run the affected behavioral comparison.
+This structure answers a specific question: did the skill improve a realistic
+Meteor maintenance outcome while every other relevant input stayed equal?
 
-### Routing change
+### Diagnose a failed evaluation
 
-A description is broadened to recognize a new request. Review neighboring
-descriptions, update routing cases with positive and near-miss prompts, and
-verify the primary, secondary, and forbidden skill outcomes.
+| Result | Meaning | Next action |
+|---|---|---|
+| `skill-gap` | Valid guidance is missing, hidden, or misrouted | Update the smallest skill surface and rerun affected cases |
+| `evaluation-gap` | The prompt or assertion represents the wrong outcome | Correct it from authoritative evidence and rerun affected conditions |
+| `harness-gap` | Isolation, fixture, execution, or capture failed | Repair the harness and exclude the invalid run from claims |
+| `no-gap` | Observable behavior meets the suite | Record the supported scope without broader claims |
+| `inconclusive` | Evidence cannot identify the cause | Narrow the case or collect stronger evidence |
 
-### Observed regression
+Confirm expected Meteor behavior before changing an assertion. Never weaken an
+assertion only to make a run pass.
 
-A real run misses an instruction that already exists in a long reference.
-First confirm that the instruction is factually correct. Then improve its
-salience in the skill entry point, preserve or strengthen the observable
-assertion, and rerun only the affected matched conditions.
+## Detailed references
 
-## Before opening or updating a PR
-
-Confirm all of the following:
-
-1. Factual claims point to the current Meteor revision and version-specific
-   claims have an introduction source.
-2. Every changed skill has the appropriate independent `metadata.version`.
-3. Manual cases and representative suites reflect changed behavior.
-4. Behavioral reports exist when the change requires them, and raw work stays
-   under `evaluations/.work/`.
-5. All deterministic checks pass.
-6. Changed ZIPs contain only published skill runtime files. `.github/skills/`,
-   `evaluations/`, audits, and raw artifacts must remain outside them.
-7. The PR explains what was verified, which client and model were used, and
-   what the evidence does not claim.
-
-CI validates definitions and committed reports, but it does not invoke a
-model. Human reviewers remain responsible for evaluating the quality of real
-runs and for executing the complete canonical manual inventory required by
-the repository review policy.
-
-## Normative references
-
-- [`AGENTS.md`](../AGENTS.md) defines the repository authoring contract.
-- [`skill-maintenance`](../.github/skills/skill-maintenance/SKILL.md) defines
-  the operational workflow for published skill changes.
+- [`AGENTS.md`](../AGENTS.md): normative authoring contract.
+- [`CONTRIBUTING.md`](../CONTRIBUTING.md): contribution workflow and prompts.
+- [`RELEASING.md`](../RELEASING.md): release checklist and prompt.
+- [`skill-maintenance`](../.github/skills/skill-maintenance/SKILL.md)
+- [`skill-gap-audit`](../.github/skills/skill-gap-audit/SKILL.md)
 - [`skill-behavior-evaluation`](../.github/skills/skill-behavior-evaluation/SKILL.md)
-  defines when and how to execute model evaluations.
-- [The evaluation contract](../.github/skills/skill-behavior-evaluation/references/evaluation-contract.md)
-  defines suite, fixture, snapshot, and report invariants.
-- [`CONTRIBUTING.md`](../CONTRIBUTING.md) contains the contributor entry path.
-- [`RELEASING.md`](../RELEASING.md) contains the release checklist.
+- [Evaluation contract](../.github/skills/skill-behavior-evaluation/references/evaluation-contract.md)

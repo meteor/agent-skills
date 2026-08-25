@@ -8,6 +8,37 @@ Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare th
 
 Store committed audit records under `audits/skill-gaps/`. Do not overwrite an earlier audit. A new audit records its predecessor and the old and new Meteor revisions so later drift checks remain reproducible.
 
+## Ask a maintainer agent
+
+You can give these prompts to an agent working from the repository root. Keep
+the requested scope explicit and review its evidence before accepting edits.
+
+Audit Meteor changes without editing skills:
+
+> Use `skill-gap-audit` to compare this catalog with the current
+> `meteor/meteor` `devel` revision. Prioritize `v3-docs`, verify introduction
+> versions from history or package releases, and store a reproducible audit.
+> Do not modify published skills.
+
+Implement an approved contribution:
+
+> Use `skill-maintenance` to implement `<requested-change>`. Preserve existing
+> classification and routing unless the change explicitly requires them.
+> Verify Meteor sources, update independent skill versions and affected cases,
+> and run the checks proportional to the behavioral risk. Do not commit or push
+> unless requested.
+
+Evaluate changed behavior:
+
+> Use `skill-behavior-evaluation` for `<skill>`. Run the affected representative
+> cases in fresh workspaces, compare `current-skill` with `without-skill`, grade
+> observable outcomes, and create a new snapshot and dated report. Preserve
+> historical evidence.
+
+The [maintenance verification guide](./docs/maintenance-verification.md)
+contains additional task recipes, commands, expected outcomes, and failure
+diagnosis.
+
 ## Local checks
 
 ```bash
@@ -21,10 +52,6 @@ pnpm run build:zips     # release artifacts
 
 All checks must pass before opening a PR.
 
-The [maintenance verification guide](./docs/maintenance-verification.md)
-explains what each check proves, when a model run is warranted, how evaluation
-evidence is connected, and how to diagnose a failed assertion.
-
 ## Adding a skill
 
 1. Copy `skills/_template/` to `skills/<your-skill-name>/`.
@@ -34,6 +61,14 @@ evidence is connected, and how to diagnose a failed assertion.
 5. Add a representative machine-readable subset under `evaluations/skills/<your-skill-name>/cases.json`, plus routing cases and small fixtures where needed.
 6. Run the local checks.
 7. Open a PR. Describe the skill in two sentences in the PR body.
+
+Agent prompt:
+
+> Use `skill-maintenance` to create `<skill-name>` for `<user-outcome>`. Inspect
+> neighboring skills and bundles, keep the scope distinct, add canonical and
+> representative evaluation cases, and use `skill-behavior-evaluation` to test
+> routing and behavior. Do not create the skill if an existing one already owns
+> the outcome.
 
 ## Smoke test against a local agent
 

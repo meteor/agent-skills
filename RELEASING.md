@@ -1,5 +1,9 @@
 # Releasing
 
+Use the [final contribution recipe](./docs/maintenance-verification.md#final-contribution-review)
+for an explanation of what each verification proves and what still requires
+human review.
+
 ## Prepare
 
 - Confirm every changed skill has an appropriate `metadata.version`.
@@ -23,6 +27,16 @@ pnpm run build:zips
 - Install one representative skill with `npx skills add` in a clean project.
 - Install one ZIP manually and confirm its references load.
 - Confirm CI is green on `main`.
+
+## Ask for release verification
+
+Before tagging, you can ask a maintainer agent:
+
+> Review this branch for release readiness. Confirm changed skill versions,
+> catalog and bundle state, source and behavioral evidence, current reports,
+> complete local checks, and changed ZIP contents. List blockers and known
+> limitations. Do not create a tag, release, commit, or push unless explicitly
+> requested.
 
 ## Publish
 
