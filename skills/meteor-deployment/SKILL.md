@@ -11,13 +11,13 @@ description: >
   containerizing.
 metadata:
   author: meteor
-  version: "0.1.0"
+  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: ops
   tagline: "Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching)."
   bundle: ["ops"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -41,7 +41,8 @@ Mismatch causes runtime errors. Run `meteor node -v` to confirm.
 
 1. Galaxy? `meteor deploy <app>.meteorapp.com --settings settings.json`.
 2. Docker / Kubernetes? `meteor build --directory ./build --server-only`
-   for Linux-on-Linux, or `--architecture os.linux.x86_64` cross-build.
+   skips platform-specific mobile artifacts. Use
+   `--architecture os.linux.x86_64` for a cross-build.
 3. SSH to a Node host? Same `meteor build`, scp the bundle, install prod
    deps under `bundle/programs/server`, run `node main.js`.
 4. Vercel / Netlify / serverless? Not supported. Meteor needs a
@@ -100,17 +101,22 @@ Other Galaxy regions have their own `DEPLOY_HOSTNAME`. Galaxy reads
 
 See `references/docker.md` for a working multi-stage Dockerfile. Build
 the bundle in one stage, install server deps and run in a smaller one.
-`--server-only` skips the client bundle if you ship to a separate CDN.
+`--server-only` skips platform-specific mobile application builds, but it
+does not omit the browser client or create an API-only bundle. Meteor still
+builds the `web.cordova` client target used for hot code push.
 
 ## Hot code push
 
-`meteor build` ships the `autoupdate` package by default. When you deploy
-a new client bundle, long-lived browser sessions pick it up; the
-`hot-code-push` package additionally swaps modules at runtime when the
-change is HMR-compatible.
+`autoupdate` provides production hot code push. It detects a new client
+version over DDP, applies stylesheet-only changes without reloading when
+possible, and otherwise performs a full browser reload. Remove `autoupdate`
+from `.meteor/packages` to disable HCP.
 
-To disable HCP for a specific environment, remove `autoupdate` from
-`.meteor/packages` or set `Meteor.disableClientResourceFetch = true`.
+`hot-module-replacement` is different. It replaces accepted JavaScript
+modules during development and falls back to HCP when a module cannot accept
+the update. HMR is disabled in production and on unsupported web
+architectures. There is no `Meteor.disableClientResourceFetch` switch in the
+current public API.
 
 ## Anti-patterns
 

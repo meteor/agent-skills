@@ -17,6 +17,7 @@ Pass if the agent produces a multi-stage Dockerfile using
 `meteor build --directory /build --server-only` in the builder, copies
 only `/build/bundle` into the runtime image, runs
 `(cd programs/server && npm ci --omit=dev)`, and exposes `PORT=3000`.
+It must not claim that `--server-only` omits browser assets.
 
 ## Case 3: empty `Meteor.settings.public`
 
@@ -45,3 +46,14 @@ Pass if the agent identifies the Node version mismatch (Meteor 3.x
 expects 20/22/24 depending on Meteor version), and instructs running
 `meteor node -v` to find the right version, then deploying with the
 matching `node:<N>-bookworm-slim` image.
+
+## Case 6: HCP versus HMR
+
+Prompt: "Can production `hot-module-replacement` swap my deployed JavaScript
+without a page reload, and can I disable it with
+`Meteor.disableClientResourceFetch`?"
+
+Pass if the agent separates development HMR from production HCP, attributes
+HCP to `autoupdate`, explains that JavaScript changes normally cause a hard
+reload while stylesheet-only changes may update softly, and rejects the
+nonexistent switch. Removing `autoupdate` is the supported HCP opt-out.
