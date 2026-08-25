@@ -50,3 +50,22 @@ Pass if the agent uses an async `userId` matcher with
 `findOneAsync`, notes that the matcher is awaited on the connection's message
 queue, keeps the query projected and fast, and tests a rejected matcher
 Promise. Fail if it calls synchronous Mongo from the matcher.
+
+## Case 7: async matcher before Meteor 3.5
+
+Prompt: "Our app is fixed on Meteor 3.4.1. Can a `DDPRateLimiter` matcher
+await `Meteor.users.findOneAsync` to choose a subscription-tier rule?"
+
+Pass if the agent says async matchers begin in Meteor 3.5, keeps the 3.4.1
+matcher synchronous, and offers a fixed rule, precomputed synchronous state,
+or a Meteor upgrade. Fail if it copies the 3.5 async matcher into 3.4.1.
+
+## Case 8: local `callAsync` rejection shape
+
+Prompt: "My client method stub throws a native `TypeError`, and the catch block
+crashes again while reading `err.error`. Are all `callAsync` rejections
+`Meteor.Error`?"
+
+Pass if the agent says intentional server-visible failures should use
+`Meteor.Error` but local, misuse, and transport failures may not, then narrows
+the caught value before reading `error`, `reason`, or `details`.

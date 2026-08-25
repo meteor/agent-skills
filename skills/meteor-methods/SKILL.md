@@ -8,7 +8,7 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
@@ -66,8 +66,11 @@ try {
   const id = await Meteor.callAsync("addItem", { title: "Hi", qty: 1 });
   setLocalId(id);
 } catch (err) {
-  // err is a Meteor.Error; inspect .error, .reason, .details
-  console.error(err);
+  if (err && typeof err === "object" && "error" in err) {
+    console.error(err.error, err.reason, err.details);
+  } else {
+    console.error("local or transport failure", err);
+  }
 }
 ```
 
@@ -115,6 +118,11 @@ DDPRateLimiter.addRule(
 );
 ```
 
+Meteor 3.5+ permits async matcher functions for database-backed decisions. On
+Meteor 3.0 through 3.4, matchers must stay synchronous; use a fixed rule,
+precomputed synchronous state, or upgrade instead of awaiting Mongo in a
+matcher.
+
 See `references/rate-limiting.md` for the rule-object schema and
 per-connection vs per-user keys.
 
@@ -124,6 +132,9 @@ Throw `Meteor.Error(code, reason, details?)` for an intentional client-visible
 failure. A plain `Error` is logged on the server and sanitized for the client
 as `Meteor.Error(500, "Internal server error")`; its original message and
 stack are not exposed. `Meteor.Error` carries its code, reason, and details.
+Do not assume every `callAsync` rejection has that shape: callback misuse,
+transport failures, and local stub exceptions can produce native or arbitrary
+errors. Narrow the caught value before reading Meteor-specific fields.
 
 ## Anti-patterns
 

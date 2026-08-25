@@ -12,7 +12,7 @@ description: >
   vs HttpOnly cookies.
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: auth
@@ -152,7 +152,10 @@ Meteor.loginWithGoogle(
 `accounts-meetup`, `accounts-weibo`.
 
 To encrypt OAuth secrets at rest, add `oauth-encryption` and pass
-`oauthSecretKey` to `Accounts.config`. See `meteor-security` skill.
+`oauthSecretKey` to `Accounts.config`. This seals the provider application
+secret in `ServiceConfiguration.configurations.secret` and the supported
+provider-specific user token fields. It does not create a generic
+`Meteor.users.services.<provider>.secret` field. See `meteor-security`.
 
 ## Email verification and reset
 

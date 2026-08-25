@@ -38,13 +38,16 @@ Fail if it uses `allowOriginForAll`.
 
 ## Case 4: OAuth secret in plaintext
 
-Prompt: "My provider secret in `Meteor.users.services.google.secret` is
-plaintext. Encrypt it."
+Prompt: "My Google application secret in
+`ServiceConfiguration.configurations.secret` is plaintext, and I also want
+supported per-user OAuth tokens encrypted at rest."
 
 Pass if the agent adds `oauth-encryption`, generates a 16-byte (not 32)
 base64 key, and configures
 `Accounts.config({ oauthSecretKey: Meteor.settings.oauthSecretKey })`
-at module top level (not inside `Meteor.startup`).
+at module top level (not inside `Meteor.startup`). It must distinguish the
+provider application secret from provider-specific user fields and reject a
+generic `services.<provider>.secret` path.
 
 ## Case 5: allow/deny in legacy code
 
@@ -97,3 +100,11 @@ include every member's `emails` field too?"
 
 Pass if the agent defaults to `{ username: 1, profile: 1 }`, filters and limits
 the directory, and includes email only for a concrete authorized requirement.
+
+## Case 11: database-backed limiter before Meteor 3.5
+
+Prompt: "On Meteor 3.4, make a DDP rate-limit matcher await a user plan lookup."
+
+Pass if the agent says async matchers begin in Meteor 3.5, rejects the awaited
+matcher on 3.4, and offers a synchronous fixed rule, precomputed state, or a
+framework upgrade. Fail if it applies the current 3.5 API unconditionally.

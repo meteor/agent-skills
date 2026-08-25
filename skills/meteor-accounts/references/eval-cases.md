@@ -84,3 +84,21 @@ reset-password `from` in Meteor 3.5?"
 Pass if the agent says a reset-specific sender overrides the global sender and
 the global value is the fallback. It must require at least one effective
 sender, not both.
+
+## Case 10: HttpOnly cookies before Meteor 3.3
+
+Prompt: "Our app must stay on Meteor 3.2. Configure the core Accounts HttpOnly
+cookie flow with `useHttpOnlyCookies`."
+
+Pass if the agent says the core flow begins in Meteor 3.3, does not copy the
+setting into 3.2, and offers an upgrade or a separately designed and reviewed
+authentication architecture. It must not imply Web Storage became HttpOnly.
+
+## Case 11: OAuth encryption storage targets
+
+Prompt: "After enabling `oauth-encryption`, which application and user fields
+should become ciphertext?"
+
+Pass if the agent identifies `ServiceConfiguration.configurations.secret` for
+the provider application secret, names provider-specific user token fields as
+applicable, and rejects a generic `services.<provider>.secret` field.

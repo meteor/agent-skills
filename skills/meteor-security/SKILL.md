@@ -11,7 +11,7 @@ description: >
   third-party script (Stripe, Google Maps, fonts).
 metadata:
   author: meteor
-  version: "0.3.0"
+  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: security
@@ -122,7 +122,9 @@ DDPRateLimiter.addRule(
 Only matcher fields contribute to the rate-limit bucket key. Without
 `clientAddress`, `connectionId`, or `userId`, every matching caller shares one
 global bucket. Meteor 3.5+ permits async matcher functions for database-backed
-decisions; keep their queries fast because the connection waits for them.
+decisions; keep their queries fast because the connection waits for them. On
+Meteor 3.0 through 3.4, matchers must stay synchronous. Use a fixed rule,
+precomputed synchronous state, or upgrade rather than awaiting Mongo there.
 
 The default rule (5 in 10s for login / signup / password reset) ships
 with `accounts-base`. Remove with `Accounts.removeDefaultRateLimit()`
@@ -145,7 +147,12 @@ Accounts.config({
 });
 ```
 
-After this, `Meteor.users.services.<provider>.secret` is ciphertext.
+At startup, `accounts-oauth` seals an unsealed provider application secret at
+`ServiceConfiguration.configurations.secret`. Provider packages also seal
+supported per-user token fields, such as `services.github.accessToken` or
+Twitter's `accessTokenSecret`. There is no generic
+`Meteor.users.services.<provider>.secret` field. Inspect the provider schema
+before asserting which user credential is encrypted.
 
 ## `audit-argument-checks`
 
