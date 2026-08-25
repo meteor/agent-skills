@@ -1,0 +1,277 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-25T15:37:05.000Z",
+  "mode": "comparison",
+  "suite": "evaluations/skills/meteor-methods/cases.json",
+  "suite_snapshot": "evaluations/snapshots/3703034269fded3405157d1a89e7702d5ea4427f84715e5f1da6d73c4877381d.json",
+  "suite_sha256": "3703034269fded3405157d1a89e7702d5ea4427f84715e5f1da6d73c4877381d",
+  "skill_version": "0.4.0",
+  "agent_skills": {
+    "revision": "47d904ddfffefd16b45e1d54522ff9d997b2faac",
+    "dirty": true
+  },
+  "meteor": {
+    "remote": "https://github.com/meteor/meteor.git",
+    "revision": "a4ac729361d77e1a85235c71ca1d2426f9735d5f",
+    "release": "case-specific suite context; no Meteor runtime executed",
+    "dirty": true
+  },
+  "environment": {
+    "client": "Codex CLI 0.149.1",
+    "model": "gpt-5.5 with low reasoning",
+    "platform": "Ubuntu 22.04 x86_64, Node.js 22.22.3"
+  },
+  "claims": ["behavior"],
+  "runs": [
+    {
+      "case_id": "method-authorization",
+      "repetition": 1,
+      "condition": "current-skill",
+      "fixture_sha256": "ce50487d4cf6af3dfedf9c1fe4eef32168e96b8ce8ebd47d99b205135eb7baeb",
+      "status": "pass",
+      "duration_ms": 47257,
+      "assertions": [
+        {
+          "id": "validates-complete-input",
+          "passed": true,
+          "evidence": "The method imports check and validates title and body as strings."
+        },
+        {
+          "id": "requires-user-id",
+          "passed": true,
+          "evidence": "The method checks this.userId and throws Meteor.Error for unauthenticated calls."
+        },
+        {
+          "id": "derives-owner-server-side",
+          "passed": true,
+          "evidence": "The inserted owner is assigned from this.userId after spreading validated fields."
+        },
+        {
+          "id": "uses-async-mongo",
+          "passed": true,
+          "evidence": "The async method awaits Reports.insertAsync."
+        },
+        {
+          "id": "parses-as-javascript",
+          "passed": true,
+          "evidence": "node --check completed successfully against the final methods.js."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/method-authorization/current-skill/response.md",
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/method-authorization/current-skill/workspace/imports/api/reports/methods.js"
+      ]
+    },
+    {
+      "case_id": "method-authorization",
+      "repetition": 1,
+      "condition": "without-skill",
+      "fixture_sha256": "ce50487d4cf6af3dfedf9c1fe4eef32168e96b8ce8ebd47d99b205135eb7baeb",
+      "status": "pass",
+      "duration_ms": 53831,
+      "assertions": [
+        {
+          "id": "validates-complete-input",
+          "passed": true,
+          "evidence": "The method imports check and validates title and content as strings."
+        },
+        {
+          "id": "requires-user-id",
+          "passed": true,
+          "evidence": "The method checks this.userId and throws Meteor.Error for unauthenticated calls."
+        },
+        {
+          "id": "derives-owner-server-side",
+          "passed": true,
+          "evidence": "The inserted owner is assigned from this.userId and caller fields are selected explicitly."
+        },
+        {
+          "id": "uses-async-mongo",
+          "passed": true,
+          "evidence": "The async method returns the Reports.insertAsync Promise safely."
+        },
+        {
+          "id": "parses-as-javascript",
+          "passed": true,
+          "evidence": "node --check completed successfully against the final methods.js."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/method-authorization/without-skill/response.md",
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/method-authorization/without-skill/workspace/imports/api/reports/methods.js"
+      ]
+    },
+    {
+      "case_id": "async-rate-limit-matcher",
+      "repetition": 1,
+      "condition": "current-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "fail",
+      "duration_ms": 19983,
+      "assertions": [
+        {
+          "id": "uses-async-user-matcher",
+          "passed": true,
+          "evidence": "The Meteor 3.5 example uses an async userId matcher and awaits findOneAsync."
+        },
+        {
+          "id": "keeps-query-bounded",
+          "passed": true,
+          "evidence": "The lookup projects subscriptionTier and the response says to keep it small because it runs on the incoming DDP message path."
+        },
+        {
+          "id": "covers-rejected-promise",
+          "passed": false,
+          "evidence": "The response discusses rate-limit rejection but omits the rejected matcher Promise path and its test."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/async-rate-limit-matcher/current-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "async-rate-limit-matcher",
+      "repetition": 1,
+      "condition": "without-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "fail",
+      "duration_ms": 17541,
+      "assertions": [
+        {
+          "id": "uses-async-user-matcher",
+          "passed": false,
+          "evidence": "The response incorrectly says the Meteor 3.5 matcher must be synchronous and uses findOne."
+        },
+        {
+          "id": "keeps-query-bounded",
+          "passed": false,
+          "evidence": "Although the lookup is projected, the response does not recognize the awaited connection-message-queue constraint."
+        },
+        {
+          "id": "covers-rejected-promise",
+          "passed": false,
+          "evidence": "The response denies async matcher support and therefore omits rejected matcher Promise behavior."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/async-rate-limit-matcher/without-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "matcher-before-3-5",
+      "repetition": 1,
+      "condition": "current-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 20211,
+      "assertions": [
+        {
+          "id": "states-3-5-floor",
+          "passed": true,
+          "evidence": "The response states that async matcher support starts in Meteor 3.5."
+        },
+        {
+          "id": "keeps-3-4-sync",
+          "passed": true,
+          "evidence": "It explicitly keeps the Meteor 3.4.1 limiter matcher synchronous."
+        },
+        {
+          "id": "offers-compatible-fallback",
+          "passed": true,
+          "evidence": "It offers a fixed synchronous rule and precomputed in-memory tier state."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/matcher-before-3-5/current-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "matcher-before-3-5",
+      "repetition": 1,
+      "condition": "without-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 27560,
+      "assertions": [
+        {
+          "id": "states-3-5-floor",
+          "passed": true,
+          "evidence": "The response states that async matcher support starts in Meteor 3.5."
+        },
+        {
+          "id": "keeps-3-4-sync",
+          "passed": true,
+          "evidence": "It rejects an async matcher on Meteor 3.4.1 and keeps the rule synchronous."
+        },
+        {
+          "id": "offers-compatible-fallback",
+          "passed": true,
+          "evidence": "It offers an in-memory tier cache and a fixed synchronous throttling layer."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/matcher-before-3-5/without-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "local-call-async-rejection",
+      "repetition": 1,
+      "condition": "current-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 17879,
+      "assertions": [
+        {
+          "id": "recognizes-other-errors",
+          "passed": true,
+          "evidence": "The response covers native local, callback misuse, transport, and arbitrary rejection shapes."
+        },
+        {
+          "id": "narrows-caught-value",
+          "passed": true,
+          "evidence": "It narrows with instanceof or a shape guard before reading Meteor-specific fields."
+        },
+        {
+          "id": "preserves-meteor-error-contract",
+          "passed": true,
+          "evidence": "Intentional server-visible failures still use Meteor.Error with known codes."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/local-call-async-rejection/current-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "local-call-async-rejection",
+      "repetition": 1,
+      "condition": "without-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 18164,
+      "assertions": [
+        {
+          "id": "recognizes-other-errors",
+          "passed": true,
+          "evidence": "The response distinguishes client stub TypeError, generic errors, transport failures, and arbitrary throws."
+        },
+        {
+          "id": "narrows-caught-value",
+          "passed": true,
+          "evidence": "It uses instanceof or a shape guard before reading err.error."
+        },
+        {
+          "id": "preserves-meteor-error-contract",
+          "passed": true,
+          "evidence": "Intentional application error codes remain Meteor.Error failures."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r1/meteor-methods/local-call-async-rejection/without-skill/response.md"
+      ]
+    }
+  ],
+  "summary": {
+    "classification": "skill-gap",
+    "notes": "The current skill passed 13 of 14 assertions and the no-skill condition passed 11 of 14. The skill changed the Meteor 3.5 async matcher answer from fully incorrect to operationally correct, which is the clearest observed value. Its final response still omitted the rejected matcher Promise test even after reading that instruction from the reference. One repetition supports a behavioral finding only."
+  }
+}

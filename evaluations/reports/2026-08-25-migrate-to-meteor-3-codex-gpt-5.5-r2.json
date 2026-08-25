@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-08-25T15:54:22.000Z",
+  "mode": "comparison",
+  "suite": "evaluations/skills/migrate-to-meteor-3/cases.json",
+  "suite_snapshot": "evaluations/snapshots/1237cbe53d85d011bca1349dd68a963e7c4173233db20d9079f05462540a54e9.json",
+  "suite_sha256": "1237cbe53d85d011bca1349dd68a963e7c4173233db20d9079f05462540a54e9",
+  "skill_version": "0.9.2",
+  "agent_skills": {
+    "revision": "47d904ddfffefd16b45e1d54522ff9d997b2faac",
+    "dirty": true
+  },
+  "meteor": {
+    "remote": "https://github.com/meteor/meteor.git",
+    "revision": "5cafdbc20f5afe5ec82430700d046f7f6ce2b2fe",
+    "release": "case-specific suite context; no Meteor runtime executed",
+    "dirty": true
+  },
+  "environment": {
+    "client": "Codex CLI 0.149.1",
+    "model": "gpt-5.5 with low reasoning",
+    "platform": "Ubuntu 22.04 x86_64, Node.js 22.22.3"
+  },
+  "claims": ["behavior"],
+  "runs": [
+    {
+      "case_id": "environment-variable-handler",
+      "repetition": 1,
+      "condition": "current-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 22056,
+      "assertions": [
+        {
+          "id": "wraps-publish-call",
+          "passed": true,
+          "evidence": "The response places withValue outside and around the original publish.call."
+        },
+        {
+          "id": "avoids-handler-scope",
+          "passed": true,
+          "evidence": "The invoked handler only returns handler.apply and does not open another withValue scope."
+        },
+        {
+          "id": "returns-wrapper-result",
+          "passed": true,
+          "evidence": "The wrapper returns withValue, whose callback returns publish.call."
+        },
+        {
+          "id": "checks-invocation-across-await",
+          "passed": true,
+          "evidence": "The regression example compares Meteor.userId and this.userId before and after an await, then adds a direct EnvironmentVariable check."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r2/migrate-to-meteor-3/environment-variable-handler/current-skill/response.md"
+      ]
+    },
+    {
+      "case_id": "environment-variable-handler",
+      "repetition": 1,
+      "condition": "without-skill",
+      "fixture_sha256": "bc0d50d5670841a1e84148d6c08d495ca759805c474ac06125137b9c591a1bdd",
+      "status": "pass",
+      "duration_ms": 24135,
+      "assertions": [
+        {
+          "id": "wraps-publish-call",
+          "passed": true,
+          "evidence": "The response moves withValue outward around the original publish.call."
+        },
+        {
+          "id": "avoids-handler-scope",
+          "passed": true,
+          "evidence": "Its corrected handler invokes handler.apply without a nested withValue."
+        },
+        {
+          "id": "returns-wrapper-result",
+          "passed": true,
+          "evidence": "The corrected wrapper returns withValue and returns publish.call from its callback."
+        },
+        {
+          "id": "checks-invocation-across-await",
+          "passed": true,
+          "evidence": "The proposed regression checks this.userId and Meteor.userId on both sides of an await."
+        }
+      ],
+      "artifacts": [
+        "evaluations/.work/2026-08-25-codex-gpt-5.5-r2/migrate-to-meteor-3/environment-variable-handler/without-skill/response.md"
+      ]
+    }
+  ],
+  "summary": {
+    "classification": "no-gap",
+    "notes": "The corrected EnvironmentVariable case passed all four assertions with and without the target skill. The previous case encoded the wrapper boundary opposite to current Meteor v3-docs and is superseded as an evaluation gap, while its historical report remains immutable. The current skill now makes the documented wrapper boundary and async regression check salient. One repetition supports a behavioral result only."
+  }
+}
