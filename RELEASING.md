@@ -5,6 +5,7 @@
 - Confirm every changed skill has an appropriate `metadata.version`.
 - Regenerate the catalog with `pnpm run catalog:write`.
 - Complete the source and behavioral reviews described in `AGENTS.md`.
+- Confirm representative suites and routing cases reflect changed behavior, and that any claimed comparison uses a current dated report.
 - Record supported clients and known limitations in the release notes.
 
 ## Verify

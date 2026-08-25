@@ -12,3 +12,6 @@ coverage/
 .vitest-cache/
 test/fixtures/**/*.hydrated
 test/fixtures/catalog/README.work.md
+
+# generated behavioral evaluation workspaces and raw evidence
+evaluations/.work/

@@ -10,6 +10,7 @@ Repository maintenance workflows live under `.github/skills/`. They help contrib
 |-------|----------|
 | [`skill-maintenance`](.github/skills/skill-maintenance/SKILL.md) | Creating, reviewing, or updating a published skill while preserving repository conventions. |
 | [`skill-gap-audit`](.github/skills/skill-gap-audit/SKILL.md) | Comparing Meteor documentation and source changes with current skill coverage. |
+| [`skill-behavior-evaluation`](.github/skills/skill-behavior-evaluation/SKILL.md) | Testing observable skill behavior, routing boundaries, and matched skill or no-skill comparisons. |
 
 ### Audit and maintenance workflow
 
@@ -20,15 +21,22 @@ skill-gap-audit
 -> confirmed findings
 -> authorized implementation scope
 -> skill-maintenance
+-> behavioral evaluation when routing or high-risk guidance changes
 -> repository validation
 -> release ZIP verification
 ```
 
 When one request explicitly asks to audit and fix, complete the audit first, preserve its evidence, then load `skill-maintenance` and implement only confirmed findings within the requested scope. Do not implement uncertain findings or create proposed skills without explicit user approval.
 
-`pnpm run validate` enforces frontmatter, naming, body size, and prohibited-content rules for both published and maintainer skills. It also checks required revision and handoff fields in committed gap-audit reports. `pnpm run check-links` checks links in both skill locations. The ZIP test suite verifies that `.github/skills/` remains outside release artifacts.
+`pnpm run validate` enforces frontmatter, naming, body size, and prohibited-content rules for both published and maintainer skills. It also checks required revision and handoff fields in committed gap-audit reports, plus machine-readable behavioral and routing suites under `evaluations/`. `pnpm run check-links` checks links in both skill locations. The ZIP test suite verifies that `.github/skills/` and repository evaluation evidence remain outside release artifacts.
 
 Committed gap-audit records live under `audits/skill-gaps/`. Each record identifies the audited agent-skills revision, Meteor remote and revision, release context, audit mode, and previous audit baseline. These reports are immutable maintenance evidence and are never included in distributable skills. An incremental audit uses the latest applicable committed record from Git history; if no reliable record exists, run a full audit.
+
+Behavioral evaluation definitions live under `evaluations/`. Canonical manual cases remain in each published skill's `references/eval-cases.md`; a machine-readable suite selects only representative cases and links back with an exact `case_ref`. Commit small starting fixtures, content-addressed suite snapshots, and dated reports from real runs. Keep generated workspaces, transcripts, and raw command output under ignored `evaluations/.work/`. Static suite validation runs in CI; model execution does not.
+
+For a human-oriented explanation of how source review, deterministic checks,
+behavioral evaluation, evidence files, and ZIP inspection fit together, read
+the [maintenance verification guide](docs/maintenance-verification.md).
 
 ## What is a skill
 
@@ -67,7 +75,7 @@ metadata:
 ---
 ```
 
-`description` is agent-facing and packed with trigger phrases so the assistant picks the skill against a user prompt. `tagline` is human-facing: a short one-liner (16-200 chars) rendered as the bullet text in the README catalog. Keep them separate; do not collapse one into the other.
+`description` is agent-facing and packed with trigger phrases so the assistant picks the skill against a user prompt. State the outcome, concrete positive triggers, and a boundary or handoff when neighboring skills overlap. Test routing changes against `evaluations/routing/cases.json`. `tagline` is human-facing: a short one-liner (16-200 chars) rendered as the bullet text in the README catalog. Keep them separate; do not collapse one into the other.
 
 Optional:
 
@@ -193,7 +201,8 @@ Helper scripts go in `scripts/`. Conventions:
 
 ```bash
 pnpm install
-pnpm run validate
+pnpm run validate             # skills, audits, evaluation schemas, and routing
+pnpm run validate:evaluations # evaluation definitions and completed reports only
 pnpm run check-links
 pnpm test
 ```
@@ -231,4 +240,5 @@ generator. Hand edits inside the markers are reverted on next run.
 2. Link checker must pass.
 3. The skill body is <=8 KB; bigger content moves to `references/`.
 4. At least one outside contributor (not the author) follows `references/eval-cases.md` against Claude Code or Cursor.
-5. The PR description links to the relevant v3-docs section(s).
+5. New skills, routing changes, and high-risk decision changes have a representative machine-readable suite. One run is a smoke check; reliability, time, or token claims require at least three repetitions per condition.
+6. The PR description links to the relevant v3-docs section(s).
