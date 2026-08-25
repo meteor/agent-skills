@@ -13,7 +13,7 @@ description: >
   and forking packages.
 metadata:
   author: meteor
-  version: "0.9.1"
+  version: "0.9.2"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -60,8 +60,11 @@ in phases. Do not flip the framework version flag first.
    manual `sub.added`) and framework handlers that read invocation `this`.
    Both synchronous and async publish handlers may return cursors; keep cursor
    transforms synchronous and use ordinary functions when Meteor must bind
-   `this`.
-   See `references/publications.md`.
+   `this`. When a package patches `Meteor.publish` with an
+   `EnvironmentVariable`, scope `publish.call` at the wrapper's top level,
+   not inside the invoked handler. Verify invocation context before and after
+   `await`. See `references/publications.md` and
+   `references/other-breaking-changes.md`.
 10. For TypeScript projects, install `zodern:types` and update
     `tsconfig.json`. See `references/typescript-migration.md`.
 11. For React projects, decide whether to adopt the Suspense-aware
@@ -93,7 +96,7 @@ in phases. Do not flip the framework version flag first.
 | Middleware on `WebApp.connectHandlers` not firing    | `references/webapp-express.md`         |
 | Route uses an unnamed wildcard after Meteor 3.1     | `references/webapp-express.md`         |
 | `rawCollection` callback never fires                 | `references/other-breaking-changes.md` |
-| `EnvironmentVariable.withValue` context is `undefined` in an async handler | `references/other-breaking-changes.md` |
+| Patched publication loses `Meteor.userId()` or async context | `references/other-breaking-changes.md` |
 | `meteor reset` did not wipe the local Mongo          | `references/other-breaking-changes.md` |
 | `Method stub (X) took too long` console warning      | `references/call-vs-callAsync.md`      |
 | "Cannot enlarge memory array" during `meteor update` | `references/other-breaking-changes.md` |

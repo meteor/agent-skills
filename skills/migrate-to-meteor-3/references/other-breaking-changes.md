@@ -11,21 +11,13 @@ Meteor primitives to propagate dynamic context into a handler. In Meteor 3,
 `withValue` uses `AsyncLocalStorage.run`; its context follows the callback's
 Promise through `await`.
 
-Wrong: wrapping registration. The registration call normally has no request
-connection, and its dynamic scope ends before a later invocation:
+When patching `Meteor.publish`, place `withValue` at the wrapper's top level
+around the call to the original `publish`. Do not introduce that scope inside
+the invoked publication handler. Meteor establishes its own publication
+invocation context before calling the handler, and the nested placement broke
+packages that needed `Meteor.userId()` or another invocation value.
 
-```javascript
-function patchPublish(publish) {
-  return function (name, func, ...args) {
-    return _publishConnectionId.withValue(this?.connection?.id, () =>
-      publish.call(this, name, func, ...args)
-    );
-  };
-}
-```
-
-Right: wrap the actual handler invocation and return its result so the async
-scope remains active until the handler settles:
+Wrong: introducing `withValue` inside the invoked handler:
 
 ```javascript
 function patchPublish(publish) {
@@ -39,7 +31,24 @@ function patchPublish(publish) {
 }
 ```
 
-Validate the value both before and after an `await` inside the invoked handler.
+Right: scope the complete patched registration flow and return its result:
+
+```javascript
+function patchPublish(publish) {
+  return function (name, func, ...args) {
+    return _publishConnectionId.withValue(this?.connection?.id, () =>
+      publish.call(this, name, function (...handlerArgs) {
+        return func.apply(this, handlerArgs);
+      }, ...args)
+    );
+  };
+}
+```
+
+Regression-test the invoked publication before and after an `await`. Its
+`Meteor.userId()` or `DDP._CurrentPublicationInvocation` value must remain
+consistent with the handler's `this.userId`. A direct `EnvironmentVariable`
+test should likewise read the scoped value on both sides of an `await`.
 
 ## Mongo driver 6.x: callbacks removed on `rawCollection`
 

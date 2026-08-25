@@ -8,7 +8,7 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.4.0"
+  version: "0.4.1"
   kind: knowledge
   meteor: ">=3.0"
   area: data
@@ -122,6 +122,10 @@ Meteor 3.5+ permits async matcher functions for database-backed decisions. On
 Meteor 3.0 through 3.4, matchers must stay synchronous; use a fixed rule,
 precomputed synchronous state, or upgrade instead of awaiting Mongo in a
 matcher.
+
+Meteor awaits async matchers sequentially on the incoming connection's message
+queue. Project only required fields and keep the lookup fast. A rejected
+matcher Promise errors the invocation; test that path explicitly.
 
 See `references/rate-limiting.md` for the rule-object schema and
 per-connection vs per-user keys.

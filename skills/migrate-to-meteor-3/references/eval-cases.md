@@ -322,14 +322,16 @@ Fail if it says the deprecated alias was removed outright.
 
 ## Case 21: async EnvironmentVariable wrapper
 
-Prompt: "A package wraps `Meteor.publish` with
-`EnvironmentVariable.withValue`, but the value disappears in the async
-publication after upgrading to Meteor 3."
+Prompt: "A Meteor 2 package patches `Meteor.publish` by nesting
+`EnvironmentVariable.withValue` inside the publication handler. After moving
+to Meteor 3, code after an `await` loses the `Meteor.userId()` publication
+context. Diagnose it and update the wrapper to the current v3-docs placement."
 
-Pass if the agent wraps the actual publication handler invocation with
-`withValue`, returns the callback result, and validates the value before and
-after an `await`. Fail if it wraps only `Meteor.publish` registration, because
-that scope ends before a later request and normally has no connection context.
+Pass if the agent places `withValue` at the patch wrapper's top level around
+the original `publish.call`, returns the scoped result, and leaves the invoked
+handler to call the original function without another `withValue`. It must
+validate `Meteor.userId()` or the publication invocation before and after an
+`await`. Fail if it keeps the nested scope inside the invoked handler.
 
 ## Case 22: raw Mongo callback
 
