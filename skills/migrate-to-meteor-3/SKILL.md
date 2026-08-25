@@ -13,7 +13,7 @@ description: >
   and forking packages.
 metadata:
   author: meteor
-  version: "0.8.0"
+  version: "0.9.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration

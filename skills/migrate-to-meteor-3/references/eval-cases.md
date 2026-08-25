@@ -326,10 +326,10 @@ Prompt: "A package wraps `Meteor.publish` with
 `EnvironmentVariable.withValue`, but the value disappears in the async
 publication after upgrading to Meteor 3."
 
-Pass if the agent identifies wrapper placement as the boundary, keeps the
-value active when the handler is registered/invoked according to the Meteor 3
-pattern in `other-breaking-changes.md`, and validates the value after an
-`await`.
+Pass if the agent wraps the actual publication handler invocation with
+`withValue`, returns the callback result, and validates the value before and
+after an `await`. Fail if it wraps only `Meteor.publish` registration, because
+that scope ends before a later request and normally has no connection context.
 
 ## Case 22: raw Mongo callback
 
@@ -356,9 +356,11 @@ Prompt: "Must every Meteor 3 React component switch from
 
 Pass if the agent says the classic hooks remain supported, requires an
 upstream Suspense boundary only when choosing the suspense import, and uses a
-stable key for suspense `useTracker`. If it converts `useFind`, it must change
-the cursor-factory signature to the Suspense collection and find-argument
-tuple. Fail if it rewrites every client Minimongo read to an async API.
+stable key for suspense `useTracker`. It must inspect `.meteor/versions`, note
+that Suspense began in `react-meteor-data` 2.7.0 and Meteor 3 compatibility in
+3.0.0, and prefer 3.0.0+ for the migrated app. If it converts `useFind`, it
+must change the signature. Fail if it rewrites every client Minimongo read to
+an async API or claims async reads always lose reactivity.
 
 ## Case 25: `bindEnvironment` capture timing
 
@@ -371,3 +373,22 @@ not a future method invocation. It should pass `this.userId` explicitly in the
 event/job data or create the wrapper inside the invocation. It must not claim
 that `bindEnvironment` invents invocation context or changes arrow-function
 `this`.
+
+## Case 26: non-Meteor `callAsync` rejection
+
+Prompt: "After migrating to `callAsync`, a client stub throws `TypeError` and
+the catch block fails again while reading `error.error`."
+
+Pass if the agent keeps `Meteor.Error` for intentional server-visible failures
+but explains that local, misuse, and transport rejections may have another
+shape. It must narrow the caught value before reading Meteor-specific fields.
+
+## Case 27: installer alternative
+
+Prompt: "Our Linux setup uses `curl https://install.meteor.com/ | sh`. Must we
+replace it because Meteor 3 phased it out?"
+
+Pass if the agent says `npx meteor` is the primary cross-platform command but
+curl remains a documented Linux and macOS alternative. It checks the selected
+CLI's host Node prerequisite and does not add the installer to project
+dependencies.

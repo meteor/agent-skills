@@ -6,48 +6,40 @@ flip; come back when a specific symptom matches.
 
 ## `Meteor.EnvironmentVariable.withValue` placement
 
-Affects package authors that wrap `Meteor.publish`, `Meteor.methods`, or
-other Meteor primitives in an `EnvironmentVariable.withValue` to propagate
-a context value into the handler.
+Affects package authors that wrap `Meteor.publish`, `Meteor.methods`, or other
+Meteor primitives to propagate dynamic context into a handler. In Meteor 3,
+`withValue` uses `AsyncLocalStorage.run`; its context follows the callback's
+Promise through `await`.
 
-In Meteor 2.x, Fibers preserved the calling context across the
-synchronous handler invocation, so a wrapper that called
-`_publishConnectionId.withValue(this.connection.id, () => func.apply(this, args))`
-**inside** the handler worked. In Meteor 3.x, the handler is async and
-Fibers is gone. Wrapping must move to the **outer** scope so the value is
-in scope when the framework registers the handler.
-
-Wrong (Meteor 2.x pattern, broken on 3.x):
+Wrong: wrapping registration. The registration call normally has no request
+connection, and its dynamic scope ends before a later invocation:
 
 ```javascript
 function patchPublish(publish) {
   return function (name, func, ...args) {
-    return publish.call(this, name, function (...args) {
+    return _publishConnectionId.withValue(this?.connection?.id, () =>
+      publish.call(this, name, func, ...args)
+    );
+  };
+}
+```
+
+Right: wrap the actual handler invocation and return its result so the async
+scope remains active until the handler settles:
+
+```javascript
+function patchPublish(publish) {
+  return function (name, func, ...args) {
+    return publish.call(this, name, function (...handlerArgs) {
       return _publishConnectionId.withValue(this?.connection?.id, () =>
-        func.apply(this, args)
+        func.apply(this, handlerArgs)
       );
     }, ...args);
   };
 }
 ```
 
-Right (Meteor 3 pattern):
-
-```javascript
-function patchPublish(publish) {
-  return function (name, func, ...args) {
-    return _publishConnectionId.withValue(this?.connection?.id, () => {
-      return publish.call(this, name, function (...args) {
-        return func.apply(this, args);
-      }, ...args);
-    });
-  };
-}
-```
-
-Symptom: the context value is `undefined` inside the handler at runtime,
-even though the call site set it. The `universe:i18n` package adopted
-this pattern for the 3.x upgrade.
+Validate the value both before and after an `await` inside the invoked handler.
 
 ## Mongo driver 6.x: callbacks removed on `rawCollection`
 
@@ -94,9 +86,9 @@ Meteor 3 does not have one Node baseline across every minor release:
 
 | Meteor release | Bundled Node |
 |----------------|--------------|
-| 3.0 through 3.3 | Node 20     |
-| 3.4             | Node 22     |
-| 3.5             | Node 24     |
+| 3.0             | Node 20     |
+| 3.1 through 3.4 | Node 22     |
+| 3.5+            | Node 24     |
 
 Run `meteor node --version` in the target app and use that version in CI,
 native dependency builds, and container images. Audit `engines.node` and
@@ -188,13 +180,14 @@ was `undefined` at patch time and the assignment was a no-op.
 
 ## NPM installer
 
-The official Meteor install command is now `npx meteor` (a thin npm
-wrapper that resolves the platform binary). The old `curl
-https://install.meteor.com/ | sh` installer still works but is being
-phased out. Use `npx meteor` in fresh-environment instructions and CI.
+Use `npx meteor` as the primary cross-platform command. The documented
+`curl https://install.meteor.com/ | sh` command remains an alternative for
+Linux and macOS; do not describe it as phased out. Do not add the npm Meteor
+installer to the application's `package.json`.
 
-Run on Node 20 or newer, including in CI runners. Older Node versions
-cannot resolve the wrapper.
+Match the host Node prerequisite to the selected CLI version. Current Meteor
+3.5 installation docs require Node 24+, while earlier Meteor 3 tool releases
+bundle earlier Node majors as shown above.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/v3-migration-docs/breaking-changes/index.md
