@@ -14,7 +14,7 @@ description: >
   migrate-to-meteor-3.
 metadata:
   author: meteor
-  version: "0.1.0"
+  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
@@ -36,8 +36,9 @@ invoke methods, while publications and methods remain the server authority.
 1. For a new JavaScript app, run `meteor create --react <name>`; React is also
    the default skeleton. For TypeScript and TSX, run
    `meteor create --typescript <name>`.
-2. Inspect `package.json`, `.meteor/packages`, the client entry, and
-   `rspack.config.*`. Current skeletons can change independently of this skill.
+2. Inspect `package.json`, `.meteor/packages`, `.meteor/versions`, the client
+   entry, and `rspack.config.*`. Skeletons and `react-meteor-data` versions can
+   change independently of this skill.
 3. Mount one React root from `Meteor.startup` with `createRoot`.
 4. Pick one `react-meteor-data` surface for a component:
    - Classic hooks for explicit loading UI and synchronous Minimongo reads.
@@ -58,9 +59,9 @@ cd my-app
 meteor
 ```
 
-The current Meteor 3.4+ scaffold enables Rspack and the modern build stack,
-declares client, server, and test entries, and installs `react-meteor-data`.
-Treat generated files for the selected release as the baseline.
+Current Meteor 3.4+ scaffolds use Rspack and `react-meteor-data`. Inspect
+`.meteor/versions`: Meteor 3 requires 3.0.0+, these examples target 4.0.1, and
+`references/react-meteor-data.md` records feature floors.
 
 ```jsx
 import { Meteor } from "meteor/meteor";

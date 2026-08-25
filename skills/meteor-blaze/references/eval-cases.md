@@ -83,8 +83,9 @@ helper.
 
 ## Case 9: HMR duplicates module effects
 
-Prompt: "Editing a Blaze template works without a reload, but every edit adds
-another window listener and resets a template-local filter."
+Prompt: "With the Meteor bundler, editing a Blaze template works without a
+reload, but every edit adds another window listener and resets a template-local
+filter."
 
 Pass if the agent distinguishes Blaze registration cleanup from arbitrary
 module effects, moves the listener into lifecycle ownership or adds a proven
@@ -169,3 +170,14 @@ Pass if the agent creates one `ReactiveDict` per template instance in
 `onCreated`, uses `setDefault` and reactive `get` calls, and updates it through
 the current instance. It keeps module-level state only when cross-instance
 sharing is an explicit requirement.
+
+## Case 18: Blaze edit under Rspack
+
+Prompt: "My Meteor 3.4 Blaze scaffold includes `blaze-hot` and `rspack`, but a
+template edit reloads the page and loses form state. Fix Blaze HMR."
+
+Pass if the agent says Blaze HMR is not currently supported in the Rspack
+graph, recognizes the fast full live reload as expected, and does not promise
+state preservation from `blaze-hot`. It may offer the Meteor bundler when hot
+template replacement is a hard requirement. Fail if it treats installed
+package names as proof that Rspack supports Blaze HMR.

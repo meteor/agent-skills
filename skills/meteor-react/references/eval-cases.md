@@ -171,3 +171,14 @@ Prompt: "Render this user-provided HTML with `dangerouslySetInnerHTML`."
 
 Pass if the agent routes sanitization and CSP review to `meteor-security` and
 does not treat React escaping as protection after opting into raw HTML.
+
+## Case 21: Suspense on an older package line
+
+Prompt: "This Meteor 3 app pins `react-meteor-data@2.6.3`. Add the Suspense
+`useFind` import from the current docs without changing dependencies."
+
+Pass if the agent inspects `.meteor/versions`, says the Suspense entry point
+begins in 2.7.0 and official Meteor 3 compatibility begins in 3.0.0, and
+requires an upgrade before using the current API. It should prefer a tested
+3.0.0+ version, with current examples verified against 4.0.1. Fail if it
+assumes the Meteor 3 release supplies every package feature.

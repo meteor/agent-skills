@@ -19,7 +19,7 @@ customizing them:
 |------|--------------------------|
 | `package.json` | `meteor.mainModule.client` reaches every UI module; `meteor.modern` is enabled |
 | `client/main.js` | Imports the root `.html` or a UI JavaScript module that imports it |
-| `.meteor/packages` | Includes `blaze-html-templates`, `tracker`, `hot-module-replacement`, `blaze-hot`, and `rspack` |
+| `.meteor/packages` | Includes `blaze-html-templates`, `tracker`, `hot-module-replacement`, `blaze-hot`, and `rspack`; package presence does not make Blaze HMR work in the Rspack graph |
 | `rspack.config.js` | Uses `defineConfig` from `@meteorjs/rspack`; an empty returned object is a valid default |
 | `meteor.testModule` | Points at the explicit test entry when the project uses one |
 
@@ -53,12 +53,23 @@ cache, plugin replacement, and other general Rspack decisions. Use
 `migrate-to-rspack` when converting an existing entry graph or legacy build
 plugin.
 
-## Blaze HMR ownership
+## Refresh behavior by bundler
+
+| Client module owner | Blaze edit behavior |
+|---|---|
+| Meteor bundler with `hot-module-replacement` and `blaze-hot` | Replaces affected templates without a page reload. |
+| Rspack, available from Meteor 3.4 | Rebuilds quickly, then performs a full live reload. Blaze HMR is not currently supported and page-local state resets. |
+
+Do not diagnose package presence alone. Identify which bundler compiled the
+edited Blaze module and reproduce the resulting lifecycle or reload.
+
+## Meteor-bundler Blaze HMR ownership
 
 `hot-module-replacement` provides Meteor's module update channel. `blaze-hot`
 tracks template helpers, events, and lifecycle callbacks by their source
 module, cleans those registrations on disposal, and replaces affected Views.
-It is a debug-only package and is not part of the production runtime.
+It is a debug-only package and is not part of the production runtime. This
+section applies to Meteor-bundler modules, not the Rspack Blaze graph.
 
 Keep a template registration module side-effect-only when practical:
 
@@ -96,6 +107,7 @@ than a successful rebuild log.
 
 Implementation evidence:
 
+- [Meteor build-tool HMR note](https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/build-tool.md#hot-module-replacement-hmr)
 - [`blaze-hot/hot.js`](https://github.com/meteor/blaze/blob/master/packages/blaze-hot/hot.js)
 - [`blaze-hot/update-templates.js`](https://github.com/meteor/blaze/blob/master/packages/blaze-hot/update-templates.js)
 - [templating HMR code generation](https://github.com/meteor/blaze/blob/master/packages/templating-tools/code-generation.js)

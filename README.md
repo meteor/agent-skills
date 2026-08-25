@@ -40,7 +40,7 @@ npx skills add meteor/agent-skills --all
 
 ### Data
 
-- **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, HMR, and reusable components).
+- **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components).
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-blaze

@@ -5,18 +5,19 @@ description: >
   --blaze, Spacebars templates, Template helpers and events, lifecycle hooks,
   Tracker, ReactiveVar or ReactiveDict, template subscriptions, Promise
   helpers, #let async states, Template.dynamic, Blaze.render, and blaze-hot
-  HMR. Triggers on stale async helper results, lost reactivity after await,
-  data-context lookup surprises, duplicate DOM integrations after HMR, or raw
+  HMR with the Meteor bundler. Triggers on stale async helper results, lost
+  reactivity after await, data-context lookup surprises, duplicate DOM
+  integrations after HMR, Rspack full reloads, or raw
   HTML in triple braces. Use this skill when the user asks about reusable Blaze
   components, current Blaze packages, Rspack entry imports, or testing Blaze
   templates. For Meteor 2 to 3 upgrades, use migrate-to-meteor-3 instead.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
-  tagline: "Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, HMR, and reusable components)."
+  tagline: "Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components)."
   bundle: ["blaze"]
   docs_synced_at: "2026-08-25"
 license: MIT
@@ -44,9 +45,10 @@ DOM effects, and async work owned by a template instance. Use public
    external effects in `onDestroyed`.
 5. Pass named data and callbacks into reusable child templates. Keep
    publication and mutation authority on the server.
-6. Diagnose Spacebars, lifecycle, async, HMR, and template-test behavior here.
-   Route general build, migration, database, or test-runner work to the owning
-   skill.
+6. Identify the bundler before diagnosing refresh behavior. `blaze-hot` can
+   replace templates in the Meteor-bundler graph; Rspack currently performs a
+   full live reload for Blaze. Route general build, migration, database, or
+   test-runner work to the owning skill.
 
 ## Current scaffold
 
@@ -62,6 +64,9 @@ client and server `meteor.mainModule` entries, imports `.html` from the client
 entry, enables the modern build stack, and includes `blaze-html-templates`,
 `tracker`, `reactive-var`, `hot-module-replacement`, `blaze-hot`, and `rspack`.
 Treat the generated files for the selected Meteor release as the baseline.
+Those packages do not enable Blaze HMR in the Rspack graph. Blaze edits there
+trigger a fast full page reload and reset page-local state. `blaze-hot`
+replacement behavior applies when the Meteor bundler owns the module.
 
 Do not infer the installed Blaze runtime from the release name alone. Inspect
 `.meteor/versions`, then use the

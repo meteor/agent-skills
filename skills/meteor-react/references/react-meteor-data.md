@@ -17,6 +17,22 @@ Inspect `.meteor/versions` before relying on a signature or bug fix. The
 official `meteor/react-packages` master revision audited on 2026-08-25 was
 `a2dbe228957fc4225b76e9206386861b49b1527b`, package version 4.0.1.
 
+Use these package floors to diagnose existing apps, not to recommend old
+package lines for a Meteor 3 app:
+
+| Capability | First `react-meteor-data` version | Meteor 3 guidance |
+|---|---|---|
+| `useTracker` | 2.0.0 | Use 3.0.0+; current examples target 4.0.1. |
+| `useSubscribe` and `useFind` | 2.4.0 | Use 3.0.0+ and verify the installed signature. |
+| Suspense hook entry point | 2.7.0 | Use 3.0.0+; do not infer it from the Meteor release. |
+| Isomorphic Suspense `useFind` | 2.7.2 | Use 3.0.0+ for Meteor 3 compatibility. |
+| Official Meteor 3 compatibility | 3.0.0 | Minimum package line for Meteor 3 apps. |
+| `useSubscribeSuspenseServer` | 3.0.3 | Require 3.0.3+ only when that server helper is needed. |
+
+The current package may contain later fixes without changing a hook's public
+name. Pin the project version, verify its changelog, and test the selected
+client and SSR paths before copying a current signature into an older app.
+
 ## Hook selection
 
 | Hook | Use it for | Return |
