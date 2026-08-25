@@ -45,6 +45,10 @@ Use evidence in this order:
 
 Record the Meteor Git remote, commit SHA, branch, and dirty state during factual reviews. A date alone is not a reproducible documentation revision.
 
+Current `devel` docs prove current behavior, not introduction. Verify a feature
+floor in versioned `v3-docs`, an official changelog, a release tag, or Git
+history. For package APIs, use package history and the resolved package version.
+
 ## Authoring workflow
 
 1. Define one coherent user outcome and the neighboring requests it excludes.
@@ -57,6 +61,27 @@ Record the Meteor Git remote, commit SHA, branch, and dirty state during factual
 8. Regenerate the catalog when names, taglines, or bundle membership change.
 9. Add realistic positive, failure, and near-miss evaluation cases. Grade observable behavior instead of exact wording.
 10. Run all repository checks before reporting completion.
+
+## Version-sensitive capabilities
+
+| Layer | Meaning |
+|---|---|
+| `metadata.version` | Skill content revision. |
+| `metadata.meteor` | Minimum range for the complete decision flow. |
+| Inline `Meteor X.Y+` | First release for a conditional capability. |
+| Package floor | First independent package version for its API. |
+
+When a capability starts after the skill's `metadata.meteor` minimum:
+
+1. Label the first decision or example that can select it. Do not put the floor
+   only in an evaluation.
+2. State the earlier behavior, unavailability, or fallback.
+3. Keep a broad range only when that branch stays accurate. Raise the range only
+   when the complete outcome requires the newer release.
+4. For package APIs, inspect `.meteor/versions`, `package.json`, or the lockfile.
+   Do not infer them from the Meteor release.
+5. Evaluate both sides of the boundary and bump `metadata.version` when the
+   compatibility decision changes guidance.
 
 ## Preserve catalog patterns
 

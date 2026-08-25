@@ -167,8 +167,26 @@ Helper scripts go in `scripts/`. Conventions:
 
 ## Versioning
 
-- Each skill has its own `metadata.version`. Bump it independently when content changes meaningfully.
+- Each skill has its own `metadata.version`. This is the skill content revision,
+  not a Meteor or Atmosphere package compatibility claim. Bump it independently
+  when content changes meaningfully.
 - Repo tags (`v0.1.0`, `v0.2.0`) are aggregate snapshots of the catalog.
+- `metadata.meteor` is the minimum Meteor range for the skill's complete
+  decision flow. A capability introduced after that minimum must state its
+  `Meteor X.Y+` floor at the first decision or example that can select it.
+- Keep a broad Meteor range when the skill supplies an accurate lower-version
+  branch. State whether the capability is unavailable, uses earlier behavior,
+  or has a concrete fallback. Do not silently give post-minimum guidance to an
+  earlier release.
+- Independently released Atmosphere and npm packages use their package version,
+  not the Meteor release, as the capability floor. Inspect `.meteor/versions`,
+  `package.json`, and the lockfile before selecting package-specific APIs.
+- Verify current behavior against `v3-docs/`. Verify introduction versions
+  against versioned documentation, official release notes, tags, or Git
+  history. Do not infer an introduction version only because a capability is
+  present on `devel`.
+- Add evaluation coverage for both the supported version and an earlier-version
+  near miss when a skill spans the capability boundary.
 - A skill marked `metadata.meteor: ">=3.0"` must keep working on every Meteor 3.x release. If a behavior changes in 4.0, fork a new skill (`meteor-async-migration-4`) and bump `metadata.meteor`.
 
 ## Running the validator locally
