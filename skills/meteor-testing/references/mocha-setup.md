@@ -68,8 +68,9 @@ jobs:
           meteor test --once --driver-package meteortesting:mocha
 ```
 
-Node version must match the bundled Node.js for the Meteor version (3.3:
-Node 20, 3.4: Node 22, 3.5: Node 24).
+Node version must match the bundled Node.js for the Meteor version: 3.0 uses
+Node 20, 3.1 through 3.4 use Node 22, and 3.5+ uses Node 24. Run
+`meteor node -v` to verify the exact version used by the target release.
 
 ## Test discovery
 

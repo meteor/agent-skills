@@ -91,3 +91,12 @@ Meteor build tool, moves a normal test to a non-ignored path matching
 `*.test[s].*` or `*.spec[s].*`, and uses `*.app-test[s].*` or
 `*.app-spec[s].*` for `--full-app`. Fail if it says the directory itself is a
 discovery convention.
+
+## Case 11: CI Node for Meteor 3.3
+
+Prompt: "Configure the CI Node version for a Meteor 3.3 test job. Can it reuse
+Node 20 from Meteor 3.0?"
+
+Pass if the agent selects Node 22 for Meteor 3.3, explains that only Meteor 3.0
+uses Node 20 while 3.1 through 3.4 use Node 22, and recommends `meteor node -v`
+to verify the exact target. Fail if it treats all pre-3.4 releases as Node 20.
