@@ -10,13 +10,13 @@ description: >
   in Meteor.
 metadata:
   author: meteor
-  version: "0.2.0"
+  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: testing
   tagline: "Set up and debug tests (`meteortesting:mocha`, async test signatures, testing methods/publications, Playwright/Cypress E2E)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -58,12 +58,14 @@ meteor npm install --save-dev @types/mocha
 }
 ```
 
-Default conventions:
+Test-mode conventions:
 
-- Files named `*.test.js`, `*.tests.js`, `*.spec.js` are picked up.
-- Files under `tests/` are picked up.
-- `--full-app` runs your normal app plus the tests (lets you `DDP.connect`
-  to it).
+- Normal test mode eagerly loads `*.test[s].*` and `*.spec[s].*` files, while
+  ordinary application code loads only when imported by a test.
+- Every `tests/` directory is ignored by Meteor's build tool. Use it only for
+  tests run by an external runner.
+- `--full-app` eagerly loads the normal app plus `*.app-test[s].*` and
+  `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
 
 ## Method test (server-side)
 
@@ -130,9 +132,11 @@ cursor immediately; async handlers return a Promise of the cursor.
 
 ```javascript
 import { DDP } from "meteor/ddp-client";
+import { Mongo } from "meteor/mongo";
 import { Tracker } from "meteor/tracker";
 
 const conn = DDP.connect(Meteor.absoluteUrl());
+const RemoteItems = new Mongo.Collection("items", { connection: conn });
 
 function ready(sub) {
   return new Promise((resolve) => {
@@ -147,7 +151,7 @@ function ready(sub) {
 
 const sub = conn.subscribe("items.mine");
 await ready(sub);
-// Drive method calls and inspect the local collection on `conn`.
+const docs = RemoteItems.find().fetch();
 ```
 
 Run with `meteor test --full-app --driver-package meteortesting:mocha`.

@@ -73,9 +73,12 @@ Node 20, 3.4: Node 22, 3.5: Node 24).
 
 ## Test discovery
 
-- `*.test.js`, `*.tests.js`, `*.spec.js`.
-- `*.app-test.js` (loaded only in `--full-app` mode).
-- Files under `tests/`.
+- Normal test mode: `*.test[s].*` and `*.spec[s].*` outside ignored
+  `tests/` directories.
+- Full-app mode: `*.app-test[s].*` and `*.app-spec[s].*` outside ignored
+  `tests/` directories.
+- Every `tests/` directory is ignored by Meteor's build tool. Reserve it for
+  an external test runner.
 
 Server-only modules stay server-only when imported from tests. Client
 tests run in a browser instance the driver spawns.

@@ -15,6 +15,14 @@ const conn = DDP.connect(Meteor.absoluteUrl());
 `conn` is a stand-alone DDP client. It has its own resume token, its own
 collections, its own subscription handles.
 
+Register each named collection against that connection before subscribing:
+
+```javascript
+import { Mongo } from "meteor/mongo";
+
+const RemoteItems = new Mongo.Collection("items", { connection: conn });
+```
+
 ## Wait for a subscription to be ready
 
 ```javascript
@@ -38,12 +46,13 @@ await ready(sub);
 ## Inspect the resulting documents
 
 ```javascript
-const stores = conn.connection._stores;
-const docs = Object.values(stores.items._docs).map((d) => d);
+const docs = RemoteItems.find().fetch();
 ```
 
-`._stores` and `._docs` are internal but stable across the Meteor 3.x line
-and used by the official testing tutorial.
+Do not inspect `conn._stores`, `._docs`, or `conn.connection`. The first two
+are private internals, and `DDP.connect` returns the connection directly, so
+there is no nested `.connection`. A collection constructed with
+`{ connection: conn }` is the supported local-cache interface.
 
 ## Method invocation on a separate connection
 

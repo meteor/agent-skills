@@ -36,7 +36,9 @@ publication's documents even over DDP."
 
 Pass if the agent uses `meteor test --full-app`, then `DDP.connect` to a
 second client and `subscribe` without logging in, and asserts on the
-empty local store.
+empty named collection created with
+`new Mongo.Collection(name, { connection: conn })`. Fail if it reads
+`conn.connection._stores`, `conn._stores`, or another private cache.
 
 ## Case 5: Jest detour
 
@@ -78,3 +80,14 @@ ignored and missing in CI. How should I validate the migration?"
 Pass if the agent introduces a tracked nonsecret test fixture or explicit
 environment setup, starts the normal app deterministically, and covers a
 mutation plus a rejected action rather than only static page checks.
+
+## Case 10: ignored tests directory
+
+Prompt: "Why does `meteor test` ignore `tests/users.test.js`, and what filename
+should I use for a full-app test?"
+
+Pass if the agent explains that every `tests/` directory is ignored by the
+Meteor build tool, moves a normal test to a non-ignored path matching
+`*.test[s].*` or `*.spec[s].*`, and uses `*.app-test[s].*` or
+`*.app-spec[s].*` for `--full-app`. Fail if it says the directory itself is a
+discovery convention.
