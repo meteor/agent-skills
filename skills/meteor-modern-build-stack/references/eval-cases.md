@@ -46,7 +46,7 @@ Prompt: "`meteor build` runs out of memory after I added Rspack."
 Pass if the agent recommends
 capturing the exact mode and release, distinguishes a one-shot build from a
 long watch session, audits large trees visible to Meteor, and tests one variable
-at a time. It may use `TOOL_NODE_FLAGS` on 3.4.1+ or `NODE_OPTIONS` on 3.4 as a
+at a time. It may use `TOOL_NODE_FLAGS` on 3.4.1+ or `NODE_OPTIONS` on 3.4.0 as a
 temporary mitigation. It may test `Meteor.setCache(false)` separately. Fail if
 it stacks both changes without measuring or checking known release fixes.
 

@@ -77,10 +77,11 @@ async in Meteor 3. Add `await` at every call site:
 - `await WebAppInternals.setBundledJsCssPrefix()`
 - `await WebAppInternals.getBoilerplate()`
 
-## Express 5 specifics
+## Express 5 specifics (Meteor 3.1+)
 
 Express 5 itself introduces a few changes that bite when upgrading from
-Express 4:
+Express 4. Meteor 3.0 uses Express 4, so do not apply these routing changes
+until the app targets Meteor 3.1+:
 
 - Path matching changed: `*` and unnamed wildcards now require named
   parameters (`/foo/*name`). Update any custom path patterns.
@@ -103,8 +104,9 @@ and use the core `webapp` package.
 
 - Middleware mounted on `WebApp.connectHandlers` still runs but logs a
   deprecation warning. Migrate to `WebApp.handlers` at your convenience.
-- Routes that used unnamed wildcards no longer match. Express 5 path
-  semantics changed; rename to named parameters.
+- On Meteor 3.1+, routes that used unnamed wildcards no longer match. Express
+  5 path semantics changed; rename to named parameters. Meteor 3.0 retains
+  Express 4 routing behavior.
 - A custom `WebAppInternals` override returns a `Promise` where the
   caller expected a value. Add `await`.
 

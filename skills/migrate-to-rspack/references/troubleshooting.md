@@ -32,7 +32,7 @@ Meteor 3.4.1+:
 TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
 ```
 
-Meteor 3.4:
+Meteor 3.4.0:
 
 ```bash
 NODE_OPTIONS="--max-old-space-size=16384" meteor run
@@ -73,7 +73,7 @@ Could not find rspack.config.js, rspack.config.ts, rspack.config.mjs, or rspack.
 
 Root cause: the npm-side deps required by the current Meteor version are
 not in the lockfile because `meteor update --npm` was not committed after
-the local Meteor upgrade. Also check the release contract: Meteor 3.4 uses
+the local Meteor upgrade. Also check the release contract: Meteor 3.4.0 uses
 `@meteorjs/rspack` v1, while Meteor 3.4.1 uses v2.
 
 Preferred fix: run the update locally, review it, and commit the lockfile:

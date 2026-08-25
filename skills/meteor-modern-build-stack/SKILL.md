@@ -17,7 +17,7 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.6.0"
+  version: "0.6.1"
   kind: knowledge
   meteor: ">=3.3"
   area: build
@@ -101,7 +101,7 @@ final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
 `rspack` and `@meteorjs/rspack` follow the Meteor release, not the
-`@rspack/core` or `@rspack/cli` major. Meteor 3.4 uses both integration
+`@rspack/core` or `@rspack/cli` major. Meteor 3.4.0 uses both integration
 packages at v1. Meteor 3.4.1 and 3.5 use `rspack@1.1.0` with
 `@meteorjs/rspack@2.0.1`; Meteor 3.5.1 uses `rspack@1.2.0` with
 `@meteorjs/rspack@2.1.0`. Inspect `.meteor/versions`, `package.json`, and the
@@ -195,7 +195,7 @@ for tool processes temporarily when capturing evidence (Meteor 3.4.1+):
 TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
 ```
 
-On Meteor 3.4, use `NODE_OPTIONS="--max-old-space-size=16384"`.
+On Meteor 3.4.0, use `NODE_OPTIONS="--max-old-space-size=16384"`.
 
 First distinguish a one-shot build failure from growth during a long watch
 session. Audit large directories visible to Meteor and check the exact release

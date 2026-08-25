@@ -18,7 +18,7 @@ description: >
   meteor-modern-build-stack instead.
 metadata:
   author: meteor
-  version: "0.6.0"
+  version: "0.6.1"
   kind: knowledge
   meteor: ">=3.4"
   area: migration

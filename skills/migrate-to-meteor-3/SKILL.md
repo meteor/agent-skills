@@ -13,7 +13,7 @@ description: >
   and forking packages.
 metadata:
   author: meteor
-  version: "0.9.0"
+  version: "0.9.1"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -91,7 +91,7 @@ in phases. Do not flip the framework version flag first.
 | Atmosphere package fails to resolve or build         | `references/package-triage.md`         |
 | `forEach`/`map`/`filter` with `await` skips items    | `references/js-iterators.md`           |
 | Middleware on `WebApp.connectHandlers` not firing    | `references/webapp-express.md`         |
-| Route uses an unnamed wildcard, no longer matches    | `references/webapp-express.md`         |
+| Route uses an unnamed wildcard after Meteor 3.1     | `references/webapp-express.md`         |
 | `rawCollection` callback never fires                 | `references/other-breaking-changes.md` |
 | `EnvironmentVariable.withValue` context is `undefined` in an async handler | `references/other-breaking-changes.md` |
 | `meteor reset` did not wipe the local Mongo          | `references/other-breaking-changes.md` |
