@@ -5,7 +5,7 @@ This record is the first reliable full baseline for future incremental audits. I
 ## Audit identity
 
 - Agent-skills revision: `875f5399ee9474c3b8e0011985909ef038f4e5ab`
-- Agent-skills worktree: dirty, with the unrelated untracked file `PLAN-07.md` only
+- Agent-skills worktree: dirty from unrelated untracked local work only
 - Pre-maintenance agent-skills revision: `839c2110c4ac00db31e450c0f7503930bd3c4938`
 - Meteor remote: `https://github.com/meteor/meteor.git`
 - Meteor branch: `devel`

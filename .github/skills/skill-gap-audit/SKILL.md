@@ -1,6 +1,8 @@
 ---
 name: skill-gap-audit
 description: Use when auditing meteor/agent-skills for missing, incomplete, overlapping, or outdated coverage. Compares every distributable skill with a configurable Meteor checkout, changelog and release context, v3-docs, source, tests, and the latest committed audit baseline, then produces an evidence-backed report without editing skills.
+metadata:
+  internal: true
 ---
 
 # Audit Meteor skill gaps

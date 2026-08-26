@@ -91,7 +91,7 @@ license: MIT
 - `description` is <=1024 characters and contains at least two trigger phrases. Trigger phrases include: `Use when`, `Use this skill when`, `Use this Skill when`, `Triggers on`, any `ask about` or `asks about` substring.
 - `metadata.tagline` is 16-200 characters. Rendered verbatim into the README catalog.
 - `metadata.kind` is one of `knowledge`, `tool`, `workflow`.
-- `metadata.area` is one of `auth`, `build`, `data`, `migration`, `ops`, `security`, or `testing`. `meta` is reserved for the non-publishable template.
+- `metadata.area` is one of `auth`, `build`, `data`, `migration`, `ops`, `security`, or `testing`.
 - `metadata.meteor` is a semver range. Default for v1: `">=3.0"`.
 - `metadata.author` is always the literal string `meteor`. Non-Meteor-org skills do not belong in this repo.
 - Body (everything after the closing `---`) is <=8 KB. Larger content moves into `references/`.

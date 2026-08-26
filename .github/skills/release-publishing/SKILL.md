@@ -1,6 +1,8 @@
 ---
 name: release-publishing
 description: Use when preparing, testing, tagging, or publishing beta and stable releases of the Meteor agent-skills plugin for Codex and Claude Code.
+metadata:
+  internal: true
 ---
 
 # Publish Meteor agent skills

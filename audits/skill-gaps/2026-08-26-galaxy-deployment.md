@@ -3,7 +3,7 @@
 ## Run context
 
 ```text
-Agent-skills revision: 5d1843c63e9a0cff52122b82c6d63b5b7fc2f191; dirty only for this report and unrelated untracked PLAN-07.md
+Agent-skills revision: 5d1843c63e9a0cff52122b82c6d63b5b7fc2f191; dirty only for this report and unrelated untracked local work
 Meteor checkout: not required for this Galaxy provider audit
 Meteor remote: not applicable; Galaxy Cloud documentation is the provider source
 Meteor branch: not applicable

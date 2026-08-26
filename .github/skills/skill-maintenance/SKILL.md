@@ -1,6 +1,8 @@
 ---
 name: skill-maintenance
 description: Use when creating, reviewing, or updating a published skill in meteor/agent-skills, including applying confirmed skill-gap audit findings. Preserves repository conventions, distributable format, factual evidence, routing boundaries, references, metadata, and manual behavior cases.
+metadata:
+  internal: true
 ---
 
 # Maintain Meteor agent skills
@@ -14,7 +16,7 @@ Published skills live under `skills/`. Maintainer workflows live under `.github/
 Before editing:
 
 1. Read `AGENTS.md` completely.
-2. Read `skills/_template/SKILL.md` for a new skill.
+2. Read `templates/SKILL.template.md` for a new skill.
 3. Read the target skill, its references, and its evaluation cases for an update.
 4. Inspect neighboring skills before changing routing or scope.
 

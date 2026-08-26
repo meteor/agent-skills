@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 // Build a <name>.zip artifact for every publishable skill under skills/.
-// Skips folders whose name starts with "_" or "." (the _template stays
-// internal). The archive top level mirrors the skill folder contents:
+// Skips folders whose name starts with "_" or ".". The archive top level
+// mirrors the skill folder contents:
 // SKILL.md, references/, scripts/, assets/.
 
 import { readdirSync, createWriteStream, mkdirSync, existsSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -19,7 +19,7 @@ function isPublishable(name) {
 function zipSkill(srcDir, outFile) {
   return new Promise((resolveZip, reject) => {
     const output = createWriteStream(outFile);
-    const archive = archiver("zip", { zlib: { level: 9 } });
+    const archive = new ZipArchive({ zlib: { level: 9 } });
     output.on("close", () => resolveZip(archive.pointer()));
     archive.on("warning", (err) => {
       if (err.code === "ENOENT") return;

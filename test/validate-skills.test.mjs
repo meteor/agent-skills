@@ -203,9 +203,23 @@ describe("validateMaintainerSkills", () => {
       writeMaintainerSkill(
         root,
         "skill-review",
-        "name: skill-review\ndescription: Use when reviewing internal skills for repository consistency.",
+        "name: skill-review\ndescription: Use when reviewing internal skills for repository consistency.\nmetadata:\n  internal: true",
       );
       expect(await validateMaintainerSkills({ root })).toEqual([]);
+    });
+  });
+
+  it("rejects a maintainer skill that can be publicly discovered", async () => {
+    await withTempRoot(async (root) => {
+      writeMaintainerSkill(
+        root,
+        "skill-review",
+        "name: skill-review\ndescription: Use when reviewing internal skills for repository consistency.",
+      );
+      const findings = await validateMaintainerSkills({ root });
+      expect(findings.map((f) => f.code)).toContain(
+        "E_MAINTAINER_NOT_INTERNAL",
+      );
     });
   });
 
@@ -214,7 +228,7 @@ describe("validateMaintainerSkills", () => {
       writeMaintainerSkill(
         root,
         "skill-review",
-        "name: different-name\ndescription: Use when reviewing internal skills for repository consistency.",
+        "name: different-name\ndescription: Use when reviewing internal skills for repository consistency.\nmetadata:\n  internal: true",
       );
       const findings = await validateMaintainerSkills({ root });
       expect(findings.map((f) => f.code)).toContain("E_FOLDER_MISMATCH");
@@ -226,7 +240,7 @@ describe("validateMaintainerSkills", () => {
       writeMaintainerSkill(
         root,
         "skill-review",
-        "name: skill-review\ndescription: Reviews skills without a routing trigger.",
+        "name: skill-review\ndescription: Reviews skills without a routing trigger.\nmetadata:\n  internal: true",
       );
       const findings = await validateMaintainerSkills({ root });
       expect(findings.map((f) => f.code)).toContain(
@@ -240,7 +254,7 @@ describe("validateMaintainerSkills", () => {
       writeMaintainerSkill(
         root,
         "skill-review",
-        "name: skill-review\ndescription: Use when reviewing internal skills for repository consistency.",
+        "name: skill-review\ndescription: Use when reviewing internal skills for repository consistency.\nmetadata:\n  internal: true",
         `TODO${String.fromCodePoint(0x2014)}replace this`,
       );
       const findings = await validateMaintainerSkills({ root });

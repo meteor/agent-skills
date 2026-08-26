@@ -19,12 +19,18 @@
     "test": "rstest run"
   },
   "devDependencies": {
-    "@rstest/core": "^0.9.10",
+    "@rstest/core": "^0.11.10",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "archiver": "^7.0.1",
+    "archiver": "^8.0.0",
     "gray-matter": "^4.0.3",
     "yauzl-promise": "^4.0.0"
+  },
+  "pnpm": {
+    "overrides": {
+      "fast-uri@3": "3.1.5",
+      "js-yaml@3": "3.15.1"
+    }
   },
   "license": "MIT"
 }

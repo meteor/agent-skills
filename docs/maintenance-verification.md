@@ -118,7 +118,7 @@ After the user authorizes confirmed findings:
 ## New skill
 
 Follow [`CONTRIBUTING.md`](../CONTRIBUTING.md) and start from
-`skills/_template/`.
+`templates/SKILL.template.md`.
 
 1. Define one user outcome and its routing boundary.
 2. Add realistic positive, failure, and near-miss prompts to

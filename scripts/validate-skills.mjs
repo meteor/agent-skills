@@ -176,6 +176,15 @@ export async function validateMaintainerSkills({
       });
     }
 
+    if (parsed.data.metadata?.internal !== true) {
+      findings.push({
+        code: "E_MAINTAINER_NOT_INTERNAL",
+        folder,
+        file,
+        message: "maintainer skills must set metadata.internal to true",
+      });
+    }
+
     const bodyBytes = Buffer.byteLength(parsed.content, "utf8");
     if (bodyBytes > BODY_BYTE_CAP) {
       findings.push({

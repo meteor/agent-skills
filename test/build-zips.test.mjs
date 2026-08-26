@@ -36,9 +36,9 @@ describe("buildZips", () => {
     expect(files).toEqual(["meteor-foo.zip"]);
   });
 
-  it("skips _template", async () => {
+  it("skips underscore-prefixed internal folders", async () => {
     await buildZips({ root: fixturesRoot, out: outDir });
-    expect(readdirSync(outDir)).not.toContain("_template.zip");
+    expect(readdirSync(outDir)).not.toContain("_internal.zip");
   });
 
   it("skips .github maintainer skills", async () => {

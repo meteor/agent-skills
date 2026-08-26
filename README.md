@@ -246,7 +246,7 @@ npx skills add meteor/agent-skills \
 
 For users who cannot or do not want to run `npx skills add`:
 
-1. Open the [latest release](https://github.com/meteor/agent-skills/releases/latest).
+1. Open [GitHub releases](https://github.com/meteor/agent-skills/releases).
 2. Download the `.zip` for the skill you want, e.g. `migrate-to-meteor-3.zip`.
 3. Unzip into your agent's skills directory:
 
