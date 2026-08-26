@@ -14,6 +14,12 @@ METEOR_SETTINGS="$(cat settings.json)" node bundle/main.js
 `METEOR_SETTINGS` is the canonical production path. The bundled
 `bundle/main.js` reads it and writes `Meteor.settings`.
 
+Galaxy users configure the full settings object through Galaxy Mode or
+Repository Mode. Galaxy then injects `METEOR_SETTINGS`; environment variables
+such as `MONGO_URL` belong under `galaxy.meteor.com.env`. See
+[`galaxy.md`](galaxy.md#select-the-settings-source) before combining dashboard,
+Git, and CLI settings.
+
 ## Reading
 
 ```javascript

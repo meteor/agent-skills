@@ -2,13 +2,13 @@
 name: meteor-deployment
 description: >
   Use when deploying a Meteor 3 application. Triggers on meteor build,
-  meteor deploy, Galaxy, DEPLOY_HOSTNAME, Docker, Kubernetes,
-  settings.json, METEOR_SETTINGS, MONGO_URL, MONGO_OPLOG_URL, ROOT_URL,
-  PORT, BIND_IP, MAIL_URL, hot code push, --architecture os.linux.x86_64,
-  --server-only, Node.js version mismatch (Meteor 3.0 = Node 20, 3.1
-  through 3.4 = Node 22, 3.5 = Node 24). Use this skill when the user asks about
-  shipping the app, asks about production config, or asks about
-  containerizing.
+  meteor deploy, Galaxy Push to Deploy, Galaxy Mode, Repository Mode,
+  DEPLOY_HOSTNAME, Docker, Kubernetes, settings.json, METEOR_SETTINGS,
+  MONGO_URL, MONGO_OPLOG_URL, ROOT_URL, PORT, HTTP_FORWARDED_COUNT,
+  NODE_OPTIONS, health checks, pre-deploy commands, hot code push,
+  --architecture os.linux.x86_64, --server-only, or a deployed Node.js
+  version mismatch. Use this skill when the user asks about shipping the app,
+  asks about production config, or asks about containerizing.
 metadata:
   author: meteor
   kind: knowledge
@@ -16,7 +16,7 @@ metadata:
   area: ops
   tagline: "Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching)."
   bundle: ["ops"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-08-26"
 license: MIT
 ---
 
@@ -38,7 +38,9 @@ Mismatch causes runtime errors. Run `meteor node -v` to confirm.
 
 ## Decision flow
 
-1. Galaxy? `meteor deploy <app>.meteorapp.com --settings settings.json`.
+1. Galaxy? Choose Git Push to Deploy or the Meteor CLI. Configure Galaxy's
+   settings source, build hooks, health checks, and domains from
+   `references/galaxy.md`.
 2. Docker / Kubernetes? `meteor build --directory ./build --server-only`
    skips platform-specific mobile artifacts. Use
    `--architecture os.linux.x86_64` for a cross-build.
@@ -93,13 +95,35 @@ METEOR_SETTINGS=$(cat settings.json) node bundle/main.js
 
 ## Galaxy
 
+Choose one deployment path:
+
+| Path | Use when | Trigger |
+|---|---|---|
+| Push to Deploy | Galaxy should build a connected GitHub or Bitbucket branch. | Every push to the selected branch. |
+| Meteor CLI | A person or CI pipeline controls each upload. | `meteor deploy <app-name>`. |
+
+For a Free app, pass a simple app name, not a custom domain:
+
 ```bash
-DEPLOY_HOSTNAME=us-east-1.galaxy-deploy.meteor.com \
-  meteor deploy app.example.com --settings settings.json
+meteor login
+meteor deploy myapp --free --settings settings.json
+
+DEPLOY_HOSTNAME=eu-west-1.galaxy-deploy.meteor.com \
+  meteor deploy myapp --plan essentials --settings settings.json
 ```
 
-Other Galaxy regions have their own `DEPLOY_HOSTNAME`. Galaxy reads
-`MONGO_URL` and the rest from its container config.
+Galaxy assigns a `myapp.sandbox.galaxycloud.app` hostname on Free or a
+regional `myapp.<region>.galaxycloud.app` hostname on paid plans. Add custom
+domains in the dashboard. The active primary domain controls `ROOT_URL`.
+
+Galaxy injects `PORT`, `ROOT_URL`, and `METEOR_SETTINGS`. Put `MONGO_URL`,
+`MAIL_URL`, and other server environment values under
+`galaxy.meteor.com.env` in the Galaxy settings JSON. Do not assume a CLI
+`--settings` file overrides Repository Mode.
+
+See `references/galaxy.md` for settings modes, Push to Deploy builds,
+zero-downtime rollout and rollback, proxies, Mongo TLS, memory, and custom
+base images.
 
 ## Docker
 
@@ -132,11 +156,16 @@ current public API.
   check `meteor node -v`.
 - Build on the wrong architecture. M-series Mac developers building for
   x86_64 Linux must pass `--architecture os.linux.x86_64`.
+- Commit Galaxy settings with credentials or expect Repository Mode to read a
+  CLI `--settings` file. Keep secrets in Galaxy Mode or a secret store.
+- Hardcode Galaxy's port, load-balancer IP, or regional DNS target. Read
+  `$PORT` and copy current network values from the app dashboard.
 - Bundle the source tree into the Docker image alongside the built
   bundle. Use multi-stage; the runtime image holds only `bundle/`.
 
 ## See also
 
 - `references/settings-and-env.md`
+- `references/galaxy.md`
 - `references/docker.md`
 - `references/eval-cases.md`
