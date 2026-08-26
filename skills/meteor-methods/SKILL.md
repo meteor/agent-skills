@@ -8,7 +8,6 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.4.1"
   kind: knowledge
   meteor: ">=3.0"
   area: data

@@ -13,7 +13,6 @@ description: >
   templates. For Meteor 2 to 3 upgrades, use migrate-to-meteor-3 instead.
 metadata:
   author: meteor
-  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data

@@ -5,7 +5,6 @@ description: >
   Use this skill when authoring SKILL.md. Ask about the skill folder layout.
 metadata:
   author: meteor
-  version: "0.0.0"
   kind: knowledge
   meteor: ">=3.0"
   area: meta

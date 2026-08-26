@@ -1,7 +1,6 @@
 {
   "name": "@meteorjs/agent-skills",
   "private": true,
-  "version": "0.0.0",
   "description": "Agent Skills for Meteor 3 application developers.",
   "type": "module",
   "engines": {

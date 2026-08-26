@@ -10,7 +10,6 @@ description: >
   in Meteor.
 metadata:
   author: meteor
-  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: testing

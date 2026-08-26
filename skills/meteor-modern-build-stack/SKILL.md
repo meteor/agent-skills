@@ -17,7 +17,6 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.6.1"
   kind: knowledge
   meteor: ">=3.3"
   area: build

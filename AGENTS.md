@@ -66,7 +66,6 @@ description: >
   upgrade. Ask about top-level await and async cursors.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
   area: migration
@@ -174,10 +173,9 @@ Helper scripts go in `scripts/`. Conventions:
 
 ## Versioning
 
-- Each skill has its own `metadata.version`. This is the skill content revision,
-  not a Meteor or Atmosphere package compatibility claim. Bump it independently
-  when content changes meaningfully.
-- Repo tags (`v0.1.0`, `v0.2.0`) are aggregate snapshots of the catalog.
+- Repo tags (`v0.1.0`, `v0.2.0`) version the catalog as a whole. Individual
+  skills do not carry content versions. A partial install is identified by the
+  selected skill path and repository tag or commit.
 - `metadata.meteor` is the minimum Meteor range for the skill's complete
   decision flow. A capability introduced after that minimum must state its
   `Meteor X.Y+` floor at the first decision or example that can select it.

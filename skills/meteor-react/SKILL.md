@@ -14,7 +14,6 @@ description: >
   migrate-to-meteor-3.
 metadata:
   author: meteor
-  version: "0.2.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data

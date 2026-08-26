@@ -5,7 +5,6 @@ description: >
   Use this skill when authoring SKILL.md. Ask about the skill folder layout.
 metadata:
   author: meteor
-  version: "0.0.0"
   kind: knowledge
   meteor: ">=3.0"
   area: meta
@@ -30,5 +29,4 @@ Then edit:
 - `name`: lowercase-kebab-case.
 - `description`: at least two trigger phrases. Agent-facing; pack with trigger keywords.
 - `metadata.tagline`: short one-line summary rendered in the README catalog (16-200 chars).
-- `metadata.version`: start at `0.1.0`.
 - This body: replace with the actual skill content.

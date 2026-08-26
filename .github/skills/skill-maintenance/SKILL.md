@@ -55,9 +55,9 @@ history. For package APIs, use package history and the resolved package version.
 2. Map every capability advertised in the description to instructions and an evaluation case.
 3. Keep routing and essential decisions in `SKILL.md`. Move conditional detail and long examples into focused references.
 4. Use scripts only for repeated operations where deterministic execution improves reliability.
-5. Preserve naming, frontmatter, writing, versioning, source footer, and bundle rules from `AGENTS.md`.
+5. Preserve naming, frontmatter, writing, compatibility, source footer, and bundle rules from `AGENTS.md`.
 6. Keep only runtime skill content under `skills/<name>/`: `SKILL.md`, `references/`, `scripts/`, and `assets/`. Keep audit reports, raw results, and reviewer-only solutions outside the distributable folder.
-7. Bump `metadata.version` for meaningful behavioral guidance changes. Update `docs_synced_at` only after checking the relevant current documentation.
+7. Update `docs_synced_at` only after checking the relevant current documentation.
 8. Regenerate the catalog when names, taglines, or bundle membership change.
 9. Add realistic positive, failure, and near-miss evaluation cases. Grade observable behavior instead of exact wording.
 10. Run affected manual cases for a new skill, a description or routing change, a high-risk decision change, or a confirmed behavioral regression.
@@ -67,7 +67,7 @@ history. For package APIs, use package history and the resolved package version.
 
 | Layer | Meaning |
 |---|---|
-| `metadata.version` | Skill content revision. |
+| Repository tag | Catalog release containing the skill. |
 | `metadata.meteor` | Minimum range for the complete decision flow. |
 | Inline `Meteor X.Y+` | First release for a conditional capability. |
 | Package floor | First independent package version for its API. |
@@ -81,8 +81,8 @@ When a capability starts after the skill's `metadata.meteor` minimum:
    when the complete outcome requires the newer release.
 4. For package APIs, inspect `.meteor/versions`, `package.json`, or the lockfile.
    Do not infer them from the Meteor release.
-5. Evaluate both sides of the boundary and bump `metadata.version` when the
-   compatibility decision changes guidance.
+5. Evaluate both sides of the boundary when the compatibility decision changes
+   guidance.
 
 ## Evaluation cases
 

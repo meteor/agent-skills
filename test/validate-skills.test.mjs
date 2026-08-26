@@ -57,7 +57,6 @@ name: meteor-example
 description: Use when testing catalog classification. Triggers on an unknown skill area.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
   area: unknown
@@ -128,7 +127,6 @@ name: meteor-example
 description: Use when testing a valid Meteor example skill. Triggers on example validation.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
   area: testing

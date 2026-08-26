@@ -11,7 +11,6 @@ description: >
   third-party script (Stripe, Google Maps, fonts).
 metadata:
   author: meteor
-  version: "0.4.0"
   kind: knowledge
   meteor: ">=3.0"
   area: security

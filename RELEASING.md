@@ -6,7 +6,7 @@ human review.
 
 ## Prepare
 
-- Confirm every changed skill has an appropriate `metadata.version`.
+- Choose one `vX.Y.Z` repository tag for the complete catalog snapshot.
 - Regenerate the catalog with `pnpm run catalog:write`.
 - Complete the source and behavioral reviews described in `AGENTS.md`.
 - Confirm each changed skill's evaluation cases reflect its current behavior.
@@ -33,7 +33,7 @@ pnpm run build:zips
 
 Before tagging, you can ask a maintainer agent:
 
-> Review this branch for release readiness. Confirm changed skill versions,
+> Review this branch for release readiness. Confirm the planned repository tag,
 > catalog and bundle state, source and behavior checks, complete local checks,
 > and changed ZIP contents. List blockers and known
 > limitations. Do not create a tag, release, commit, or push unless explicitly

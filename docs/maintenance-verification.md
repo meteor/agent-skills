@@ -7,7 +7,7 @@ release ZIP.
 ## Required workflow
 
 1. Verify changed facts against Meteor documentation or source.
-2. Update the skill and bump `metadata.version` for meaningful guidance changes.
+2. Update the smallest skill surface that owns the guidance.
 3. Update `references/eval-cases.md` when expected behavior changes.
 4. Run only the affected prompts in fresh conversations or disposable projects.
 5. Run repository validation and inspect changed ZIPs.
@@ -111,8 +111,8 @@ Audit before changing published skills:
 After the user authorizes confirmed findings:
 
 > Use `skill-maintenance` to implement only confirmed findings from
-> `<audit-path>`. Update the smallest coherent skill surface, bump independent
-> skill versions, maintain affected cases, and run the checks required for the
+> `<audit-path>`. Update the smallest coherent skill surface, maintain affected
+> cases, and run the checks required for the
 > changed behavior.
 
 ## New skill

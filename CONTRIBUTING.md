@@ -24,7 +24,7 @@ Implement an approved contribution:
 
 > Use `skill-maintenance` to implement `<requested-change>`. Preserve existing
 > classification and routing unless the change explicitly requires them.
-> Verify Meteor sources, update independent skill versions and affected cases,
+> Verify Meteor sources, update affected cases,
 > and run the checks proportional to the behavioral risk. Do not commit or push
 > unless requested.
 

@@ -9,7 +9,6 @@ description: >
   reactive data fetching.
 metadata:
   author: meteor
-  version: "0.3.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
