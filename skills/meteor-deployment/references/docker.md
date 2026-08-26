@@ -35,12 +35,16 @@ EXPOSE 3000
 CMD ["node", "main.js"]
 ```
 
-Match the `node:` tag to the Meteor's bundled Node (3.3=20, 3.4=22,
-3.5=24). On M-series Macs targeting x86_64 Linux, add
+This sample targets Meteor 3.1 through 3.4. Match both `node:` tags to the
+bundled Node major: Meteor 3.0 uses Node 20, 3.1 through 3.4 use Node 22,
+and 3.5+ uses Node 24. Run `meteor node -v` to verify the exact version. On
+M-series Macs targeting x86_64 Linux, add
 `--architecture os.linux.x86_64` to `meteor build`.
 
-`--server-only` skips the client bundle (smaller image; CDN serves the
-client). Drop it if the same Node process should serve the client too.
+`--server-only` skips platform-specific mobile application artifacts. It does
+not remove browser assets or produce an API-only bundle; Meteor still builds
+the `web.cordova` target used for hot code push. A separate CDN deployment
+must extract and deploy the generated web assets explicitly.
 
 ## Build and run
 
@@ -64,7 +68,8 @@ recompiling:
 COPY --from=builder /app/node_modules/sharp ./programs/server/node_modules/sharp
 ```
 
-For workers shipped by transitive deps (e.g. `thread-stream` from Mongo),
+For workers shipped by transitive logging deps (for example, `thread-stream`
+from `pino`),
 see the `meteor-modern-build-stack` skill: when using rspack, route the
 dep through `Meteor.compileWithMeteor`.
 

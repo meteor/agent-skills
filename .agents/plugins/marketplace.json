@@ -1,0 +1,20 @@
+{
+  "name": "meteor",
+  "interface": {
+    "displayName": "Meteor Agent Skills"
+  },
+  "plugins": [
+    {
+      "name": "meteor",
+      "source": {
+        "source": "local",
+        "path": "./"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Developer Tools"
+    }
+  ]
+}

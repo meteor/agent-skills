@@ -25,8 +25,22 @@ collection writes are visible before the server round trip resolves.
 
 ## Error shape
 
-`callAsync` rejects with `Meteor.Error`. Catch and inspect `.error`, `.reason`,
-and `.details`. The error shape did not change in 3.x.
+Intentional client-visible server failures should throw `Meteor.Error`, whose
+rejection exposes `.error`, `.reason`, and `.details`. Do not assume every
+rejection has that shape. A local stub exception, API misuse, or transport
+failure can produce a native or arbitrary error. Narrow the value first:
+
+```javascript
+try {
+  await Meteor.callAsync('orders.create', input);
+} catch (error) {
+  if (error && typeof error === 'object' && 'error' in error) {
+    reportMeteorError(error.error, error.reason, error.details);
+  } else {
+    reportUnexpectedError(error);
+  }
+}
+```
 
 ## When to keep `Meteor.call`
 
@@ -50,10 +64,10 @@ These APIs are banned inside a stub body:
 - `indexedDB`
 - Web Workers and `Worker.postMessage`
 
-If the optimistic UI needs to do async work, do it outside the stub:
-fire the method, then run the async work in the surrounding component
-after `callAsync` resolves. The stub itself must be synchronous and
-limited to local Minimongo writes.
+Async stubs are supported. They may await work that settles without yielding
+to a browser macrotask, including `*Async` Minimongo writes used by a shared
+client/server method definition. Do external I/O after `callAsync` resolves.
+Keep the stub limited to deterministic local state changes.
 
 Symptom: the optimistic update flashes (the local write is reverted)
 even though the server method succeeds. The stub yielded to a macrotask

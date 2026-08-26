@@ -24,18 +24,31 @@ Client-side Minimongo retains the synchronous API.
 | Removed                  | Replacement                |
 |--------------------------|----------------------------|
 | `Meteor.user()` (server) | `await Meteor.userAsync()` |
-| `Meteor.userId()` (server, outside method/publish) | `await Meteor.userIdAsync()` |
 
-Inside a method or publication, `this.userId` works unchanged.
+`Meteor.userId()` was not replaced with an async API. It remains synchronous
+inside a method or publication and reads the current invocation. Prefer
+`this.userId` there for explicit context. Outside those invocation scopes,
+pass the user ID into the async function; `Meteor.userIdAsync()` does not
+exist.
 
 ## Accounts
 
-| Removed                                | Replacement                                 |
-|----------------------------------------|---------------------------------------------|
-| `Accounts.createUser(opts, cb)`        | `await Accounts.createUserAsync(opts)`      |
-| `Accounts.setPassword(uid, p, opts)`   | `await Accounts.setPasswordAsync(uid, p)`   |
-| `Accounts.changePassword(old, new)`    | `await Accounts.changePasswordAsync(old, new)` |
-| `Accounts.addEmail(uid, addr)`         | `await Accounts.addEmailAsync(uid, addr)`   |
+Server administration APIs that lost synchronous forms:
+
+| Removed                              | Replacement                                   |
+|--------------------------------------|-----------------------------------------------|
+| `Accounts.setPassword(uid, p, opts)` | `await Accounts.setPasswordAsync(uid, p, opts)` |
+| `Accounts.addEmail(uid, addr)`       | `await Accounts.addEmailAsync(uid, addr)`     |
+
+Use `await Accounts.createUserAsync(options)` for explicit server-side user
+creation. Do not apply this table to client login flows:
+
+- Client `Accounts.createUser(options, callback)` remains supported, and
+  `Accounts.createUserAsync(options)` is also available.
+- Client `Accounts.changePassword(old, next, callback)` remains
+  callback-shaped.
+- `Meteor.loginWithPassword(user, password, callback)` remains supported.
+  `Meteor.loginWithPasswordAsync` was added in Meteor 3.5.
 
 ## Email
 

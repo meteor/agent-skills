@@ -8,13 +8,12 @@ description: >
   rate limiting RPC, or asks about wrapping a method with auth checks.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -66,8 +65,11 @@ try {
   const id = await Meteor.callAsync("addItem", { title: "Hi", qty: 1 });
   setLocalId(id);
 } catch (err) {
-  // err is a Meteor.Error; inspect .error, .reason, .details
-  console.error(err);
+  if (err && typeof err === "object" && "error" in err) {
+    console.error(err.error, err.reason, err.details);
+  } else {
+    console.error("local or transport failure", err);
+  }
 }
 ```
 
@@ -79,6 +81,7 @@ the local Minimongo; the server's authoritative result reverts any divergence.
 ```javascript
 // client/methods.js
 import { Meteor } from "meteor/meteor";
+import { Random } from "meteor/random";
 Meteor.methods({
   addItem(payload) {
     Items.insert({
@@ -91,8 +94,12 @@ Meteor.methods({
 });
 ```
 
-The client stub is synchronous because client Minimongo is synchronous.
-Do not `await` inside it.
+Synchronous stubs are simplest when they only need synchronous Minimongo.
+Async stubs are also supported by `callAsync` and are useful when the same
+method definition runs on client and server with `*Async` collection calls.
+An async stub may await microtask-based local work, but it must not wait on
+`fetch`, timers, IndexedDB, workers, or other browser macrotask APIs. Run
+external I/O outside the stub.
 
 ## Rate limiting
 
@@ -110,14 +117,27 @@ DDPRateLimiter.addRule(
 );
 ```
 
+Meteor 3.5+ permits async matcher functions for database-backed decisions. On
+Meteor 3.0 through 3.4, matchers must stay synchronous; use a fixed rule,
+precomputed synchronous state, or upgrade instead of awaiting Mongo in a
+matcher.
+
+Meteor awaits async matchers sequentially on the incoming connection's message
+queue. Project only required fields and keep the lookup fast. A rejected
+matcher Promise errors the invocation; test that path explicitly.
+
 See `references/rate-limiting.md` for the rule-object schema and
 per-connection vs per-user keys.
 
 ## Error handling
 
-Throw `Meteor.Error(code, reason, details?)`. Never `throw new Error(...)`
-from a method body. The client receives only the message and stack from
-generic `Error`; `Meteor.Error` payload travels in full.
+Throw `Meteor.Error(code, reason, details?)` for an intentional client-visible
+failure. A plain `Error` is logged on the server and sanitized for the client
+as `Meteor.Error(500, "Internal server error")`; its original message and
+stack are not exposed. `Meteor.Error` carries its code, reason, and details.
+Do not assume every `callAsync` rejection has that shape: callback misuse,
+transport failures, and local stub exceptions can produce native or arbitrary
+errors. Narrow the caught value before reading Meteor-specific fields.
 
 ## Anti-patterns
 
@@ -125,7 +145,9 @@ generic `Error`; `Meteor.Error` payload travels in full.
   review.
 - Reusing a method for both authenticated and unauthenticated calls. Split
   into two methods.
-- Returning Promises out of the client stub. Stubs are sync.
+- Awaiting browser macrotask APIs such as `fetch` or timers inside a client
+  stub. Async stubs are valid, but those APIs let unrelated code run before
+  the optimistic simulation finishes.
 - Calling `Meteor.user()` inside an async method body. Use `this.userId`.
 
 ## See also

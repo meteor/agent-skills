@@ -22,9 +22,11 @@ Accounts.emailTemplates.resetPassword.text = (user, url) =>
   `Click to reset: ${url}`;
 ```
 
-`Accounts.urls.*` setters accept async functions in Meteor 3.x. Both
-`Accounts.emailTemplates.*.from` and the global `Accounts.emailTemplates.from`
-must be set; missing `from` triggers a server warning in 3.5+.
+`Accounts.urls.*` setters accept async functions in Meteor 3.x. A
+template-specific `Accounts.emailTemplates.<name>.from` overrides the global
+`Accounts.emailTemplates.from`; otherwise Meteor falls back to the global
+value. Configure at least one effective sender. Meteor 3.5+ logs a warning
+when it cannot resolve a `from` address.
 
 ## Reset password (client, on the reset page)
 
@@ -61,13 +63,12 @@ automatically when `sendVerificationEmail: true` is set in
 
 - `await Accounts.createUserAsync(options)`
 - `await Accounts.setPasswordAsync(userId, newPassword, options?)`
-- `Accounts.sendVerificationEmail(userId, email?)`
-- `Accounts.sendEnrollmentEmail(userId, email?)`
-- `Accounts.sendResetPasswordEmail(userId, email?)`
+- `await Accounts.sendVerificationEmail(userId, email?)`
+- `await Accounts.sendEnrollmentEmail(userId, email?)`
+- `await Accounts.sendResetPasswordEmail(userId, email?)`
 
-`createUserAsync` is the only one currently exposed with an `Async`
-suffix; the others remain callback-/sync-style on the server but are safe
-to `await` no-op since they return promises in Meteor 3.x.
+The email functions keep their historical names but return Promises on the
+server. Await them so delivery or configuration failures propagate.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/accounts.md

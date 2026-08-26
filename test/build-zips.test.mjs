@@ -36,9 +36,16 @@ describe("buildZips", () => {
     expect(files).toEqual(["meteor-foo.zip"]);
   });
 
-  it("skips _template", async () => {
+  it("skips underscore-prefixed internal folders", async () => {
     await buildZips({ root: fixturesRoot, out: outDir });
-    expect(readdirSync(outDir)).not.toContain("_template.zip");
+    expect(readdirSync(outDir)).not.toContain("_internal.zip");
+  });
+
+  it("skips .github maintainer skills", async () => {
+    await buildZips({ root: fixturesRoot, out: outDir });
+    expect(readdirSync(outDir)).not.toContain(".github.zip");
+    const names = await entryNames(join(outDir, "meteor-foo.zip"));
+    expect(names.some((name) => name.includes("internal-review"))).toBe(false);
   });
 
   it("packages SKILL.md at the zip top level", async () => {

@@ -16,16 +16,33 @@ Atmosphere packages are the largest single source of friction in a 2.x to
 
 ## Before the framework upgrade
 
-1. Inventory `.meteor/packages`. List every non-core package.
-2. Look up each on Packosphere or its GitHub repo. Note the latest version
+1. Save `.meteor/packages`, `.meteor/versions`, `package.json`, and the npm
+   lockfile as a resolution checkpoint.
+2. Inventory `.meteor/packages`. List every non-core package.
+3. Look up each on Packosphere or its GitHub repo. Note the latest version
    and whether it ships a 3.x release.
-3. For packages with no 3.x release, search community forks. Several
+4. For packages with no 3.x release, search community forks. Several
    ecosystem groups maintain community forks of common Atmosphere packages.
-4. For packages still missing, decide replace vs fork vs remove now,
+5. For packages still missing, decide replace vs fork vs remove now,
    before the framework flip.
+
+Review the resolved version diff after every package operation. Keep critical
+schema, accounts, router, collection-hook, and build-plugin major upgrades in
+separate commits when possible. If behavior changes after the release flip,
+first determine whether the responsible package version changed too.
 
 Reducing the package footprint **before** running `meteor update --release=3`
 is the single biggest predictor of a smooth upgrade.
+
+## Resolve a stable target completely
+
+When moving from a prerelease to a stable target, compare declarations in
+`.meteor/release`, `.meteor/packages`, and `package.json` with resolved versions
+in `.meteor/versions` and the npm lockfile. Remove only unintended resolved
+prereleases. Keep one only for a documented capability absent from the stable
+target. Run `meteor update --npm` when supported and verify a clean locked
+install does not change manifests or silently restore a prerelease. Do not fold
+unrelated dependency major upgrades into this cleanup.
 
 ## Forking a package
 
@@ -56,7 +73,7 @@ Package.onUse(function (api) {
     'mongo@1.16.0 || 2.0.0',                         // multi-version refs
     /* ... */
   ]);
-  api.mainModule('main.js');                         // replaces api.addFiles + api.export
+  api.mainModule('main.js');                         // optional modular entry point
 });
 ```
 
@@ -66,15 +83,21 @@ Common edits inside the package code:
 - `Meteor._sleepForMs` and Fibers helpers: rewrite to native async.
 - Implicit globals at file top level: convert to `const` or `export`.
 
-## API replacements common across packages
+## Package API decisions
 
-| Removed in 3.x       | Replacement                                          |
-|----------------------|------------------------------------------------------|
-| `api.addFiles(f)`    | `api.mainModule(f)` with `import` / `export` inside. |
-| `api.export(name)`   | `export { name }` from the main module.              |
-| `_ensureIndex`       | `createIndex` (server-side).                         |
-| `HTTP.get`           | native `fetch`.                                      |
-| Sync Mongo methods   | `*Async` siblings on the server.                     |
+`api.addFiles`, `api.export`, and `api.mainModule` all remain supported in
+Meteor 3. Do not convert a package only to satisfy the framework version.
+Choose `api.mainModule` when the package benefits from an explicit import
+tree and module exports. Retain `api.addFiles` for ordered or build-plugin
+sources and `api.export` when consumers still rely on package globals.
+
+Actual migration replacements include:
+
+| Removed or changed in 3.x | Replacement                        |
+|---------------------------|------------------------------------|
+| `_ensureIndex`            | `createIndexAsync` on the server   |
+| `HTTP.get`                | `meteor/fetch` or native `fetch`   |
+| Sync Mongo methods        | `*Async` siblings on the server    |
 
 ## Custom validators in package methods
 

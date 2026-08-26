@@ -6,11 +6,11 @@ description: >
   validation.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
-  area: test
+  area: testing
   tagline: "Fixture tagline for the validator happy path."
+  bundle: ["essentials"]
 ---
 
 # Good skill

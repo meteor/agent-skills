@@ -6,48 +6,49 @@ flip; come back when a specific symptom matches.
 
 ## `Meteor.EnvironmentVariable.withValue` placement
 
-Affects package authors that wrap `Meteor.publish`, `Meteor.methods`, or
-other Meteor primitives in an `EnvironmentVariable.withValue` to propagate
-a context value into the handler.
+Affects package authors that wrap `Meteor.publish`, `Meteor.methods`, or other
+Meteor primitives to propagate dynamic context into a handler. In Meteor 3,
+`withValue` uses `AsyncLocalStorage.run`; its context follows the callback's
+Promise through `await`.
 
-In Meteor 2.x, Fibers preserved the calling context across the
-synchronous handler invocation, so a wrapper that called
-`_publishConnectionId.withValue(this.connection.id, () => func.apply(this, args))`
-**inside** the handler worked. In Meteor 3.x, the handler is async and
-Fibers is gone. Wrapping must move to the **outer** scope so the value is
-in scope when the framework registers the handler.
+When patching `Meteor.publish`, place `withValue` at the wrapper's top level
+around the call to the original `publish`. Do not introduce that scope inside
+the invoked publication handler. Meteor establishes its own publication
+invocation context before calling the handler, and the nested placement broke
+packages that needed `Meteor.userId()` or another invocation value.
 
-Wrong (Meteor 2.x pattern, broken on 3.x):
+Wrong: introducing `withValue` inside the invoked handler:
 
 ```javascript
 function patchPublish(publish) {
   return function (name, func, ...args) {
-    return publish.call(this, name, function (...args) {
+    return publish.call(this, name, function (...handlerArgs) {
       return _publishConnectionId.withValue(this?.connection?.id, () =>
-        func.apply(this, args)
+        func.apply(this, handlerArgs)
       );
     }, ...args);
   };
 }
 ```
 
-Right (Meteor 3 pattern):
+Right: scope the complete patched registration flow and return its result:
 
 ```javascript
 function patchPublish(publish) {
   return function (name, func, ...args) {
-    return _publishConnectionId.withValue(this?.connection?.id, () => {
-      return publish.call(this, name, function (...args) {
-        return func.apply(this, args);
-      }, ...args);
-    });
+    return _publishConnectionId.withValue(this?.connection?.id, () =>
+      publish.call(this, name, function (...handlerArgs) {
+        return func.apply(this, handlerArgs);
+      }, ...args)
+    );
   };
 }
 ```
 
-Symptom: the context value is `undefined` inside the handler at runtime,
-even though the call site set it. The `universe:i18n` package adopted
-this pattern for the 3.x upgrade.
+Regression-test the invoked publication before and after an `await`. Its
+`Meteor.userId()` or `DDP._CurrentPublicationInvocation` value must remain
+consistent with the handler's `this.userId`. A direct `EnvironmentVariable`
+test should likewise read the scoped value on both sides of an `await`.
 
 ## Mongo driver 6.x: callbacks removed on `rawCollection`
 
@@ -88,12 +89,19 @@ meteor reset --db      # clears build cache AND local Mongo
 Update any CI or development scripts that rely on `meteor reset` wiping
 the database.
 
-## Node v22 baseline
+## Release-specific Node baseline
 
-Meteor 3 runs on Node 22. Dependencies that pinned to Node 14 or 16 must
-be upgraded or replaced. Audit `package.json` for any `engines.node`
-constraint and any package whose latest release pre-dates Node 18 active
-support.
+Meteor 3 does not have one Node baseline across every minor release:
+
+| Meteor release | Bundled Node |
+|----------------|--------------|
+| 3.0             | Node 20     |
+| 3.1 through 3.4 | Node 22     |
+| 3.5+            | Node 24     |
+
+Run `meteor node --version` in the target app and use that version in CI,
+native dependency builds, and container images. Audit `engines.node` and
+native packages whenever the target Meteor release changes Node major.
 
 ## "Cannot enlarge memory array" during `meteor update`
 
@@ -120,25 +128,37 @@ This is the same root cause as "the install just hangs forever" reports.
 
 ## `Meteor.bindEnvironment` for external callbacks
 
-Code that registers a callback with a non-Meteor library (a third-party
-SDK, a raw Node stream, a global event emitter) loses Meteor context.
-`this.userId`, `Meteor.user()`, `Meteor.EnvironmentVariable` values all
-read as `undefined` inside the callback.
+`Meteor.bindEnvironment` captures Meteor dynamic-variable values at the moment
+the wrapper is created and restores those values when the callback later runs.
+It does not discover the identity of a future method or publication
+invocation, and it does not change JavaScript's `this` binding.
 
-Wrap the callback with `Meteor.bindEnvironment`:
+Create the wrapper inside the invocation whose environment must be preserved.
+For identity, capture `this.userId` explicitly so a long-lived callback does
+not depend on implicit request context:
 
 ```javascript
 import { Meteor } from 'meteor/meteor';
+import { check } from 'meteor/check';
 
-externalSdk.on('event', Meteor.bindEnvironment(async (payload) => {
-  // Meteor context is restored here. this.userId / Meteor.user() work.
-  await Posts.insertAsync({ payload, createdBy: Meteor.userId() });
-}));
+Meteor.methods({
+  startImport(jobId) {
+    check(jobId, String);
+    if (!this.userId) throw new Meteor.Error('not-authorized');
+
+    const userId = this.userId;
+    externalSdk.once(jobId, Meteor.bindEnvironment(async (payload) => {
+      await Posts.insertAsync({ payload, createdBy: userId });
+    }));
+  },
+});
 ```
 
-This is not new in Meteor 3, but it surfaces more often because async
-code paths are everywhere. If a callback used to work and now doesn't,
-suspect lost environment and reach for `bindEnvironment`.
+A wrapper created by top-level registration captures the top-level
+environment, which normally has no user invocation. For a global event emitter
+or background queue, put the authenticated identity in the job or event data
+and pass it explicitly. Use `bindEnvironment` only for dynamic variables that
+exist when the callback is registered.
 
 ## Monkey-patching from `Meteor.startup()`
 
@@ -169,13 +189,14 @@ was `undefined` at patch time and the assignment was a no-op.
 
 ## NPM installer
 
-The official Meteor install command is now `npx meteor` (a thin npm
-wrapper that resolves the platform binary). The old `curl
-https://install.meteor.com/ | sh` installer still works but is being
-phased out. Use `npx meteor` in fresh-environment instructions and CI.
+Use `npx meteor` as the primary cross-platform command. The documented
+`curl https://install.meteor.com/ | sh` command remains an alternative for
+Linux and macOS; do not describe it as phased out. Do not add the npm Meteor
+installer to the application's `package.json`.
 
-Run on Node 20 or newer, including in CI runners. Older Node versions
-cannot resolve the wrapper.
+Match the host Node prerequisite to the selected CLI version. Current Meteor
+3.5 installation docs require Node 24+, while earlier Meteor 3 tool releases
+bundle earlier Node majors as shown above.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/v3-migration-docs/breaking-changes/index.md

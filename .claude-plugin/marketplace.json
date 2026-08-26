@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "meteor",
+  "description": "Meteor-maintained agent skills for Meteor 3 application development.",
+  "owner": {
+    "name": "Meteor",
+    "url": "https://www.meteor.com/"
+  },
+  "plugins": [
+    {
+      "name": "meteor",
+      "source": "./",
+      "description": "Build, migrate, debug, test, secure, and deploy Meteor 3 applications.",
+      "category": "Developer Tools"
+    }
+  ]
+}

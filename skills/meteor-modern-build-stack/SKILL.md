@@ -6,8 +6,8 @@ description: >
   in development, .meteorignore, and the Rspack bundler integration via the
   rspack Atmosphere package. Triggers on package.json "meteor": { "modern":
   true }, .swcrc, swc.config.js, [Transpiler] Used Babel Fallback logs,
-  rspack.config.js, defineConfig from @meteorjs/rspack, Meteor.compileWith*
-  helpers, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
+  rspack.config.js, rspack.config.ts, defineConfig from @meteorjs/rspack, Meteor.compileWith*
+  helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
   Meteor.splitVendorChunk, Meteor.persistDevFiles, Meteor.disablePlugins,
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
   RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS for OOM, modern/legacy archs.
@@ -17,13 +17,12 @@ description: >
   app's code to be Rspack-compatible, use migrate-to-rspack instead.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.3"
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-05-14"
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -38,8 +37,12 @@ The modern build stack is two independent tracks. Enable either or both.
    delegates app-code compilation to Rspack. Tree shaking, ESM, code
    splitting via HTTP, modern bundler plugins.
 
-New apps from `meteor create` ship both enabled. For existing apps, enable
-optimizations first, then add Rspack once the app code is standards-clean.
+Standard current `meteor create` application skeletons ship both enabled.
+Purposefully small or compatibility-oriented skeletons, including `minimal`
+and `legacy`, may omit Rspack or the modern flag. Inspect the generated
+`package.json` and `.meteor/packages` instead of inferring features only from
+the Meteor version. For existing apps, enable optimizations first, then add
+Rspack once the app code is standards-clean.
 
 ## Enable Meteor Bundler Optimizations
 
@@ -96,6 +99,13 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
+`rspack` and `@meteorjs/rspack` follow the Meteor release, not the
+`@rspack/core` or `@rspack/cli` major. Meteor 3.4.0 uses both integration
+packages at v1. Meteor 3.4.1 and 3.5 use `rspack@1.1.0` with
+`@meteorjs/rspack@2.0.1`; Meteor 3.5.1 uses `rspack@1.2.0` with
+`@meteorjs/rspack@2.1.0`. Inspect `.meteor/versions`, `package.json`, and the
+lockfile. Run `meteor update --npm` after changing the Meteor release.
+
 ## SWC config files
 
 ```text
@@ -112,20 +122,22 @@ Install `@swc/helpers` to externalize SWC helpers (smaller bundles):
 meteor npm install --save @swc/helpers
 ```
 
-New apps ship with this preinstalled. No further setup needed; Meteor's
-pipeline detects it and emits imports instead of inlining.
+New apps ship with this preinstalled. Normally no further setup is needed;
+Meteor's pipeline detects it and emits imports instead of inlining. If only a
+production or legacy bundle fails on a helper import, inspect Rspack-generated
+and final Meteor output before changing `.swcrc` or adding manual imports.
 
 ## Rspack config files
 
 ```text
-rspack.config.js | rspack.config.mjs | rspack.config.cjs
+rspack.config.js | rspack.config.ts | rspack.config.mjs | rspack.config.cjs
 ```
 
 Use `defineConfig` from `@meteorjs/rspack`. The function receives a
 `Meteor` parameter with build flags and helpers. See
 `references/rspack-config.md` for the full table and the most useful
 helpers (`extendSwcConfig`, `compileWithRspack`, `compileWithMeteor`,
-`splitVendorChunk`, `persistDevFiles`, `disablePlugins`,
+`extendConfig`, `splitVendorChunk`, `persistDevFiles`, `disablePlugins`,
 `enablePortableBuild`, `setCache`).
 
 ## .meteorignore
@@ -144,6 +156,23 @@ scripts/
 
 For per-command rules, set the `METEOR_IGNORE` env var.
 
+Do not copy `.gitignore` into `.meteorignore` blindly. Exclude unrelated large
+trees that Meteor does not need, but never match the active Rspack build context:
+Meteor consumes its generated main and test modules during final assembly.
+
+Rspack also generates `_build/`, `public/build-assets/`,
+`public/build-chunks/`, and `private/build-assets/`. Add those paths to the
+native ignore configuration of recursive formatters, linters, typecheckers,
+test discovery, coverage, and IDEs. `.gitignore` alone is insufficient.
+
+## Minifier ownership
+
+`"modern": true` selects Meteor's modern standard minifier. A third-party
+Atmosphere package that provides the JavaScript minifier remains part of the
+final Meteor assembly even when Rspack compiles app modules. Inventory custom
+minifier packages before migration. Keep or remove one only after comparing
+production output, source maps, build time, and runtime behavior.
+
 ## Production legacy builds
 
 Dev skips `web.browser.legacy` and `web.cordova` with `"modern": true`.
@@ -159,13 +188,18 @@ modern
 ## Memory limits
 
 Rspack runs as a child process and may OOM on large apps. Raise the heap
-for tool processes (Meteor 3.4.1+):
+for tool processes temporarily when capturing evidence (Meteor 3.4.1+):
 
 ```bash
 TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
 ```
 
-On Meteor 3.4, use `NODE_OPTIONS="--max-old-space-size=16384"`.
+On Meteor 3.4.0, use `NODE_OPTIONS="--max-old-space-size=16384"`.
+
+First distinguish a one-shot build failure from growth during a long watch
+session. Audit large directories visible to Meteor and check the exact release
+for fixes. Test heap size and persistent cache as separate variables; revert a
+change that does not improve the failure or a measured memory trend.
 
 ## Multiple instances
 
@@ -182,6 +216,12 @@ PORT=3001 METEOR_LOCAL_DIR=.meteor/local-2 meteor run
   `"modern": true` first, clean up Babel fallbacks, then add Rspack.
 - Edit files inside `_build/`, `public/build-assets/`,
   `public/build-chunks/`, or `private/build-assets/`. Autogenerated.
+- Assume `.gitignore` prevents code-quality tools from scanning generated
+  Rspack output. Configure each tool's own ignore mechanism.
+- Copy `.gitignore` to `.meteorignore`. Git may ignore Rspack's generated
+  handoff even though Meteor must read it.
+- Remove a custom Atmosphere minifier only because Rspack is enabled.
+  Benchmark the final production bundle first.
 - Disable Rspack persistent cache without need. It is the default and the
   main rebuild-speed win. Disable only when investigating OOM or a
   cache-related Rspack bug.

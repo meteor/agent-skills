@@ -87,17 +87,68 @@ app.
 
 Skeleton: `meteor create --babel`.
 
+## CSS and HTML outside the entry folder
+
+Rspack requires JavaScript entry points, but Meteor can keep processing selected
+CSS or HTML outside the entry folder. List those paths under `meteor.modules`:
+
+```json
+{
+  "meteor": {
+    "modules": ["styles/main.css", "imports/shell.html"]
+  }
+}
+```
+
+Use this when a Meteor HTML or stylesheet compiler must retain ownership. Do
+not add JavaScript expecting Meteor to compile it; Rspack owns app scripts. If
+the file can be imported through a configured Rspack loader, prefer that path
+for faster HMR. Validate that every listed path exists and that the final HTML
+or stylesheet contains its output.
+
+## Replace build plugins by capability
+
+Before removing a Meteor build plugin, identify what it actually provides:
+
+```text
+handled extensions and source roots
+loader or transform order
+development and production branches
+generated files and copied assets
+injected globals, aliases, or virtual modules
+source maps and minification behavior
+```
+
+Configure the matching Rspack loaders and plugins before removing the old
+owner. Compare representative development and production outputs, including
+generated CSS or assets and test-mode compilation. Remove the old plugin only
+after output and runtime parity hold. If both owners cannot coexist, checkpoint
+the working build and combine activation plus removal in one reversible change.
+Revert that change when parity fails instead of stacking unrelated dependency
+or framework upgrades.
+
+Do not remove a plugin that acts only on Atmosphere package internals. Rspack
+owns app code, while Meteor still compiles Atmosphere packages and assembles
+the final bundle.
+
 ## CSS (default)
 
 Built in. Any imported CSS file is processed and added to the HTML
 skeleton. Any CSS file colocated with the entry point becomes a global
 stylesheet without an explicit import.
 
-When `rspack.config.js` declares any CSS rule (via `postcss-loader`,
-`type: "css"`, or another CSS loader), Meteor detects the handled file
-extensions after the first compilation and stops processing those files.
-No `.meteorignore` change required. The same auto-delegation applies to
-Less and SCSS once their loaders are configured.
+On Meteor 3.4.1 and later, when `rspack.config.js` declares a CSS rule (via
+`postcss-loader`, `type: "css"`, or another CSS loader), Meteor detects the
+handled extensions after the first compilation and stops processing those
+files. No `.meteorignore` change is required. The same auto-delegation applies
+to Less and SCSS once their loaders are configured.
+
+Meteor 3.4.0 predates automatic stylesheet delegation. Prefer upgrading to
+3.4.1 or later before migrating the style pipeline. If the app must remain on
+3.4.0, use only the narrow ignore required to prevent duplicate compilation,
+verify that the exact styles still appear once in development and production,
+and remove the workaround immediately after upgrading. Never ignore the active
+Rspack build context.
 
 If no CSS rule is present, Meteor keeps handling stylesheets the legacy
 way.

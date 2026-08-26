@@ -38,9 +38,9 @@ For every `Meteor.publish(...)`:
 - [ ] `this.userId` filter when data is user-specific.
 - [ ] `fields` projection limiting columns.
 - [ ] `limit` and `sort` on unbounded collections.
-- [ ] If returning a Promise, the publication uses the low-level
-      `this.added` / `this.changed` / `this.removed` API rather than the
-      cursor-return form. Cursor `transform` callbacks remain synchronous.
+- [ ] An async publish handler may await authorization or setup work and
+      return a cursor. Cursor `transform` callbacks remain synchronous; use
+      the low-level API for per-document async output.
 
 ```javascript
 Meteor.publish("items.mine", function () {
@@ -65,13 +65,15 @@ Meteor.publish("users.public", function () {
   if (!this.userId) return this.ready();
   return Meteor.users.find(
     {},
-    { fields: { username: 1, emails: 1, profile: 1 } },
+    { fields: { username: 1, profile: 1 }, limit: 200 },
   );
 });
 ```
 
 Never publish `services.*`. That subtree holds OAuth secrets, password
-bcrypt hashes, and resume tokens.
+bcrypt hashes, and resume tokens. Do not publish every user's `emails` field by
+default. Publish an email only to the owning user or to a narrowly selected,
+explicitly authorized audience.
 
 ## Audit packages
 

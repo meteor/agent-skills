@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "meteor",
+  "displayName": "Meteor",
+  "version": "1.0.0-beta.1",
+  "description": "Build, migrate, debug, test, secure, and deploy Meteor 3 applications.",
+  "author": {
+    "name": "Meteor",
+    "url": "https://www.meteor.com/"
+  },
+  "homepage": "https://github.com/meteor/agent-skills",
+  "repository": "https://github.com/meteor/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "meteor",
+    "meteorjs",
+    "javascript",
+    "full-stack",
+    "migration"
+  ],
+  "skills": "./skills/"
+}

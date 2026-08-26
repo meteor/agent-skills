@@ -1,5 +1,13 @@
 # Troubleshooting Rspack integration
 
+## Preserve evidence first
+
+Create a checkpoint. Reproduce with one exact command and record the build mode,
+Meteor and integration versions, duration, exit status, first exception, and
+expected artifact. Change one variable per attempt. Keep a change only when the
+failure or a quantitative measurement improves, and revert disproven changes
+before testing the next hypothesis.
+
 ## Reset state
 
 ```bash
@@ -7,11 +15,16 @@ meteor reset
 rm -rf .meteor/local _build public/build-assets public/build-chunks private/build-assets
 ```
 
-Clears every cache the integration owns.
+Clears every cache the integration owns. Capture logs or generated output first;
+resetting state can erase the evidence needed to distinguish a stale cache from
+a deterministic compiler failure.
 
 ## Memory crashes (OOM)
 
-Rspack runs as a child process. Large apps may exhaust the default heap.
+Rspack runs as a child process. Large apps may exhaust the default heap. First
+distinguish a one-shot build failure from growth across a long watch session.
+Inventory large directories beneath the app root and compare `.meteorignore`
+with `.gitignore`. Check the exact Meteor/Rspack release for known fixes.
 
 Meteor 3.4.1+:
 
@@ -19,7 +32,7 @@ Meteor 3.4.1+:
 TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
 ```
 
-Meteor 3.4:
+Meteor 3.4.0:
 
 ```bash
 NODE_OPTIONS="--max-old-space-size=16384" meteor run
@@ -27,8 +40,8 @@ NODE_OPTIONS="--max-old-space-size=16384" meteor run
 
 `TOOL_NODE_FLAGS` propagates to Rspack and other Meteor tool processes.
 
-Complementary: disable Rspack's persistent cache when investigating OOM
-(persistent cache is memory-heavy).
+As a separate experiment, disable Rspack's persistent cache when investigating
+watch-mode growth:
 
 ```javascript
 module.exports = defineConfig(Meteor => ({
@@ -36,9 +49,19 @@ module.exports = defineConfig(Meteor => ({
 }));
 ```
 
-Combine both: raise heap with `TOOL_NODE_FLAGS`, drop persistent cache.
+Do not combine both changes initially. A heap increase is a temporary mitigation;
+cache disabling trades rebuild performance for memory. Measure each separately.
+If neither changes the retained-memory shape, capture a heap snapshot or Rspack
+stats instead of stacking more configuration changes.
 
-Rspack 2.0 plans to lower RAM use; current numbers will improve.
+## Generated output differs from source
+
+Meteor still assembles the final bundle after Rspack compiles app code. If only
+production or a legacy web architecture fails, compare source, Rspack output,
+the generated Meteor-facing module, and the final bundle. Identify the first
+stage that introduces an invalid helper import or syntax before changing
+application code or `.swcrc`. Check for a framework fix and reduce a reproducer
+before keeping a pipeline workaround.
 
 ## CI and Docker
 
@@ -50,9 +73,20 @@ Could not find rspack.config.js, rspack.config.ts, rspack.config.mjs, or rspack.
 
 Root cause: the npm-side deps required by the current Meteor version are
 not in the lockfile because `meteor update --npm` was not committed after
-the local Meteor upgrade.
+the local Meteor upgrade. Also check the release contract: Meteor 3.4.0 uses
+`@meteorjs/rspack` v1, while Meteor 3.4.1 uses v2.
 
-Fix in the same step as `meteor build`:
+Preferred fix: run the update locally, review it, and commit the lockfile:
+
+```bash
+meteor update --npm
+meteor npm install
+git add package.json package-lock.json
+git commit -m "update rspack npm dependencies"
+```
+
+CI can then run `meteor npm ci && meteor build`. If the pipeline must repair
+an incomplete upgrade defensively, use this fallback in the build step:
 
 ```dockerfile
 RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor build [...]
@@ -61,15 +95,9 @@ RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor bu
 The `2>/dev/null || true` keeps the step compatible with older Meteor
 versions that lack `--npm` (3.4 introduced it).
 
-Each Docker step or CI stage is isolated. If `meteor update --npm` runs in
-one step and `meteor build` in another, the npm bumps will not carry over.
-Either run both in the same step or commit the bumps locally:
-
-```bash
-meteor update --npm
-git add package.json package-lock.json
-git commit -m "bump rspack npm deps after meteor update"
-```
+Each Docker step or CI stage is isolated. Uncommitted npm bumps from one
+stage do not carry into another. Prefer the committed dependency changes;
+the fallback is a recovery mechanism, not the reproducible default.
 
 ## thread-stream worker error
 
@@ -77,8 +105,8 @@ git commit -m "bump rspack npm deps after meteor update"
 Error: Cannot find module '/_build/main-dev/lib/worker.js'
 ```
 
-`thread-stream` (transitively used by Mongo packages) loads worker scripts
-via filesystem paths Rspack rewrites. Send it to Meteor:
+`thread-stream`, commonly reached through logging stacks such as `pino`, loads
+worker scripts via filesystem paths Rspack rewrites. Send it to Meteor:
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');

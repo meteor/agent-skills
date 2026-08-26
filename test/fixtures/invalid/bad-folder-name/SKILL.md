@@ -4,10 +4,9 @@ description: >
   Use when testing folder/name mismatch. Triggers on validator unit tests.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
-  area: test
+  area: testing
   tagline: "Fixture tagline for the folder/name mismatch case."
 ---
 

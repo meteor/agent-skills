@@ -68,14 +68,18 @@ jobs:
           meteor test --once --driver-package meteortesting:mocha
 ```
 
-Node version must match the bundled Node.js for the Meteor version (3.3:
-Node 20, 3.4: Node 22, 3.5: Node 24).
+Node version must match the bundled Node.js for the Meteor version: 3.0 uses
+Node 20, 3.1 through 3.4 use Node 22, and 3.5+ uses Node 24. Run
+`meteor node -v` to verify the exact version used by the target release.
 
 ## Test discovery
 
-- `*.test.js`, `*.tests.js`, `*.spec.js`.
-- `*.app-test.js` (loaded only in `--full-app` mode).
-- Files under `tests/`.
+- Normal test mode: `*.test[s].*` and `*.spec[s].*` outside ignored
+  `tests/` directories.
+- Full-app mode: `*.app-test[s].*` and `*.app-spec[s].*` outside ignored
+  `tests/` directories.
+- Every `tests/` directory is ignored by Meteor's build tool. Reserve it for
+  an external test runner.
 
 Server-only modules stay server-only when imported from tests. Client
 tests run in a browser instance the driver spawns.

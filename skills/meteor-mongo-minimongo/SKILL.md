@@ -8,13 +8,12 @@ description: >
   Minimongo on the client.
 metadata:
   author: meteor
-  version: "0.1.0"
   kind: knowledge
   meteor: ">=3.0"
   area: data
   tagline: "Write and debug Mongo queries in Meteor 3 (server async vs Minimongo, oplog vs change streams, indexes, selectors, modifiers)."
-  bundle: ["essentials"]
-  docs_synced_at: "2026-05-14"
+  bundle: ["essentials", "fullstack"]
+  docs_synced_at: "2026-08-25"
 license: MIT
 ---
 
@@ -31,7 +30,8 @@ subscriptions have shipped.
    - Server-only: use `await Collection.*Async(...)`.
    - Client-only: use `Collection.*(...)` synchronously.
    - Isomorphic (`import` in shared code): use `await Collection.*Async(...)`.
-     On the client it resolves synchronously; on the server it talks to Mongo.
+     On the client the work is local but still Promise-based; on the server it
+     talks to Mongo.
 2. Does the query select more than a page of documents? Add `{ limit, skip }`
    and an index that matches the selector.
 3. Are you reading from a publication on the client? Use `find().fetch()`
@@ -65,8 +65,9 @@ const doc = await Posts.findOneAsync(id);                 // works in shared/cli
 const list = await Posts.find({ ownerId }).fetchAsync();
 ```
 
-On the client, the Promise resolves synchronously because Minimongo is
-in-memory. The sync API also works client-side, but only there:
+On the client, the operation reads in-memory Minimongo but the async API still
+returns a real Promise. Code after `await` resumes in a later microtask. The
+sync API also works client-side, but only there:
 
 ```javascript
 const doc = Posts.findOne(id);                            // client-only
@@ -97,16 +98,68 @@ Meteor.startup(async () => {
 });
 ```
 
-The selector order in the query must match the index order. To verify, drop
-into the Mongo shell (`meteor mongo`) and run
+Choose compound-index key order from equality filters, sort fields, range
+filters, and usable index prefixes. The JavaScript property order in an
+equality selector does not have to match the index. Verify the chosen plan in
+the Mongo shell (`meteor mongo`) with
 `db.posts.find(...).explain("executionStats")`.
 
 ## Reactivity source: oplog or change streams
 
-Meteor's reactivity engine on the server can ride the Mongo replica oplog
-(the default for self-hosted Mongo) or change streams (Atlas, Mongo 5+). The
-choice is driven by your `MONGO_OPLOG_URL` env var or `MONGO_URL` shape.
-See `v3-docs/docs/api/collections.md#mongo-connection-options`.
+The core driver boundary is release-specific:
+
+| Meteor | Reactive behavior |
+|---|---|
+| 3.0 through 3.4 | Uses oplog when `MONGO_OPLOG_URL` is configured; otherwise polling. Core change streams and reactivity-order settings are unavailable. |
+| 3.5+ | Chooses a driver per query in the default order below. |
+
+Meteor 3.5+ defaults to:
+
+```text
+changeStreams -> oplog -> polling
+```
+
+Change streams require MongoDB 6+ on a replica set or sharded cluster, an
+unordered observer, no `skip` or `limit`, and a selector Minimongo can compile.
+An ineligible query falls through to the next configured driver. Oplog is
+available only when `MONGO_OPLOG_URL` is configured.
+
+On Meteor 3.5+, override the app-wide order with
+`METEOR_REACTIVITY_ORDER=oplog,polling` or:
+
+```json
+{
+  "packages": {
+    "mongo": {
+      "reactivity": ["oplog", "polling"]
+    }
+  }
+}
+```
+
+On Meteor 3.5+, the `disable-oplog` package removes only the oplog step. It
+does not disable change streams. Use `reactivity: ["polling"]` to force
+polling. On Meteor 3.0 through 3.4, do not add these settings; upgrade first.
+
+## Collation (Meteor 3.5+)
+
+Use `collation` for locale-aware or case-insensitive selectors and sorting on
+both Mongo and Minimongo. Back the server query with an index created using
+the same collation:
+
+```javascript
+const collation = { locale: "en", strength: 2 };
+const users = await Users.find(
+  { email: "Alice@Example.COM" },
+  { collation },
+).fetchAsync();
+
+await Users.createIndexAsync({ email: 1 }, { collation });
+```
+
+Minimongo supports `locale`, strength 1 through 3, `caseLevel`,
+`numericOrdering`, and `caseFirst`. Other Mongo collation options are
+server-only and are ignored by Minimongo.
 
 ## Anti-patterns
 
@@ -115,6 +168,8 @@ See `v3-docs/docs/api/collections.md#mongo-connection-options`.
   Breaks the moment the file is imported on the server.
 - Unbounded `find` on the server. Always `limit`.
 - Forget `fields` projection when publishing. Always project.
+- Assume the async Minimongo API resumes inline. It returns a Promise even
+  though the underlying read is local.
 
 ## See also
 

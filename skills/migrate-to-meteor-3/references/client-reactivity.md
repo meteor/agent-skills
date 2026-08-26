@@ -4,35 +4,44 @@ In Meteor 2.x, `Collection.findOne` on the client was synchronous and
 reactive. Inside a Blaze helper or `Tracker.autorun`, calling it registered
 a dependency that re-ran the computation when the underlying data changed.
 
-In Meteor 3.x the sync minimongo API still exists on the client, but the
-`*Async` siblings (`findOneAsync`, `fetchAsync`) return Promises. Tracker
-cannot follow a Promise. Any async query inside a reactive computation
-loses reactivity past the first `await`.
+In Meteor 3.x the sync Minimongo API still exists on the client, and the
+`*Async` siblings (`findOneAsync`, `fetchAsync`) also work there. A reactive
+read executed before the first `await`, including the first async query, can
+register a Tracker dependency. Code after an `await` loses
+`Tracker.currentComputation` unless the reactive read is wrapped with
+`Tracker.withComputation`.
 
 ## The trap
 
 ```javascript
-// BROKEN: not reactive. The view never updates when user docs change.
+// BROKEN: the reactive query runs after an await without its computation.
 Template.profile.helpers({
-  user() {
+  async user() {
+    await Meteor.callAsync('profiles.prepare', this.userId);
     return Meteor.users.findOneAsync(this.userId);
   },
 });
 ```
 
-The helper returns a Promise. Blaze unwraps it the first time, but
-subsequent changes to the user document do not re-run the helper.
+Blaze can unwrap the returned Promise, but the query runs after the first
+`await`. It cannot register the helper's Tracker dependency, so subsequent
+document changes do not re-run the helper.
 
 ## The rule
 
-On the **server**, always use the `*Async` API. On the **client**, inside
-any reactive context (`Blaze` helper, `Tracker.autorun`, `Tracker.Dependency`,
-`ReactiveVar` consumers), keep using the **sync** minimongo API. The sync
-methods are deprecated but functional and they are the only path to
-Tracker dependencies.
+On the server, use the `*Async` API. On the client, choose based on the calling
+code:
+
+- Prefer sync Minimongo in naturally synchronous Blaze helpers, render paths,
+  and Tracker computations. It avoids Promise state and unnecessary async
+  propagation while retaining normal reactivity.
+- Prefer async Minimongo in shared client/server modules and code that is
+  already async.
+- A reactive query before the first `await` can register dependencies. Wrap
+  each reactive query after an `await` with `Tracker.withComputation`.
 
 ```javascript
-// WORKS: sync minimongo on the client, reactive.
+// Simple and reactive: sync Minimongo in synchronous UI code.
 Template.profile.helpers({
   user() {
     return Meteor.users.findOne(this.userId);
@@ -42,8 +51,17 @@ Template.profile.helpers({
 
 ## Async helpers that need reactivity
 
-If the helper must do async work (an external call, an awaited method),
-restore reactivity manually with `Tracker.withComputation`:
+An async Minimongo call made before any `await` can also be reactive:
+
+```javascript
+Tracker.autorun(async () => {
+  const users = await Meteor.users.find().fetchAsync();
+  renderUsers(users);
+});
+```
+
+If unrelated async work happens first, save the computation and restore it
+around the later reactive read:
 
 ```javascript
 import { Tracker } from 'meteor/tracker';
@@ -51,17 +69,21 @@ import { Tracker } from 'meteor/tracker';
 Template.profile.helpers({
   enriched() {
     const computation = Tracker.currentComputation;
-    return Tracker.withComputation(computation, async () => {
-      const doc  = Meteor.users.findOne(this.userId); // first read, reactive
+    return (async () => {
       const more = await Meteor.callAsync('users.enrich', this.userId);
+      const doc = await Tracker.withComputation(
+        computation,
+        () => Meteor.users.findOneAsync(this.userId),
+      );
       return { ...doc, ...more };
-    });
+    })();
   },
 });
 ```
 
-Reactivity is preserved through the first `await`. Any reactive reads after
-that need `Tracker.withComputation` to be tracked.
+Code before the first `await` keeps the current computation. Code after it does
+not. Wrap only the reactive reads that need the saved computation;
+`Tracker.withComputation` has a performance cost.
 
 ## Blaze async helpers (Blaze 2.7+)
 
@@ -107,11 +129,13 @@ pins an older Blaze, upgrade `blaze-html-templates` and the
 ## Symptoms
 
 - Page renders correctly on initial load. Subsequent changes to the data
-  never appear. Reactive helpers were rewritten to use async Mongo.
+  never appear. A reactive query runs after an `await` without
+  `Tracker.withComputation`.
 - A Blaze partial logs `[object Promise]` instead of the value. The helper
   returned a Promise without `@resolved` gating.
-- `Tracker.autorun` runs once. Subsequent invalidations are silent. The
-  autorun body awaited something.
+- `Tracker.autorun` runs once. Subsequent invalidations are silent. Its
+  reactive reads occur only after an `await` without restoring the
+  computation.
 
 ## Two-phase data patterns
 

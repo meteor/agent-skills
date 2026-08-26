@@ -21,6 +21,12 @@
     ],
     "ops": [
       "meteor-deployment"
+    ],
+    "blaze": [
+      "meteor-blaze"
+    ],
+    "react": [
+      "meteor-react"
     ]
   }
 }

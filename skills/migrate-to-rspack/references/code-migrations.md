@@ -75,7 +75,9 @@ if (condition) {
 
 Use the dynamic-import form when the goal was code-splitting (the original
 Meteor nested-import use case). Use `require` for purely synchronous
-loading in a sync scope.
+loading in a sync scope. Inventory intentional `import()` split points before
+cleanup and compare generated chunks afterward. Do not silently convert a lazy
+boundary into an eager import.
 
 ## Default-import interop for CommonJS
 
@@ -157,6 +159,26 @@ Limits:
 For dynamic aliases by env, use `swc.config.js` (a function that returns
 the SWC config).
 
+## Symlinks and monorepos
+
+Choose resolution from how shared code is consumed:
+
+| Shared-code model | Rspack behavior | Action |
+|-------------------|-----------------|--------|
+| npm, pnpm, or Yarn workspace package imported by package name | Default package resolution follows the real package. | Keep the default. |
+| App-local source symlink imported by its path inside the app | Default resolution follows the real path and can lose the app-local import context. | Set `resolve.symlinks: false`. |
+
+```javascript
+module.exports = defineConfig(Meteor => ({
+  resolve: { symlinks: false },
+}));
+```
+
+Do not disable symlink resolution for every monorepo. Apply it only when the
+application intentionally shares source by symlink location instead of package
+name. Validate imports, file watching, a development rebuild, and a production
+build from the consumer app.
+
 ## Reserved build folders
 
 Do not commit, edit, or import from:
@@ -181,16 +203,38 @@ these names, rename:
 }
 ```
 
+`.gitignore` is not a tool ignore. Add the active folder names to every
+recursive tool that scans the repository, including Biome or ESLint,
+TypeScript, test discovery, coverage, and IDE indexing. Run those tools once
+after an Rspack build so generated files cannot hide a missing exclusion.
+
+Do not add the active build context to `.meteorignore` or `METEOR_IGNORE`.
+Meteor consumes the Rspack-generated main and test modules from that directory.
+See `client-graph-preflight.md` for renamed contexts and source-tree scanning.
+
 ## Verifying a migration
 
-1. `"meteor": { "modern": true }` is set and dev runs clean (no
-   `(app)` Babel fallbacks).
-2. `meteor add rspack` succeeds and `rspack.config.js` appears.
-3. `meteor reset` then `meteor run` builds both client and server.
-4. Verbose mode shows app code running through Rspack/SWC; only
-   Atmosphere `(package)` files run through the Meteor bundler.
-5. `meteor build --architecture os.linux.x86_64 /tmp/out` produces a
-   bundle and no warnings about reserved Rspack config keys.
+Verify from a clean clone, not only from a developer tree with cached files
+or ignored settings:
+
+1. `meteor npm ci` installs the committed lockfile without changing it.
+2. `"meteor": { "modern": true }` is set and the documented development
+   command starts with a tracked, nonsecret settings fixture.
+3. `meteor add rspack` has produced a committed `rspack.config.*` and the
+   required npm dependency changes.
+4. Verbose mode shows app code running through Rspack/SWC; only Atmosphere
+   `(package)` files run through the Meteor bundler.
+5. Server tests, browser-backed client tests, and the app's E2E command pass.
+6. Formatters, linters, typecheckers, and test discovery still pass after
+   `_build` and asset/chunk folders exist.
+7. `meteor build --architecture os.linux.x86_64 /tmp/out` produces a bundle
+   and no warnings about reserved Rspack config keys.
+8. `git status --short` remains clean after the complete sequence.
+
+Then boot the extracted production bundle and load it in a browser. Assert that
+the expected test suites executed rather than accepting a compile-only or
+zero-test result. Use `validation-matrix.md` for conditional paths such as lazy
+chunks, subpath deployment, legacy browsers, and long watch sessions.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md

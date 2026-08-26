@@ -14,6 +14,12 @@ METEOR_SETTINGS="$(cat settings.json)" node bundle/main.js
 `METEOR_SETTINGS` is the canonical production path. The bundled
 `bundle/main.js` reads it and writes `Meteor.settings`.
 
+Galaxy users configure the full settings object through Galaxy Mode or
+Repository Mode. Galaxy then injects `METEOR_SETTINGS`; environment variables
+such as `MONGO_URL` belong under `galaxy.meteor.com.env`. See
+[`galaxy.md`](galaxy.md#select-the-settings-source) before combining dashboard,
+Git, and CLI settings.
+
 ## Reading
 
 ```javascript
@@ -32,7 +38,7 @@ server.
 |--------------------|--------------|------------------------------------------------|
 | `ROOT_URL`         | required     | External URL. Required for OAuth, absoluteUrl. |
 | `MONGO_URL`        | required     | `mongodb://...` or `mongodb+srv://...`.        |
-| `MONGO_OPLOG_URL`  | optional     | Self-hosted Mongo replica oplog.               |
+| `MONGO_OPLOG_URL`  | optional     | Mongo replica oplog URL.                       |
 | `PORT`             | 3000         |                                                |
 | `BIND_IP`          | 0.0.0.0      | Listen interface.                              |
 | `METEOR_SETTINGS`  | optional     | JSON blob; merged into `Meteor.settings`.      |
@@ -51,8 +57,11 @@ Meteor-specific knobs documented in
 - Atlas: `mongodb+srv://user:pass@cluster.mongodb.net/myapp?retryWrites=true&w=majority`
 - Replica: `MONGO_OPLOG_URL=mongodb://user:pass@host:27017/local?replicaSet=rs0&authSource=admin`
 
-Atlas uses change streams instead of oplog; do not set `MONGO_OPLOG_URL`
-there.
+On Meteor 3.0 through 3.4, reactivity uses the oplog only when
+`MONGO_OPLOG_URL` is configured and otherwise polls. Meteor 3.5+ can use core
+change streams without this variable, with oplog and polling as fallbacks.
+Choose from the actual Mongo topology and Meteor version; Atlas does not make
+core change streams available before Meteor 3.5.
 
 ## Secrets
 

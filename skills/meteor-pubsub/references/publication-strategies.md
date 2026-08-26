@@ -8,15 +8,21 @@ where the working set per client is small.
 
 ## `NO_MERGE`
 
-The server sends the full result of every reactive run. No per-client state.
-Lower memory; higher bandwidth. Use for read-only feeds or when memory
-pressure is real.
+The server does not merge fields across publications, but it remembers the
+document IDs sent by this subscription. It can therefore send removals when
+the subscription stops. Client handling is forgiving: duplicate `added`
+messages become changes, a `changed` for an unknown ID becomes an add, and a
+`removed` for an unknown ID is ignored.
+
+Use this when a collection is supplied by only one publication. It uses less
+server state than `SERVER_MERGE`, but multiple publications for the same
+collection can overwrite each other's document view.
 
 ## `NO_MERGE_NO_HISTORY`
 
-Like `NO_MERGE`, but the server forgets which documents it sent. Documents
-already at the client are sent again on every change. Use only for
-append-only, write-once data.
+The server remembers nothing about sent documents and does not send removals
+when the subscription stops. Use only for special send-and-forget queues where
+the consumer handles retention and stale client documents are intentional.
 
 ## Setting the strategy
 
@@ -37,8 +43,8 @@ Meteor.server.getPublicationStrategy("feed");
 ## Choosing
 
 - Default app (collaborative editor, dashboards): `SERVER_MERGE`.
-- High-fanout feed (notifications, activity stream): `NO_MERGE`.
-- Append-only log shipped to many clients: `NO_MERGE_NO_HISTORY`.
+- Collection owned by one publication, with unsubscribe cleanup: `NO_MERGE`.
+- Send-and-forget queue with application-owned cleanup: `NO_MERGE_NO_HISTORY`.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/meteor.md#publication-strategies

@@ -31,7 +31,11 @@ DDPRateLimiter.addRule(
 
 // Per-IP login attempts
 DDPRateLimiter.addRule(
-  { type: "method", name: "login" },
+  {
+    type: "method",
+    name: "login",
+    clientAddress: () => true,
+  },
   5,
   60000,
 );
@@ -62,6 +66,36 @@ DDPRateLimiter.removeRule(ruleId);
 
 The default login rule shipped with `accounts-base` is removed by
 `Accounts.removeDefaultRateLimit()`.
+
+## Async matchers (Meteor 3.5+)
+
+Matchers may return `Promise<boolean>`. Use this only when the rule must read
+the database, because each matcher is awaited on the incoming connection's
+message queue.
+
+```javascript
+DDPRateLimiter.addRule(
+  {
+    type: "method",
+    name: "reports.generate",
+    async userId(userId) {
+      if (!userId) return true;
+      const user = await Meteor.users.findOneAsync(userId, {
+        fields: { subscriptionTier: 1 },
+      });
+      return user?.subscriptionTier !== "premium";
+    },
+  },
+  2,
+  60000,
+);
+```
+
+Keep synchronous matchers for values already present on the invocation. A
+rejected async matcher fails the invocation; test that error path. Every
+matcher field also contributes to the bucket key. Include `userId`,
+`clientAddress`, or `connectionId` when the limit must be scoped rather than
+global.
 
 ## Custom error message
 

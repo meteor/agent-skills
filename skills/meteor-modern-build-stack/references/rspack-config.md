@@ -1,8 +1,21 @@
 # Customizing `rspack.config.js`
 
 The `rspack` Atmosphere package generates a `rspack.config.js` at install
-time. Edit it with `defineConfig` from `@meteorjs/rspack`. Accept any of
-`rspack.config.js`, `.mjs`, or `.cjs`.
+time. Edit it with `defineConfig` from `@meteorjs/rspack`. Accepted names are
+`rspack.config.js`, `rspack.config.ts`, `rspack.config.mjs`, and
+`rspack.config.cjs`.
+
+Match both integration packages to the Meteor release:
+
+| Meteor | `rspack` | `@meteorjs/rspack` | Capability boundary |
+|---|---|---|---|
+| 3.4 | `1.0.0` | `1.0.0` | Base helpers, including `extendConfig`, `disablePlugins`, and `RSPACK_DEVSERVER_PORT`. |
+| 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds `replaceSwcConfig`, `persistDevFiles`, `enablePortableBuild`, and inherited `TOOL_NODE_FLAGS`. |
+| 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and app-extension discovery; retains the v2 helper API. |
+
+Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
+arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
+release and its paired dependencies.
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');
@@ -34,9 +47,29 @@ module.exports = defineConfig(Meteor => ({
 
 ## Helpers
 
+### `extendConfig`
+
+Deep-merge reusable or conditional Rspack configuration fragments without
+replacing sibling nested keys:
+
+```javascript
+module.exports = defineConfig(Meteor => ({
+  ...Meteor.extendConfig(
+    { resolve: { alias: { '@ui': '/imports/ui' } } },
+    Meteor.isClient ? { module: { rules: [clientRule] } } : {},
+  ),
+}));
+```
+
+Use direct properties for one small config. Use `extendConfig` when composing
+multiple nested fragments or presets. Inspect verbose final config to confirm
+the merge result.
+
 ### `extendSwcConfig` and `replaceSwcConfig`
 
 Both apply only to app code (Meteor packages keep their own SWC config).
+`extendSwcConfig` exists in Meteor 3.4+. `replaceSwcConfig` requires Meteor
+3.4.1+ and `@meteorjs/rspack` v2.
 
 ```javascript
 // Smart-merge custom options onto Meteor's SWC defaults
@@ -78,9 +111,10 @@ Use `compileWithMeteor` for:
 
 - Native or binary deps (e.g. `sharp`).
 - Atmosphere-package internals.
-- `thread-stream` and similar transitive Mongo deps that load workers via
-  filesystem paths. Fix for `Cannot find module '/_build/main-dev/lib/worker.js'`:
-  add `thread-stream` to `compileWithMeteor`.
+- `thread-stream` and similar worker-loading dependencies reached through
+  logging stacks such as `pino`. Fix
+  `Cannot find module '/_build/main-dev/lib/worker.js'` by adding
+  `thread-stream` to `compileWithMeteor`.
 
 ### `splitVendorChunk`
 
@@ -96,7 +130,7 @@ module.exports = defineConfig(Meteor => ({
 For finer control, drop the helper and use Rspack's official
 `splitChunksPlugin` config.
 
-### `persistDevFiles`
+### `persistDevFiles` (Meteor 3.4.1+)
 
 Rspack dev server keeps build output in memory. If Meteor's web server has
 to serve a file (e.g. a Workbox-generated `sw.js`), persist it.
@@ -143,7 +177,7 @@ Match by constructor name string, RegExp, or predicate.
 ])
 ```
 
-### `enablePortableBuild`
+### `enablePortableBuild` (Meteor 3.4.1+)
 
 Default: `Meteor.isDevelopment` and `Meteor.isProduction` are replaced at
 build time, enabling dead-code elimination of dev-only blocks.

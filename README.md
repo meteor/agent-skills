@@ -2,11 +2,54 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: bootstrapping. The first public skill ships in the next release. See the proposal repo for the roadmap.
+> Status: beta. Twelve Meteor 3 skills are available below; the first tagged release is in preparation.
 
 ## Install
 
-The open `skills` CLI installs skills into your local agent (Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and 40+ others).
+The GitHub installation commands below require a public repository. Maintainers
+can test the working tree while it remains private by following
+[`RELEASING.md`](./RELEASING.md#test-the-plugin-locally).
+
+### Codex
+
+Install the complete catalog as one Codex plugin:
+
+```bash
+codex plugin marketplace add meteor/agent-skills
+codex plugin add meteor@meteor
+```
+
+To test a specific prerelease, pin the marketplace checkout to its repository
+tag before installing:
+
+```bash
+codex plugin marketplace add meteor/agent-skills --ref v1.0.0-beta.1
+codex plugin add meteor@meteor
+```
+
+### Claude Code
+
+Install the complete catalog as one Claude Code plugin:
+
+```bash
+claude plugin marketplace add meteor/agent-skills
+claude plugin install meteor@meteor
+```
+
+To test a specific prerelease, append its repository tag to the marketplace
+source:
+
+```bash
+claude plugin marketplace add meteor/agent-skills@v1.0.0-beta.1
+claude plugin install meteor@meteor
+```
+
+### Individual skills and other agents
+
+The open `skills` CLI installs individual skills or the complete catalog into
+Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and other supported
+agents. Use this route when you want only selected skills instead of the full
+Meteor plugin.
 
 ```bash
 # all skills (interactive picker)
@@ -40,6 +83,12 @@ npx skills add meteor/agent-skills --all
 
 ### Data
 
+- **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components).
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-blaze
+  ```
+
 - **`meteor-methods`**: Author and debug Meteor methods (argument `check()`, optimistic stubs, latency compensation, `Meteor.Error`, `DDPRateLimiter`).
 
   ```bash
@@ -56,6 +105,12 @@ npx skills add meteor/agent-skills --all
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-pubsub
+  ```
+
+- **`meteor-react`**: Build and debug Meteor 3 React interfaces (Rspack scaffold, reactive data hooks, Suspense, Fast Refresh, and testing).
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-react
   ```
 
 ### Migration
@@ -157,13 +212,41 @@ npx skills add meteor/agent-skills \
   $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
     | jq -r '.bundles["ops"] | map("--skill " + .) | join(" ")')
 ```
+
+### `blaze`
+
+```bash
+npx skills add meteor/agent-skills --skill meteor-blaze
+```
+
+Or via `bundles.json`:
+
+```bash
+npx skills add meteor/agent-skills \
+  $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
+    | jq -r '.bundles["blaze"] | map("--skill " + .) | join(" ")')
+```
+
+### `react`
+
+```bash
+npx skills add meteor/agent-skills --skill meteor-react
+```
+
+Or via `bundles.json`:
+
+```bash
+npx skills add meteor/agent-skills \
+  $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
+    | jq -r '.bundles["react"] | map("--skill " + .) | join(" ")')
+```
 <!-- BUNDLES:END -->
 
 ## Manual install
 
 For users who cannot or do not want to run `npx skills add`:
 
-1. Open the [latest release](https://github.com/meteor/agent-skills/releases/latest).
+1. Open [GitHub releases](https://github.com/meteor/agent-skills/releases).
 2. Download the `.zip` for the skill you want, e.g. `migrate-to-meteor-3.zip`.
 3. Unzip into your agent's skills directory:
 
@@ -182,7 +265,11 @@ example `.cursor/skills/`, `.codex/skills/`).
 
 ## Contributing
 
-See [`AGENTS.md`](./AGENTS.md) and [`CONTRIBUTING.md`](./CONTRIBUTING.md).
+Start with [`CONTRIBUTING.md`](./CONTRIBUTING.md). The
+[maintenance verification guide](./docs/maintenance-verification.md) provides
+copy-paste commands and prompts for audits, skill changes, behavioral
+checks, and final review. [`AGENTS.md`](./AGENTS.md) is the normative
+authoring contract.
 
 ## License
 

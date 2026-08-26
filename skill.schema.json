@@ -8,7 +8,7 @@
   "properties": {
     "name": {
       "type": "string",
-      "pattern": "^_?[a-z0-9][a-z0-9-]{0,62}[a-z0-9]$",
+      "pattern": "^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$",
       "maxLength": 64
     },
     "description": {
@@ -22,15 +22,11 @@
     },
     "metadata": {
       "type": "object",
-      "required": ["author", "version", "kind", "meteor", "area", "tagline"],
+      "required": ["author", "kind", "meteor", "area", "tagline"],
       "additionalProperties": true,
       "properties": {
         "author": {
           "const": "meteor"
-        },
-        "version": {
-          "type": "string",
-          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(-[0-9A-Za-z.-]+)?$"
         },
         "kind": {
           "enum": ["knowledge", "tool", "workflow"]
@@ -41,8 +37,15 @@
         },
         "area": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 64
+          "enum": [
+            "auth",
+            "build",
+            "data",
+            "migration",
+            "ops",
+            "security",
+            "testing"
+          ]
         },
         "tagline": {
           "type": "string",

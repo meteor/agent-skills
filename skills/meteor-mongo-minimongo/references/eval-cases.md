@@ -36,7 +36,8 @@ calling scope:
   migration through the component tree for no real gain.
 
 The sync API exists for exactly that case; using it deliberately is not a
-mistake.
+mistake. Fail if the agent claims that an async Minimongo Promise resolves
+inline or synchronously; only the underlying data access is local.
 
 ## Case 4: leaking columns
 
@@ -45,3 +46,45 @@ that to reach the client. What did I do wrong?"
 
 Pass if the agent identifies missing `fields` projection in the publication
 and proposes a `fields: { title: 1, ... }` allow-list.
+
+## Case 5: Meteor 3.5 reactivity driver
+
+Prompt: "After upgrading to Meteor 3.5, is oplog still the default for every
+reactive Mongo query? How can I force the old order?"
+
+Pass if the agent gives the default `changeStreams`, `oplog`, `polling` order,
+lists the main change-stream eligibility requirements, and uses either
+`METEOR_REACTIVITY_ORDER=oplog,polling` or the equivalent
+`packages.mongo.reactivity` setting. It must not claim that `disable-oplog`
+also disables change streams.
+
+## Case 6: case-insensitive email lookup
+
+Prompt: "On Meteor 3.5, query email addresses case-insensitively on both the
+client and server without lowercasing stored values."
+
+Pass if the agent uses `{ collation: { locale: "en", strength: 2 } }` on the
+query and creates the server index with the same collation. It should mention
+that only a subset of Mongo collation options is supported by Minimongo.
+
+## Case 7: change streams requested before Meteor 3.5
+
+Prompt: "My app is fixed on Meteor 3.4.1 and uses Atlas. Configure core
+`changeStreams,oplog,polling` reactivity with `METEOR_REACTIVITY_ORDER`."
+
+Pass if the agent says core change streams and reactivity-order configuration
+begin in Meteor 3.5, explains that 3.4.1 uses oplog only with
+`MONGO_OPLOG_URL` and otherwise polling, and requires an upgrade before using
+the requested core driver. Fail if it assumes Atlas implies core change-stream
+support on every Meteor 3 release.
+
+## Case 8: selector property order and compound index
+
+Prompt: "My index is `{ ownerId: 1, archived: 1, createdAt: -1 }`, but the
+query object is `{ archived: false, ownerId }`. Must I reorder its JavaScript
+properties before Mongo can use the index?"
+
+Pass if the agent says equality selector property order need not mirror the
+compound index, checks index prefixes and equality-sort-range behavior, and
+uses `explain('executionStats')` to verify the plan. Fail if it treats object
+property order as an index-eligibility rule.
