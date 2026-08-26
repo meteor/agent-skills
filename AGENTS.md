@@ -28,7 +28,7 @@ skill-gap-audit
 
 When one request explicitly asks to audit and fix, complete the audit first, preserve its evidence, then load `skill-maintenance` and implement only confirmed findings within the requested scope. Do not implement uncertain findings or create proposed skills without explicit user approval.
 
-`pnpm run validate` enforces frontmatter, naming, body size, prohibited-content rules, required evaluation-case files, and required revision and handoff fields in committed gap-audit reports. `pnpm run check-links` checks links in published and maintainer skills. The ZIP test suite verifies that `.github/skills/` and repository maintenance evidence remain outside release artifacts.
+`pnpm run validate` enforces frontmatter, naming, body size, prohibited-content rules, required evaluation-case files, plugin packaging consistency, and required revision and handoff fields in committed gap-audit reports. `pnpm run check-links` checks links in published and maintainer skills. The ZIP test suite verifies that `.github/skills/` and repository maintenance evidence remain outside release artifacts.
 
 Committed gap-audit records live under `audits/skill-gaps/`. Each record identifies the audited agent-skills revision, Meteor remote and revision, release context, audit mode, and previous audit baseline. These reports are immutable maintenance evidence and are never included in distributable skills. An incremental audit uses the latest applicable committed record from Git history; if no reliable record exists, run a full audit.
 
