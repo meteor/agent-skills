@@ -42,7 +42,7 @@ Focus on user-visible changes under `v3-docs/`, `packages/`, `tools/`, `npm-pack
 
 ## Audit distributable content deeply
 
-Audit the exact runtime content that can enter each published ZIP: `SKILL.md`, every reference, every helper script, and any assets whose behavior or output is described by the skill. Treat reviewer-only material outside `skills/<name>/` as evaluation evidence, not distributable guidance.
+Audit the exact runtime content that can enter each published ZIP: `SKILL.md`, every reference, every helper script, and any assets whose behavior or output is described by the skill. Use each skill's `references/eval-cases.md` as its acceptance criteria.
 
 For every advertised or instructional claim, record:
 

@@ -1,6 +1,6 @@
 ---
 name: skill-maintenance
-description: Use when creating, reviewing, or updating a published skill in meteor/agent-skills, including applying confirmed skill-gap audit findings. Preserves repository conventions, distributable format, factual evidence, routing boundaries, references, metadata, and behavioral evaluation coverage.
+description: Use when creating, reviewing, or updating a published skill in meteor/agent-skills, including applying confirmed skill-gap audit findings. Preserves repository conventions, distributable format, factual evidence, routing boundaries, references, metadata, and manual behavior cases.
 ---
 
 # Maintain Meteor agent skills
@@ -60,7 +60,7 @@ history. For package APIs, use package history and the resolved package version.
 7. Bump `metadata.version` for meaningful behavioral guidance changes. Update `docs_synced_at` only after checking the relevant current documentation.
 8. Regenerate the catalog when names, taglines, or bundle membership change.
 9. Add realistic positive, failure, and near-miss evaluation cases. Grade observable behavior instead of exact wording.
-10. Load [`skill-behavior-evaluation`](../skill-behavior-evaluation/SKILL.md) for a new skill, a description or routing change, a high-risk decision change, or a confirmed behavioral regression. Maintain the representative suite and run only the evaluation level justified by the change.
+10. Run affected manual cases for a new skill, a description or routing change, a high-risk decision change, or a confirmed behavioral regression.
 11. Run all repository checks before reporting completion.
 
 ## Version-sensitive capabilities
@@ -83,6 +83,12 @@ When a capability starts after the skill's `metadata.meteor` minimum:
    Do not infer them from the Meteor release.
 5. Evaluate both sides of the boundary and bump `metadata.version` when the
    compatibility decision changes guidance.
+
+## Evaluation cases
+
+Each published skill keeps its acceptance prompts in `references/eval-cases.md`. Add only a realistic prompt with observable pass and fail conditions that catches a meaningful failure. State versions when relevant and add a near miss only for a plausible neighboring skill. Skip wording-only and duplicate cases.
+
+Run affected prompts with the current skill in fresh conversations or disposable projects. Hide the criteria until each run finishes and record the outcomes in the PR or review.
 
 ## Preserve catalog patterns
 
@@ -119,7 +125,7 @@ Otherwise, update an existing skill, add an evaluation case, or leave the inform
 
 ## Validation
 
-Static validation always applies. A model run applies when the change meets the behavioral threshold above, not for wording, formatting, links, or a factual source refresh that leaves decisions unchanged. Keep representative suites and required fixtures under `evaluations/`; keep generated workspaces and raw output under ignored `evaluations/.work/`. Record affected case outcomes in the PR or review.
+Static validation always applies. Run affected manual cases when guidance or routing changes, not for wording, formatting, links, or a factual source refresh that leaves decisions unchanged. Keep temporary projects and raw model output outside the repository. Record affected case outcomes in the PR or review.
 
 Run from the agent-skills repository root:
 

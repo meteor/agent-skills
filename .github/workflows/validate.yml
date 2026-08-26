@@ -20,7 +20,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Validate skills and evaluations
+      - name: Validate skills
         run: pnpm run validate
 
       - name: Check links

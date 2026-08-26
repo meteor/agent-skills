@@ -4,7 +4,7 @@ The full authoring contract is in [`AGENTS.md`](./AGENTS.md). Read it first.
 
 ## Maintaining existing skills
 
-Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare the catalog with a Meteor checkout and produce a read-only evidence report. Use [`skill-maintenance`](./.github/skills/skill-maintenance/SKILL.md) only after implementation is requested. Use [`skill-behavior-evaluation`](./.github/skills/skill-behavior-evaluation/SKILL.md) for new skills, routing changes, high-risk guidance, or behavioral regressions. An explicit audit-and-fix request may use the workflows in sequence, with the audit preserved before edits begin.
+Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare the catalog with a Meteor checkout and produce a read-only evidence report. Use [`skill-maintenance`](./.github/skills/skill-maintenance/SKILL.md) only after implementation is requested. An explicit audit-and-fix request may use the workflows in sequence, with the audit preserved before edits begin.
 
 Store committed audit records under `audits/skill-gaps/`. Do not overwrite an earlier audit. A new audit records its predecessor and the old and new Meteor revisions so later drift checks remain reproducible.
 
@@ -28,11 +28,12 @@ Implement an approved contribution:
 > and run the checks proportional to the behavioral risk. Do not commit or push
 > unless requested.
 
-Evaluate changed behavior:
+Test changed behavior:
 
-> Use `skill-behavior-evaluation` for `<skill>`. Run the affected representative
-> current-skill cases in fresh workspaces, grade observable outcomes, diagnose
-> failures, and report the cases run and their results.
+> Run the affected cases from `<skill>/references/eval-cases.md` with the current
+> skill. Use a fresh conversation or disposable project for each prompt. Check
+> the documented pass and fail conditions after the run, diagnose failures, and
+> report the results.
 
 The [maintenance verification guide](./docs/maintenance-verification.md)
 contains additional task recipes, commands, expected outcomes, and failure
@@ -42,7 +43,7 @@ diagnosis.
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm run validate       # skills, audits, representative suites, and routing
+pnpm run validate       # skills, audits, and required evaluation-case files
 pnpm run check-links    # relative + v3-docs links
 pnpm run catalog:check  # README catalog and bundles
 pnpm test               # unit tests for the toolchain
@@ -57,7 +58,7 @@ All checks must pass before opening a PR.
 2. Edit `SKILL.md`: update `name` (must match folder), `description` (>=2 trigger phrases), `metadata`.
 3. Write the body. Keep it under 8 KB. Move overflow into `references/`.
 4. Add `references/eval-cases.md` with realistic prompts to run against an agent.
-5. Add a representative machine-readable subset under `evaluations/skills/<your-skill-name>/cases.json`, plus routing cases and small fixtures where needed.
+5. Run the central behavior and routing prompts in fresh conversations or disposable projects.
 6. Run the local checks.
 7. Open a PR. Describe the skill in two sentences in the PR body.
 
@@ -65,9 +66,8 @@ Agent prompt:
 
 > Use `skill-maintenance` to create `<skill-name>` for `<user-outcome>`. Inspect
 > neighboring skills and bundles, keep the scope distinct, add canonical and
-> representative evaluation cases, and use `skill-behavior-evaluation` to test
-> routing and behavior. Do not create the skill if an existing one already owns
-> the outcome.
+> realistic evaluation cases, and test routing and behavior with affected
+> prompts. Do not create the skill if an existing one already owns the outcome.
 
 ## Smoke test against a local agent
 
@@ -83,15 +83,14 @@ npx skills add ./ --skill <your-skill-name>
 # Mark pass/fail in the PR description.
 ```
 
-Run the prompt before opening any reviewer guide under `test/evals/`. Do not
-copy reviewer guides into the target project or expose them in the agent
-conversation. Compare the response with the guide only after the run ends.
+Do not expose the documented pass and fail conditions until the run ends. Keep
+temporary projects and raw output outside this repository. Record each affected
+case and its pass or fail result in the PR.
 
-Machine-readable suites do not replace the complete manual cases. They select a stable representative subset, pin Meteor and package context, and grade observable response, file, or command evidence. Store generated workspaces and raw output only under `evaluations/.work/`.
-
-Run affected current-skill cases in fresh workspaces. Record each pass or fail result in the PR, along with any limitation. Rerun a case only after changing the skill, case, fixture, or execution setup.
-
-The PR is not ready to merge until an outside contributor runs every canonical eval case against Claude Code or Cursor and records the results in the PR. Static CI validates the case definitions but does not invoke a model.
+For a new skill, routing change, or high-risk guidance change, ask an outside
+contributor to run the affected cases against Claude Code or Cursor and record
+the results in the PR. Static CI validates that case files exist but does not
+invoke a model.
 
 ## Reporting an issue
 

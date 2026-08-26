@@ -43,7 +43,7 @@ For every publishable folder under `skills/`:
 1. Read the frontmatter description, tagline, kind, area, bundle membership, Meteor range, version, and documentation sync date.
 2. List the outcomes and symptoms promised by `SKILL.md`.
 3. Map each promise to its supporting reference and evaluation case.
-4. Compare naming, classification, routing, structure, references, and evaluation style with the closest neighboring skills. Treat useful local variation as intentional unless it conflicts with the repository contract or behavior.
+4. Compare naming, classification, routing, structure, references, and case style with the closest neighboring skills. Treat useful local variation as intentional unless it conflicts with the repository contract or behavior.
 5. Note overlap with neighboring skills, promises without behavioral coverage, and classifications that do not match the skill's actual outcome or installation audience.
 6. Exclude folders beginning with `_` and internal `.github/skills/`.
 
@@ -67,7 +67,7 @@ Use this order:
 
 1. Incorrect security, data-access, deployment, or migration guidance.
 2. Removed APIs and breaking behavior.
-3. Advertised capabilities with no instructions or evaluation evidence.
+3. Advertised capabilities with no instructions or acceptance case.
 4. New user-facing workflows with strong skill value.
 5. Routing overlap and near-miss failures.
 6. Helpful improvements that are not release blockers.
@@ -82,7 +82,7 @@ Every finding must include:
 - Affected skill or proposed scope.
 - User impact.
 - Evidence path, revision, and relevant symbol or section.
-- Existing evaluation coverage.
+- Existing acceptance cases.
 - Recommended action and acceptance evidence.
 
 For full and release audits, include a claim matrix covering every distributable skill. For incremental audits, include every changed claim plus all claims affected by the Meteor diff, even when the skill file itself did not change.

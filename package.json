@@ -9,9 +9,8 @@
   },
   "packageManager": "pnpm@9.12.0",
   "scripts": {
-    "validate": "pnpm run validate:skills && pnpm run validate:evaluations",
+    "validate": "pnpm run validate:skills",
     "validate:skills": "node scripts/validate-skills.mjs",
-    "validate:evaluations": "node scripts/validate-evaluations.mjs",
     "check-links": "node scripts/check-links.mjs",
     "build:zips": "node scripts/build-zips.mjs",
     "catalog:write": "node scripts/generate-catalog.mjs",

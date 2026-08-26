@@ -10,7 +10,6 @@ Repository maintenance workflows live under `.github/skills/`. They help contrib
 |-------|----------|
 | [`skill-maintenance`](.github/skills/skill-maintenance/SKILL.md) | Creating, reviewing, or updating a published skill while preserving repository conventions. |
 | [`skill-gap-audit`](.github/skills/skill-gap-audit/SKILL.md) | Comparing Meteor documentation and source changes with current skill coverage. |
-| [`skill-behavior-evaluation`](.github/skills/skill-behavior-evaluation/SKILL.md) | Testing current skill behavior, routing boundaries, and regressions. |
 
 ### Audit and maintenance workflow
 
@@ -21,21 +20,21 @@ skill-gap-audit
 -> confirmed findings
 -> authorized implementation scope
 -> skill-maintenance
--> behavioral evaluation when routing or high-risk guidance changes
+-> affected manual cases when routing or high-risk guidance changes
 -> repository validation
 -> release ZIP verification
 ```
 
 When one request explicitly asks to audit and fix, complete the audit first, preserve its evidence, then load `skill-maintenance` and implement only confirmed findings within the requested scope. Do not implement uncertain findings or create proposed skills without explicit user approval.
 
-`pnpm run validate` enforces frontmatter, naming, body size, and prohibited-content rules for both published and maintainer skills. It also checks required revision and handoff fields in committed gap-audit reports, plus machine-readable behavioral and routing suites under `evaluations/`. `pnpm run check-links` checks links in both skill locations. The ZIP test suite verifies that `.github/skills/` and repository evaluation evidence remain outside release artifacts.
+`pnpm run validate` enforces frontmatter, naming, body size, prohibited-content rules, required evaluation-case files, and required revision and handoff fields in committed gap-audit reports. `pnpm run check-links` checks links in published and maintainer skills. The ZIP test suite verifies that `.github/skills/` and repository maintenance evidence remain outside release artifacts.
 
 Committed gap-audit records live under `audits/skill-gaps/`. Each record identifies the audited agent-skills revision, Meteor remote and revision, release context, audit mode, and previous audit baseline. These reports are immutable maintenance evidence and are never included in distributable skills. An incremental audit uses the latest applicable committed record from Git history; if no reliable record exists, run a full audit.
 
-Behavioral evaluation definitions live under `evaluations/`. Canonical manual cases remain in each published skill's `references/eval-cases.md`; a machine-readable suite selects only representative cases and links back with an exact `case_ref`. Commit small starting fixtures only when files or commands are part of the expected result. Keep generated workspaces, responses, and command output under ignored `evaluations/.work/`. Record case outcomes in the PR or review. Static suite validation runs in CI; model execution does not.
+Each published skill keeps its complete manual acceptance cases in `references/eval-cases.md`. These cases are the single source of truth for behavior checks. Run affected prompts in fresh conversations or disposable projects and record pass or fail outcomes in the PR or review. Do not commit temporary projects, transcripts, or raw model output. CI validates that the case file exists but does not invoke a model.
 
 For a human-oriented explanation of how source review, deterministic checks,
-behavioral evaluation, evidence files, and ZIP inspection fit together, read
+manual behavior checks, and ZIP inspection fit together, read
 the [maintenance verification guide](docs/maintenance-verification.md).
 
 ## What is a skill
@@ -75,7 +74,7 @@ metadata:
 ---
 ```
 
-`description` is agent-facing and packed with trigger phrases so the assistant picks the skill against a user prompt. State the outcome, concrete positive triggers, and a boundary or handoff when neighboring skills overlap. Test routing changes against `evaluations/routing/cases.json`. `tagline` is human-facing: a short one-liner (16-200 chars) rendered as the bullet text in the README catalog. Keep them separate; do not collapse one into the other.
+`description` is agent-facing and packed with trigger phrases so the assistant picks the skill against a user prompt. State the outcome, concrete positive triggers, and a boundary or handoff when neighboring skills overlap. Test routing changes with positive and near-miss prompts in the affected skills' `references/eval-cases.md`. `tagline` is human-facing: a short one-liner (16-200 chars) rendered as the bullet text in the README catalog. Keep them separate; do not collapse one into the other.
 
 Optional:
 
@@ -193,7 +192,7 @@ Helper scripts go in `scripts/`. Conventions:
   against versioned documentation, official release notes, tags, or Git
   history. Do not infer an introduction version only because a capability is
   present on `devel`.
-- Add evaluation coverage for both the supported version and an earlier-version
+- Add case coverage for both the supported version and an earlier-version
   near miss when a skill spans the capability boundary.
 - A skill marked `metadata.meteor: ">=3.0"` must keep working on every Meteor 3.x release. If a behavior changes in 4.0, fork a new skill (`meteor-async-migration-4`) and bump `metadata.meteor`.
 
@@ -201,8 +200,7 @@ Helper scripts go in `scripts/`. Conventions:
 
 ```bash
 pnpm install
-pnpm run validate             # skills, audits, evaluation schemas, and routing
-pnpm run validate:evaluations # representative suites, fixtures, and routing
+pnpm run validate             # skills, audits, and required evaluation-case files
 pnpm run check-links
 pnpm test
 ```
@@ -239,6 +237,6 @@ generator. Hand edits inside the markers are reverted on next run.
 1. Validator must pass.
 2. Link checker must pass.
 3. The skill body is <=8 KB; bigger content moves to `references/`.
-4. At least one outside contributor (not the author) follows `references/eval-cases.md` against Claude Code or Cursor.
-5. New skills, routing changes, and high-risk decision changes have representative machine-readable cases. Run affected cases in fresh workspaces and record their outcomes in the PR.
+4. For a new skill, routing change, or high-risk guidance change, at least one outside contributor runs the affected cases in `references/eval-cases.md` against Claude Code or Cursor.
+5. New skills, routing changes, and high-risk decision changes add or update the smallest relevant cases in `references/eval-cases.md`. Run affected prompts in fresh conversations or disposable projects and record their outcomes in the PR.
 6. The PR description links to the relevant v3-docs section(s).

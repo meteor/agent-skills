@@ -225,7 +225,7 @@ example `.cursor/skills/`, `.codex/skills/`).
 Start with [`CONTRIBUTING.md`](./CONTRIBUTING.md). The
 [maintenance verification guide](./docs/maintenance-verification.md) provides
 copy-paste commands and prompts for audits, skill changes, behavioral
-evaluation, and final review. [`AGENTS.md`](./AGENTS.md) is the normative
+checks, and final review. [`AGENTS.md`](./AGENTS.md) is the normative
 authoring contract.
 
 ## License
