@@ -1,10 +1,8 @@
-import { createHash } from "node:crypto";
 import { describe, expect, it } from "@rstest/core";
 import {
   cpSync,
   mkdirSync,
   mkdtempSync,
-  readFileSync,
   rmSync,
   writeFileSync,
 } from "node:fs";
@@ -12,8 +10,6 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { validateEvaluations } from "../scripts/validate-evaluations.mjs";
-import { hashEvaluationFixture } from "../scripts/hash-evaluation-fixture.mjs";
-import { snapshotEvaluationSuite } from "../scripts/snapshot-evaluation-suite.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -159,85 +155,6 @@ async function findingsFor(paths, trackedFiles = []) {
   });
 }
 
-function validReport(paths) {
-  const suiteFile = join(
-    paths.evaluationsRoot,
-    "skills",
-    "meteor-example",
-    "cases.json",
-  );
-  const suiteDigest = createHash("sha256")
-    .update(readFileSync(suiteFile))
-    .digest("hex");
-  const snapshot = join(
-    paths.evaluationsRoot,
-    "snapshots",
-    `${suiteDigest}.json`,
-  );
-  mkdirSync(dirname(snapshot), { recursive: true });
-  cpSync(suiteFile, snapshot);
-  const fixtureDigest = hashEvaluationFixture(
-    join(
-      paths.evaluationsRoot,
-      "fixtures",
-      "meteor-example",
-      "workspace-case",
-    ),
-  );
-  const assertions = [
-    { id: "changes-file", passed: true, evidence: "example.js changed" },
-    { id: "keeps-boundary", passed: true, evidence: "response explains boundary" },
-  ];
-  return {
-    schema_version: 1,
-    created_at: "2026-08-25T12:00:00.000Z",
-    mode: "comparison",
-    suite: "evaluations/skills/meteor-example/cases.json",
-    suite_snapshot: `evaluations/snapshots/${suiteDigest}.json`,
-    suite_sha256: suiteDigest,
-    skill_version: "0.1.0",
-    agent_skills: { revision: "0123456789abcdef", dirty: false },
-    meteor: {
-      remote: "https://github.com/meteor/meteor.git",
-      revision: "fedcba9876543210",
-      release: "3.5.2",
-      dirty: false,
-    },
-    environment: {
-      client: "test client 1.0",
-      model: "test model",
-      platform: "test platform",
-    },
-    claims: ["behavior"],
-    runs: [
-      {
-        case_id: "workspace-case",
-        repetition: 1,
-        condition: "current-skill",
-        fixture_sha256: fixtureDigest,
-        status: "pass",
-        assertions,
-      },
-      {
-        case_id: "workspace-case",
-        repetition: 1,
-        condition: "without-skill",
-        fixture_sha256: fixtureDigest,
-        status: "fail",
-        assertions: assertions.map((assertion) => ({
-          ...assertion,
-          passed: false,
-          evidence: "observable outcome missing",
-        })),
-      },
-    ],
-    summary: {
-      classification: "no-gap",
-      notes: "The matched comparison demonstrates the expected behavior difference.",
-    },
-  };
-}
-
 describe("validateEvaluations", () => {
   it("accepts the repository evaluation definitions", async () => {
     expect(await validateEvaluations()).toEqual([]);
@@ -246,28 +163,6 @@ describe("validateEvaluations", () => {
   it("accepts a valid isolated evaluation tree", async () => {
     await withTempRepo(async (_root, paths) => {
       expect(await findingsFor(paths)).toEqual([]);
-    });
-  });
-
-  it("creates an idempotent content-addressed suite snapshot", async () => {
-    await withTempRepo(async (_root, paths) => {
-      const suiteFile = join(
-        paths.evaluationsRoot,
-        "skills",
-        "meteor-example",
-        "cases.json",
-      );
-      const options = {
-        allowedSuitesRoot: join(paths.evaluationsRoot, "skills"),
-        outputRoot: join(paths.evaluationsRoot, "snapshots"),
-      };
-      const first = snapshotEvaluationSuite(suiteFile, options);
-      const second = snapshotEvaluationSuite(suiteFile, options);
-      expect(first).toEqual(second);
-      expect(readFileSync(first.target, "utf8")).toBe(
-        readFileSync(suiteFile, "utf8"),
-      );
-      expect(first.target.endsWith(`${first.sha256}.json`)).toBe(true);
     });
   });
 
@@ -321,79 +216,6 @@ describe("validateEvaluations", () => {
       const codes = (await findingsFor(paths)).map((item) => item.code);
       expect(codes).toContain("E_EVAL_UNKNOWN_ROUTE_SKILL");
       expect(codes).toContain("E_EVAL_ROUTE_OVERLAP");
-    });
-  });
-
-  it("accepts a reproducible matched comparison report", async () => {
-    await withTempRepo(async (_root, paths) => {
-      writeJson(
-        join(paths.evaluationsRoot, "reports", "2026-08-25-meteor-example-test.json"),
-        validReport(paths),
-      );
-      expect(await findingsFor(paths)).toEqual([]);
-    });
-  });
-
-  it("keeps an immutable report valid after the current suite evolves", async () => {
-    await withTempRepo(async (_root, paths) => {
-      const report = validReport(paths);
-      const suite = validSuite();
-      suite.description =
-        "A later representative suite revision with the same published owner.";
-      writeJson(
-        join(paths.evaluationsRoot, "skills", "meteor-example", "cases.json"),
-        suite,
-      );
-      writeJson(
-        join(paths.evaluationsRoot, "reports", "2026-08-25-meteor-example-test.json"),
-        report,
-      );
-      expect(await findingsFor(paths)).toEqual([]);
-    });
-  });
-
-  it("rejects mismatched report assertions and comparison fixtures", async () => {
-    await withTempRepo(async (_root, paths) => {
-      const report = validReport(paths);
-      report.runs[0].assertions[1].id = "invented-assertion";
-      report.runs[1].fixture_sha256 = "b".repeat(64);
-      writeJson(
-        join(paths.evaluationsRoot, "reports", "2026-08-25-meteor-example-test.json"),
-        report,
-      );
-      const codes = (await findingsFor(paths)).map((item) => item.code);
-      expect(codes).toContain("E_EVAL_REPORT_ASSERTIONS");
-      expect(codes).toContain("E_EVAL_REPORT_FIXTURE");
-    });
-  });
-
-  it("rejects a run status that contradicts its assertions", async () => {
-    await withTempRepo(async (_root, paths) => {
-      const report = validReport(paths);
-      report.runs[0].status = "fail";
-      writeJson(
-        join(paths.evaluationsRoot, "reports", "2026-08-25-meteor-example-test.json"),
-        report,
-      );
-      const findings = await findingsFor(paths);
-      expect(findings.map((item) => item.code)).toContain(
-        "E_EVAL_REPORT_STATUS",
-      );
-    });
-  });
-
-  it("requires three repetitions for reliability claims", async () => {
-    await withTempRepo(async (_root, paths) => {
-      const report = validReport(paths);
-      report.claims = ["behavior", "reliability"];
-      writeJson(
-        join(paths.evaluationsRoot, "reports", "2026-08-25-meteor-example-test.json"),
-        report,
-      );
-      const findings = await findingsFor(paths);
-      expect(findings.map((item) => item.code)).toContain(
-        "E_EVAL_REPORT_REPETITIONS",
-      );
     });
   });
 

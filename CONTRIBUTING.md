@@ -4,7 +4,7 @@ The full authoring contract is in [`AGENTS.md`](./AGENTS.md). Read it first.
 
 ## Maintaining existing skills
 
-Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare the catalog with a Meteor checkout and produce a read-only evidence report. Use [`skill-maintenance`](./.github/skills/skill-maintenance/SKILL.md) only after implementation is requested. Use [`skill-behavior-evaluation`](./.github/skills/skill-behavior-evaluation/SKILL.md) for new skills, routing changes, high-risk guidance, matched comparisons, or behavioral regressions. An explicit audit-and-fix request may use the workflows in sequence, with the audit preserved before edits begin.
+Use [`skill-gap-audit`](./.github/skills/skill-gap-audit/SKILL.md) to compare the catalog with a Meteor checkout and produce a read-only evidence report. Use [`skill-maintenance`](./.github/skills/skill-maintenance/SKILL.md) only after implementation is requested. Use [`skill-behavior-evaluation`](./.github/skills/skill-behavior-evaluation/SKILL.md) for new skills, routing changes, high-risk guidance, or behavioral regressions. An explicit audit-and-fix request may use the workflows in sequence, with the audit preserved before edits begin.
 
 Store committed audit records under `audits/skill-gaps/`. Do not overwrite an earlier audit. A new audit records its predecessor and the old and new Meteor revisions so later drift checks remain reproducible.
 
@@ -31,9 +31,8 @@ Implement an approved contribution:
 Evaluate changed behavior:
 
 > Use `skill-behavior-evaluation` for `<skill>`. Run the affected representative
-> cases in fresh workspaces, compare `current-skill` with `without-skill`, grade
-> observable outcomes, and create a new snapshot and dated report. Preserve
-> historical evidence.
+> current-skill cases in fresh workspaces, grade observable outcomes, diagnose
+> failures, and report the cases run and their results.
 
 The [maintenance verification guide](./docs/maintenance-verification.md)
 contains additional task recipes, commands, expected outcomes, and failure
@@ -43,7 +42,7 @@ diagnosis.
 
 ```bash
 pnpm install --frozen-lockfile
-pnpm run validate       # skills, audits, evaluation definitions, and reports
+pnpm run validate       # skills, audits, representative suites, and routing
 pnpm run check-links    # relative + v3-docs links
 pnpm run catalog:check  # README catalog and bundles
 pnpm test               # unit tests for the toolchain
@@ -88,11 +87,11 @@ Run the prompt before opening any reviewer guide under `test/evals/`. Do not
 copy reviewer guides into the target project or expose them in the agent
 conversation. Compare the response with the guide only after the run ends.
 
-Machine-readable suites do not replace the complete manual cases. They select a stable representative subset, pin Meteor and package context, and grade observable response, file, or command evidence. Store generated workspaces and raw transcripts only under `evaluations/.work/`. Commit a content-addressed suite snapshot and dated report after real runs when the change needs reproducible comparison evidence.
+Machine-readable suites do not replace the complete manual cases. They select a stable representative subset, pin Meteor and package context, and grade observable response, file, or command evidence. Store generated workspaces and raw output only under `evaluations/.work/`.
 
-Use one run only as a smoke check. Compare `current-skill` and `without-skill` from identical fresh fixtures to demonstrate skill value. Add an exact `previous-skill` revision for regression comparisons. Reliability, time, or token claims need at least three repetitions for every compared condition.
+Run affected current-skill cases in fresh workspaces. Record each pass or fail result in the PR, along with any limitation. Rerun a case only after changing the skill, case, fixture, or execution setup.
 
-The PR is not ready to merge until an outside contributor runs every canonical eval case against Claude Code or Cursor and records the results in the PR. Static CI validates suites and reports but does not invoke a model.
+The PR is not ready to merge until an outside contributor runs every canonical eval case against Claude Code or Cursor and records the results in the PR. Static CI validates the case definitions but does not invoke a model.
 
 ## Reporting an issue
 

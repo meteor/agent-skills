@@ -9,7 +9,8 @@ human review.
 - Confirm every changed skill has an appropriate `metadata.version`.
 - Regenerate the catalog with `pnpm run catalog:write`.
 - Complete the source and behavioral reviews described in `AGENTS.md`.
-- Confirm representative suites and routing cases reflect changed behavior, and that any claimed comparison uses a current dated report.
+- Confirm representative suites and routing cases reflect changed behavior.
+- Record the affected behavior cases and their results in the release PR.
 - Record supported clients and known limitations in the release notes.
 
 ## Verify
@@ -33,8 +34,8 @@ pnpm run build:zips
 Before tagging, you can ask a maintainer agent:
 
 > Review this branch for release readiness. Confirm changed skill versions,
-> catalog and bundle state, source and behavioral evidence, current reports,
-> complete local checks, and changed ZIP contents. List blockers and known
+> catalog and bundle state, source and behavior checks, complete local checks,
+> and changed ZIP contents. List blockers and known
 > limitations. Do not create a tag, release, commit, or push unless explicitly
 > requested.
 

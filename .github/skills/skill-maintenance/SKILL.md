@@ -119,7 +119,7 @@ Otherwise, update an existing skill, add an evaluation case, or leave the inform
 
 ## Validation
 
-Static validation always applies. A model run applies when the change meets the behavioral threshold above, not for wording, formatting, links, or a factual source refresh that leaves decisions unchanged. Keep machine-readable suites, committed fixtures, and dated reports under `evaluations/`; keep generated workspaces and raw artifacts under ignored `evaluations/.work/`.
+Static validation always applies. A model run applies when the change meets the behavioral threshold above, not for wording, formatting, links, or a factual source refresh that leaves decisions unchanged. Keep representative suites and required fixtures under `evaluations/`; keep generated workspaces and raw output under ignored `evaluations/.work/`. Record affected case outcomes in the PR or review.
 
 Run from the agent-skills repository root:
 

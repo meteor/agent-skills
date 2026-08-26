@@ -12,8 +12,6 @@
     "validate": "pnpm run validate:skills && pnpm run validate:evaluations",
     "validate:skills": "node scripts/validate-skills.mjs",
     "validate:evaluations": "node scripts/validate-evaluations.mjs",
-    "evaluation:hash-fixture": "node scripts/hash-evaluation-fixture.mjs",
-    "evaluation:snapshot-suite": "node scripts/snapshot-evaluation-suite.mjs",
     "check-links": "node scripts/check-links.mjs",
     "build:zips": "node scripts/build-zips.mjs",
     "catalog:write": "node scripts/generate-catalog.mjs",

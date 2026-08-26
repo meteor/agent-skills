@@ -10,7 +10,7 @@ Repository maintenance workflows live under `.github/skills/`. They help contrib
 |-------|----------|
 | [`skill-maintenance`](.github/skills/skill-maintenance/SKILL.md) | Creating, reviewing, or updating a published skill while preserving repository conventions. |
 | [`skill-gap-audit`](.github/skills/skill-gap-audit/SKILL.md) | Comparing Meteor documentation and source changes with current skill coverage. |
-| [`skill-behavior-evaluation`](.github/skills/skill-behavior-evaluation/SKILL.md) | Testing observable skill behavior, routing boundaries, and matched skill or no-skill comparisons. |
+| [`skill-behavior-evaluation`](.github/skills/skill-behavior-evaluation/SKILL.md) | Testing current skill behavior, routing boundaries, and regressions. |
 
 ### Audit and maintenance workflow
 
@@ -32,7 +32,7 @@ When one request explicitly asks to audit and fix, complete the audit first, pre
 
 Committed gap-audit records live under `audits/skill-gaps/`. Each record identifies the audited agent-skills revision, Meteor remote and revision, release context, audit mode, and previous audit baseline. These reports are immutable maintenance evidence and are never included in distributable skills. An incremental audit uses the latest applicable committed record from Git history; if no reliable record exists, run a full audit.
 
-Behavioral evaluation definitions live under `evaluations/`. Canonical manual cases remain in each published skill's `references/eval-cases.md`; a machine-readable suite selects only representative cases and links back with an exact `case_ref`. Commit small starting fixtures, content-addressed suite snapshots, and dated reports from real runs. Keep generated workspaces, transcripts, and raw command output under ignored `evaluations/.work/`. Static suite validation runs in CI; model execution does not.
+Behavioral evaluation definitions live under `evaluations/`. Canonical manual cases remain in each published skill's `references/eval-cases.md`; a machine-readable suite selects only representative cases and links back with an exact `case_ref`. Commit small starting fixtures only when files or commands are part of the expected result. Keep generated workspaces, responses, and command output under ignored `evaluations/.work/`. Record case outcomes in the PR or review. Static suite validation runs in CI; model execution does not.
 
 For a human-oriented explanation of how source review, deterministic checks,
 behavioral evaluation, evidence files, and ZIP inspection fit together, read
@@ -202,7 +202,7 @@ Helper scripts go in `scripts/`. Conventions:
 ```bash
 pnpm install
 pnpm run validate             # skills, audits, evaluation schemas, and routing
-pnpm run validate:evaluations # evaluation definitions and completed reports only
+pnpm run validate:evaluations # representative suites, fixtures, and routing
 pnpm run check-links
 pnpm test
 ```
@@ -240,5 +240,5 @@ generator. Hand edits inside the markers are reverted on next run.
 2. Link checker must pass.
 3. The skill body is <=8 KB; bigger content moves to `references/`.
 4. At least one outside contributor (not the author) follows `references/eval-cases.md` against Claude Code or Cursor.
-5. New skills, routing changes, and high-risk decision changes have a representative machine-readable suite. One run is a smoke check; reliability, time, or token claims require at least three repetitions per condition.
+5. New skills, routing changes, and high-risk decision changes have representative machine-readable cases. Run affected cases in fresh workspaces and record their outcomes in the PR.
 6. The PR description links to the relevant v3-docs section(s).
