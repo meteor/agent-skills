@@ -16,13 +16,13 @@ function withPluginRoot(run) {
     mkdirSync(join(root, "skills"));
     const codex = {
       name: "meteor",
-      version: "0.1.0-beta.1",
+      version: "1.0.0-beta.1",
       skills: "./skills/",
       interface: { capabilities: ["Interactive", "Read", "Write"] },
     };
     const claude = {
       name: "meteor",
-      version: "0.1.0-beta.1",
+      version: "1.0.0-beta.1",
       skills: "./skills/",
     };
     const codexMarketplace = {
@@ -57,7 +57,7 @@ describe("validatePlugins", () => {
 
   it("rejects inconsistent release metadata", () => {
     withPluginRoot(({ root, codex, claude, codexMarketplace }) => {
-      claude.version = "0.1.0";
+      claude.version = "1.0.0";
       codex.interface.capabilities = ["Read"];
       codexMarketplace.plugins[0].name = "other";
       writeJson(root, ".claude-plugin/plugin.json", claude);

@@ -29,14 +29,14 @@ Inspect the worktree first and preserve unrelated changes. Set the same global
 version in both plugin manifests with:
 
 ```bash
-pnpm release:bump 0.1.0-beta.1
+pnpm release:bump 1.0.0-beta.1
 ```
 
 Use a stable version only after its beta has passed local and tagged remote
 installation tests:
 
 ```bash
-pnpm release:bump 0.1.0
+pnpm release:bump 1.0.0
 ```
 
 Do not add versions to `package.json` or individual `SKILL.md` files. The

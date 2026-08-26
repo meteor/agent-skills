@@ -174,7 +174,7 @@ Helper scripts go in `scripts/`. Conventions:
 
 ## Versioning
 
-- Repo tags (`v0.1.0`, `v0.2.0`) version the catalog as a whole. Individual
+- Repo tags (`v1.0.0`, `v1.1.0`) version the catalog as a whole. Individual
   skills do not carry content versions. A partial install is identified by the
   selected skill path and repository tag or commit.
 - `metadata.meteor` is the minimum Meteor range for the skill's complete

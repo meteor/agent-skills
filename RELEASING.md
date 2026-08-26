@@ -12,10 +12,10 @@ human review.
 - Keep the version in `.codex-plugin/plugin.json` and
   `.claude-plugin/plugin.json` identical.
 - Bump both versions deterministically with `pnpm release:bump X.Y.Z`.
-- Use `0.1.0-beta.1` for the first public installation test, then increment the
+- Use `1.0.0-beta.1` for the first public installation test, then increment the
   prerelease number only when publishing another beta.
 - Choose the matching `vX.Y.Z` repository tag for the complete catalog
-  snapshot, for example `v0.1.0-beta.1`.
+  snapshot, for example `v1.0.0-beta.1`.
 - Regenerate the catalog with `pnpm run catalog:write`.
 - Complete the source and behavioral reviews described in `AGENTS.md`.
 - Confirm each changed skill's evaluation cases reflect its current behavior.

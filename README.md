@@ -23,7 +23,7 @@ To test a specific prerelease, pin the marketplace checkout to its repository
 tag before installing:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v0.1.0-beta.1
+codex plugin marketplace add meteor/agent-skills --ref v1.0.0-beta.1
 codex plugin add meteor@meteor
 ```
 
@@ -40,7 +40,7 @@ To test a specific prerelease, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills@v0.1.0-beta.1
+claude plugin marketplace add meteor/agent-skills@v1.0.0-beta.1
 claude plugin install meteor@meteor
 ```
 
