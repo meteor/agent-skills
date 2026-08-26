@@ -10,6 +10,7 @@ Repository maintenance workflows live under `.github/skills/`. They help contrib
 |-------|----------|
 | [`skill-maintenance`](.github/skills/skill-maintenance/SKILL.md) | Creating, reviewing, or updating a published skill while preserving repository conventions. |
 | [`skill-gap-audit`](.github/skills/skill-gap-audit/SKILL.md) | Comparing Meteor documentation and source changes with current skill coverage. |
+| [`release-publishing`](.github/skills/release-publishing/SKILL.md) | Preparing, testing, tagging, or publishing beta and stable plugin releases. |
 
 ### Audit and maintenance workflow
 

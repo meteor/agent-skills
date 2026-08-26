@@ -23,6 +23,9 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
+      - name: Check plugin version
+        run: node .github/skills/release-publishing/scripts/plugin-version.mjs --check "${GITHUB_REF_NAME}"
+
       - name: Validate
         run: pnpm run validate
 
@@ -43,3 +46,4 @@ jobs:
         with:
           files: skills/*.zip
           generate_release_notes: true
+          prerelease: ${{ contains(github.ref_name, '-') }}

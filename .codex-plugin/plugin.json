@@ -1,0 +1,38 @@
+{
+  "name": "meteor",
+  "version": "0.1.0-beta.1",
+  "description": "Build, migrate, debug, test, secure, and deploy Meteor 3 applications.",
+  "author": {
+    "name": "Meteor",
+    "url": "https://www.meteor.com/"
+  },
+  "homepage": "https://github.com/meteor/agent-skills",
+  "repository": "https://github.com/meteor/agent-skills",
+  "license": "MIT",
+  "keywords": [
+    "meteor",
+    "meteorjs",
+    "javascript",
+    "full-stack",
+    "migration"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Meteor",
+    "shortDescription": "Build and maintain Meteor 3 applications.",
+    "longDescription": "Meteor-maintained skills for building, migrating, debugging, testing, securing, and deploying Meteor 3 applications.",
+    "developerName": "Meteor",
+    "category": "Developer Tools",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "websiteURL": "https://docs.meteor.com/",
+    "defaultPrompt": [
+      "Migrate this Meteor 2 application to Meteor 3.",
+      "Review this Meteor publication and subscription flow.",
+      "Audit this Meteor application for security issues."
+    ]
+  }
+}

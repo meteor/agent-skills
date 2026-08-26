@@ -2,11 +2,54 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: beta. Ten Meteor 3 skills are available below; the first tagged release is in preparation.
+> Status: beta. Twelve Meteor 3 skills are available below; the first tagged release is in preparation.
 
 ## Install
 
-The open `skills` CLI installs skills into your local agent (Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and 40+ others).
+The GitHub installation commands below require a public repository. Maintainers
+can test the working tree while it remains private by following
+[`RELEASING.md`](./RELEASING.md#test-the-plugin-locally).
+
+### Codex
+
+Install the complete catalog as one Codex plugin:
+
+```bash
+codex plugin marketplace add meteor/agent-skills
+codex plugin add meteor@meteor
+```
+
+To test a specific prerelease, pin the marketplace checkout to its repository
+tag before installing:
+
+```bash
+codex plugin marketplace add meteor/agent-skills --ref v0.1.0-beta.1
+codex plugin add meteor@meteor
+```
+
+### Claude Code
+
+Install the complete catalog as one Claude Code plugin:
+
+```bash
+claude plugin marketplace add meteor/agent-skills
+claude plugin install meteor@meteor
+```
+
+To test a specific prerelease, append its repository tag to the marketplace
+source:
+
+```bash
+claude plugin marketplace add meteor/agent-skills@v0.1.0-beta.1
+claude plugin install meteor@meteor
+```
+
+### Individual skills and other agents
+
+The open `skills` CLI installs individual skills or the complete catalog into
+Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and other supported
+agents. Use this route when you want only selected skills instead of the full
+Meteor plugin.
 
 ```bash
 # all skills (interactive picker)

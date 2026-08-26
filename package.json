@@ -14,6 +14,7 @@
     "build:zips": "node scripts/build-zips.mjs",
     "catalog:write": "node scripts/generate-catalog.mjs",
     "catalog:check": "node scripts/generate-catalog.mjs --check",
+    "release:bump": "node .github/skills/release-publishing/scripts/plugin-version.mjs",
     "test": "rstest run"
   },
   "devDependencies": {
