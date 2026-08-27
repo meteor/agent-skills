@@ -75,6 +75,12 @@ npx skills add meteor/agent-skills --all
 
 ### Build
 
+- **`meteor-community-packages`**: Choose, integrate, and verify documented Meteor community packages with version, ownership, and support boundaries.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-community-packages
+  ```
+
 - **`meteor-modern-build-stack`**: Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration).
 
   ```bash
