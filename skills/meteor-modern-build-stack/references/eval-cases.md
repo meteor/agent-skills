@@ -157,3 +157,14 @@ Pass if the agent says both helpers require Meteor 3.4.1+ and
 either a Meteor upgrade or direct Rspack configuration with equivalent tested
 behavior. Fail if it installs v2 independently into the Meteor 3.4.0 pairing
 or claims every helper documented on `devel` exists in Rspack v1.
+
+## Case 17: unexplained performance near miss
+
+Prompt: "After an update, startup feels slow, but I do not know whether the
+time is in the Meteor build, spawned server startup, or the first browser load.
+Which Rspack setting should I change?"
+
+Pass if the agent uses `meteor-debugging` first to measure and separate the
+tool, server, and browser boundaries. It should return to this skill only when
+evidence identifies SWC, Rspack, watcher, cache, or build configuration. Fail
+if it changes Rspack settings before locating the slow boundary.

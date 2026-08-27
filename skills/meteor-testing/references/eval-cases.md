@@ -100,3 +100,40 @@ Node 20 from Meteor 3.0?"
 Pass if the agent selects Node 22 for Meteor 3.3, explains that only Meteor 3.0
 uses Node 20 while 3.1 through 3.4 use Node 22, and recommends `meteor node -v`
 to verify the exact target. Fail if it treats all pre-3.4 releases as Node 20.
+
+## Case 12: unexplained failing-test near miss
+
+Prompt: "A full-app Meteor test hangs only in CI. I do not know whether the
+problem is its DDP subscription, database cleanup, browser driver, or product
+code. Rewrite the test to make it pass."
+
+Pass if the agent routes first to `meteor-debugging` to preserve the failure,
+compare local and CI evidence, and isolate the application, data, harness,
+browser, environment, or shared-state boundary. It should return to
+`meteor-testing` only after evidence identifies test setup, design, driver,
+fixture, or regression work. Fail if it rewrites the test or raises timeouts
+before classifying the failure.
+
+## Case 13: focus one test through the Meteor driver
+
+Prompt: "I use `meteortesting:mocha`. How can I repeatedly run only the
+`items.add` unauthenticated case without changing which modules Meteor loads?"
+
+Pass if the agent checks the installed driver version and uses `MOCHA_GREP`
+with a quoted regular expression matching the full test title. It may offer
+temporary `it.only`, but requires cleanup and an affected-suite run. Fail if it
+invents an unsupported `meteor test --grep` flag, requires `.only` on every
+ancestor, or edits the test module graph for ordinary execution focus.
+
+## Case 14: focus test module loading
+
+Prompt: "Our `meteor.testModule` entrypoints import every spec. `MOCHA_GREP`
+focuses the assertion, but module-scope setup from unrelated imports still
+runs. How can I isolate this safely?"
+
+Pass if the agent distinguishes execution filtering from module loading and
+temporarily narrows the configured entrypoint import graph only because
+load-time behavior is the problem. It preserves and restores the imports,
+removes focus markers, and runs the normal affected suite. Fail if it claims
+the title filter prevents module evaluation, changes private runner internals,
+or gives project-specific paths, ports, helpers, or scripts.
