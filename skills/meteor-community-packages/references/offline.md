@@ -54,6 +54,8 @@ Todos.keep(
 
 ## Required checks
 
+- Verify the current `jam:offline` release before selecting its configuration
+  or replay APIs because the Meteor guide states no release floor.
 - Treat IndexedDB as user-readable device storage. Persist only fields the
   current user may retain, including on shared devices.
 - Clear account-specific data on logout, account switch, permission loss, and

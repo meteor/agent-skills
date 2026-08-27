@@ -79,8 +79,19 @@ can reject the current hypothesis.
 - Prefer observable readiness over sleeps: subscription ready, settled method,
   expected document, visible UI, or a specific browser event.
 - Inspect existing Playwright reports and traces before starting an interactive
-  browser. Use `playwright-cli` only for a real browser boundary when it is
-  already available or the user authorizes installation.
+  browser. For a `playwright-cli` request, first check whether the executable
+  is available. If it is unavailable, obtain authority before installation or
+  browser downloads. Explicitly report that availability result and request
+  the authority rather than only asking for the application URL. Use it only
+  for a real browser boundary.
+- For an authorized ad hoc `playwright-cli` reproduction: **MUST** run
+  `snapshot`, `console`, and `requests`, start tracing before the failing
+  action, stop tracing immediately after it, and close the browser session.
+  Do not substitute source inspection for this browser evidence or omit the
+  trace because the console or network already suggests a cause.
+- Use only an application path or URL the user placed in scope. If the current
+  workspace has no app and the prompt gives no URL, ask for one. Do not scan
+  unrelated directories, processes, or ports to discover an application.
 - Read through `meteor shell` and `meteor mongo` before mutating. Never use
   `meteor reset --db` as a diagnostic shortcut.
 - On production, do not expose an inspector, deploy a debug build, retain

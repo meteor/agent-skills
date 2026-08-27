@@ -132,6 +132,10 @@ Use `playwright-cli` for an ad hoc browser reproduction only when it is already
 available or the user authorizes installation and browser downloads. Prefer a
 local or staging Meteor URL.
 
+Use only the application path or URL in the task scope. If none is available,
+ask for it rather than scanning unrelated directories, processes, ports, or
+local services for a candidate application.
+
 ```bash
 playwright-cli -s=meteor-debug open http://localhost:3000 --headed
 playwright-cli -s=meteor-debug snapshot

@@ -26,9 +26,11 @@ reading one message, and clearing all captured messages under
 
 ## Required checks
 
-- Test password reset, verification, enrollment, and custom email templates as
-  applicable. Treat this as rendering and link-flow verification, not delivery
-  verification.
+- Verify the current package release against the upstream repository before
+  installation.
+- Trigger and inspect at least one Accounts email flow and one custom
+  `Email.sendAsync()` flow. Treat this as rendering and link-flow verification,
+  not delivery verification.
 - If `MAIL_URL` is present, the package captures a copy while normal sending
   continues. Avoid sending development messages to real recipients.
 - Protect development environments that are reachable by other users because

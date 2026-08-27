@@ -76,10 +76,13 @@ Test-mode conventions:
   `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
 
 To focus an existing test, prefer a supported driver filter such as
-`MOCHA_GREP`; use `.only` only temporarily. These select registered tests but
-do not prevent other test modules from evaluating. If loading itself causes
-interference, inspect `meteor.testModule` and read
-`references/focused-runs.md` before narrowing entrypoint imports.
+`MOCHA_GREP` after checking the installed driver in `.meteor/versions`; use
+`.only` only temporarily. These select registered tests but do not prevent
+other test modules from evaluating. If loading itself causes interference,
+inspect `meteor.testModule` and read `references/focused-runs.md` before
+narrowing entrypoint imports. Restore every temporary focus or import change,
+then run the normal affected suite. Read the configured entrypoint paths from
+the project; do not invent paths, scripts, ports, or helpers.
 
 ## Method test (server-side)
 

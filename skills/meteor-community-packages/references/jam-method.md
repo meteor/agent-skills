@@ -47,6 +47,11 @@ export const createTodo = createMethod({
 
 ## Required checks
 
+- A method setup response **MUST** include a focused test plan. Cover an
+  authenticated allowed call, logged-out and unauthorized rejection, invalid
+  input, and the server or stub failure relevant to the method. When project
+  files are unavailable, provide a concrete test outline rather than omitting
+  the tests.
 - Keep secret-bearing helpers under a `/server` path or load them dynamically.
   `serverOnly: true` alone controls execution, not source visibility.
 - Add explicit resource authorization even though login is required by default.
@@ -54,6 +59,21 @@ export const createTodo = createMethod({
 - Test the handler with `.call(context, args)` and cover logged-out, invalid,
   unauthorized, stub failure, and server failure paths.
 - Use `meteor-methods` and `meteor-security` for core method guarantees.
+
+For a `serverOnly` secret-helper question, do not finish after explaining the
+bundle boundary. Include a focused test outline using the package's documented
+`.call(context, args)` form:
+
+```javascript
+await chargeCustomer.call({ userId: "allowed-user" }, { amount: 100 });
+await assert.rejects(
+  () => chargeCustomer.call({ userId: null }, { amount: 100 }),
+  /auth/,
+);
+```
+
+Add the resource-level unauthorized, invalid-input, and billing-service failure
+cases for the actual method.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/community-packages/jam-method.md

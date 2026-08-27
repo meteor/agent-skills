@@ -40,6 +40,15 @@ Wormhole.expose("todos.add", {
 
 ## Required checks
 
+- A setup response **MUST** inventory the candidate method names and their
+  existing authentication and authorization before providing an exposure
+  configuration. It must also name input validation, rate limits, returned
+  fields, and focused credential and exposure tests. Do not stop at recommending
+  opt-in mode and an API key.
+- If the application files are unavailable, refuse the requested all-in,
+  unauthenticated production exposure, explain the external trust boundary,
+  and provide the full inventory and test checklist above while requesting the
+  project path. Do not stop after reporting that the project is missing.
 - Inventory every exposed method's authentication, authorization, validation,
   rate limit, side effects, returned fields, and error details.
 - Test that unexposed methods cannot be discovered or invoked.

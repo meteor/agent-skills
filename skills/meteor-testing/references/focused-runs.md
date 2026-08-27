@@ -31,24 +31,10 @@ suite. See [Mocha exclusive tests](https://mochajs.org/declaring/exclusive-tests
 ## Control the loaded test graph
 
 Configure explicit entry modules when the project needs deterministic test
-loading:
-
-```json
-{
-  "meteor": {
-    "testModule": {
-      "client": "client/tests.js",
-      "server": "server/tests.js"
-    }
-  }
-}
-```
-
-Each entry module imports the tests for that runtime:
-
-```javascript
-import "/imports/api/items/items.test.js";
-```
+loading. `meteor.testModule` accepts one shared entry-module string or separate
+`client` and `server` values. Read those values from the project's
+`package.json`; do not invent an entrypoint path. Each entry module imports the
+tests for its runtime.
 
 With `meteor.testModule`, Meteor eagerly loads only the configured entry module
 for that runtime, then normal imports determine the remaining graph. Without

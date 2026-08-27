@@ -5,10 +5,11 @@ description: >
   from Meteor's documented community catalog, or moving from a community
   package to a promoted core package such as roles. Triggers on community
   package recommendations, Atmosphere vs npm selection, Packosphere maintenance
-  checks, jam:* helpers, meteor-rpc, Wormhole, cluster, and mail-preview. Use
-  this skill when the user asks which maintained package fits or how its
-  documented integration works. Route Meteor 2-to-3 package failures to
-  migrate-to-meteor-3 and underlying core API design to its owning skill.
+  checks, jam:* helpers, Meteor.publish.once, Meteor.publish.stream, meteor-rpc,
+  Wormhole, cluster, and mail-preview. Use this skill when the user asks which
+  maintained package fits or how its documented integration works. Route
+  Meteor 2-to-3 package failures to migrate-to-meteor-3 and underlying core API
+  design to its owning skill.
 metadata:
   author: meteor
   kind: knowledge
@@ -42,7 +43,8 @@ builds, or deployment.
    package version, not only the Meteor release.
 3. Read [`references/package-catalog.md`](references/package-catalog.md) when
    the request matches the documented catalog or a promoted package. Open only
-   the selected package's local guide, then consult its linked upstream
+   the selected package's local guide and read its baseline, selection rules,
+   and required checks before responding. Then consult its linked upstream
    repository for APIs or versions beyond Meteor's maintained guidance.
 4. Classify the candidate correctly:
    - A docs-listed community package keeps its named maintainer and independent
@@ -60,9 +62,11 @@ builds, or deployment.
    Atmosphere package and `meteor npm install` for an npm package. Do not invent
    a version constraint. After installation, confirm the resolved version in
    `.meteor/versions` or the npm lockfile.
-8. Apply the selected package guide's baseline API and required checks. For an
-   option not covered there, verify the resolved version against the upstream
-   repository instead of extrapolating from another release.
+8. Apply every relevant required check from the selected package guide. Do not
+   stop after asking for a project path. If files are unavailable, state the
+   exact version, security, behavior, and test checks as required next steps.
+   For an option not covered there, verify the resolved version against the
+   upstream repository instead of extrapolating from another release.
 9. Add the smallest representative integration and test its package-specific
    behavior plus the underlying Meteor invariants. Use the owning core skill
    for authorization, validation, publication selectors, indexes, transaction
@@ -90,20 +94,26 @@ meteor npm view <npm-package> version
 
 ## Adoption checks
 
-For every selected package, report:
+For every selected package, the response **MUST** report:
 
 - Why it fits better than the documented alternatives.
 - Who maintains it and whether it is community-maintained or core.
-- The verified Meteor and package version boundaries.
+- How to verify the current upstream release and resolved package version,
+  plus the documented Meteor boundary.
 - Which application semantics it changes.
 - Which data, endpoints, or server capabilities it exposes.
 - How to remove or roll back the integration.
-- The focused test that proves the intended behavior.
+- The concrete focused tests from the selected guide that prove the intended
+  behavior and its security boundary.
 
 Treat wrappers as extensions, not replacements for Meteor's security model.
 Method and publication helpers still require server authorization and argument
 validation. Client persistence still requires least-privilege data selection.
 External method bridges require an explicit exposure and authentication review.
+For Wormhole or another external method bridge, the response **MUST** include a
+pre-exposure checklist covering method inventory, existing authentication and
+authorization, input validation, rate limits, side effects, returned fields,
+credential tests, and proof that unexposed methods remain unreachable.
 
 ## Routing
 
