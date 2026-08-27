@@ -62,80 +62,7 @@ npx skills add meteor/agent-skills --skill migrate-to-meteor-3
 npx skills add meteor/agent-skills --all
 ```
 
-## Manage an installation
-
-Use the commands for the installation route you selected. Restart the agent
-after installing or removing skills so the next session loads the current
-catalog.
-
-### Codex
-
-List the installed plugins and configured marketplaces:
-
-```bash
-codex plugin list
-codex plugin marketplace list
-```
-
-You can also enter `/plugins` in an interactive Codex session to inspect and
-manage plugins. See the
-[official OpenAI plugin documentation](https://developers.openai.com/codex/plugins).
-
-Remove the Meteor plugin:
-
-```bash
-codex plugin remove meteor@meteor
-```
-
-Optionally remove its marketplace after uninstalling the plugin:
-
-```bash
-codex plugin marketplace remove meteor
-```
-
-### Claude Code
-
-List the installed plugins and configured marketplaces:
-
-```bash
-claude plugin list
-claude plugin marketplace list
-```
-
-Remove the Meteor plugin:
-
-```bash
-claude plugin uninstall meteor@meteor
-```
-
-Optionally remove its marketplace after uninstalling the plugin:
-
-```bash
-claude plugin marketplace remove meteor
-```
-
-### Individual skills and other agents
-
-List the skills available in the Meteor repository, then inspect project-level
-or global skills already installed through the `skills` CLI:
-
-```bash
-npx skills add meteor/agent-skills --list
-npx skills list
-npx skills list --global
-```
-
-Remove project-level skills interactively or by name. Add `--global` when the
-skill was installed globally:
-
-```bash
-npx skills remove
-npx skills remove meteor-debugging
-npx skills remove --global meteor-debugging
-```
-
-Avoid `npx skills remove --all` unless you intend to remove skills from other
-publishers too.
+Already installed? See [Manage an installation](#manage-an-installation).
 
 ## Catalog
 
@@ -328,6 +255,81 @@ npx skills add meteor/agent-skills \
     | jq -r '.bundles["react"] | map("--skill " + .) | join(" ")')
 ```
 <!-- BUNDLES:END -->
+
+## Manage an installation
+
+Use the commands for the installation route you selected. Restart the agent
+after installing or removing skills so the next session loads the current
+catalog.
+
+### Codex
+
+List the installed plugins and configured marketplaces:
+
+```bash
+codex plugin list
+codex plugin marketplace list
+```
+
+You can also enter `/plugins` in an interactive Codex session to inspect and
+manage plugins. See the
+[official OpenAI plugin documentation](https://developers.openai.com/codex/plugins).
+
+Remove the Meteor plugin:
+
+```bash
+codex plugin remove meteor@meteor
+```
+
+Optionally remove its marketplace after uninstalling the plugin:
+
+```bash
+codex plugin marketplace remove meteor
+```
+
+### Claude Code
+
+List the installed plugins and configured marketplaces:
+
+```bash
+claude plugin list
+claude plugin marketplace list
+```
+
+Remove the Meteor plugin:
+
+```bash
+claude plugin uninstall meteor@meteor
+```
+
+Optionally remove its marketplace after uninstalling the plugin:
+
+```bash
+claude plugin marketplace remove meteor
+```
+
+### Individual skills and other agents
+
+List the skills available in the Meteor repository, then inspect project-level
+or global skills already installed through the `skills` CLI:
+
+```bash
+npx skills add meteor/agent-skills --list
+npx skills list
+npx skills list --global
+```
+
+Remove project-level skills interactively or by name. Add `--global` when the
+skill was installed globally:
+
+```bash
+npx skills remove
+npx skills remove meteor-debugging
+npx skills remove --global meteor-debugging
+```
+
+Avoid `npx skills remove --all` unless you intend to remove skills from other
+publishers too.
 
 ## Manual install
 
