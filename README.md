@@ -135,6 +135,12 @@ npx skills add meteor/agent-skills --all
 
 ### Ops
 
+- **`meteor-debugging`**: Diagnose Meteor 3 failures across builds, server/client runtime, DDP, Mongo, tests, browsers, mobile, and production.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-debugging
+  ```
+
 - **`meteor-deployment`**: Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching).
 
   ```bash
@@ -151,7 +157,7 @@ npx skills add meteor/agent-skills --all
 
 ### Testing
 
-- **`meteor-testing`**: Set up and debug tests (`meteortesting:mocha`, async test signatures, testing methods/publications, Playwright/Cypress E2E).
+- **`meteor-testing`**: Set up and write Meteor 3 tests (`meteortesting:mocha`, async signatures, methods/publications, Playwright/Cypress E2E).
 
   ```bash
   npx skills add meteor/agent-skills --skill meteor-testing
@@ -166,7 +172,7 @@ Install a curated group of skills with one command.
 ### `essentials`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-modern-build-stack --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-security
+npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-modern-build-stack --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-security
 ```
 
 Or via `bundles.json`:
@@ -194,7 +200,7 @@ npx skills add meteor/agent-skills \
 ### `fullstack`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-accounts --skill meteor-security --skill meteor-testing
+npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-accounts --skill meteor-security --skill meteor-testing
 ```
 
 Or via `bundles.json`:
@@ -208,7 +214,7 @@ npx skills add meteor/agent-skills \
 ### `ops`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-deployment
+npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-deployment
 ```
 
 Or via `bundles.json`:

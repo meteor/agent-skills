@@ -15,7 +15,13 @@ meteor npm install --save-dev @types/mocha
 | `TEST_BROWSER_DRIVER`  | Run client tests in a headless browser. `puppeteer`, `playwright`.   |
 | `TEST_SERVER=0`        | Skip server tests.                                                   |
 | `TEST_CLIENT=0`        | Skip client tests.                                                   |
+| `MOCHA_GREP`           | Run titles matching a regular expression.                           |
+| `MOCHA_INVERT=1`       | Exclude titles matching `MOCHA_GREP`.                               |
 | `MONGO_URL`            | External Mongo for tests (e.g. `mongodb://localhost:27017/test`).    |
+
+These driver options depend on the installed `meteortesting:mocha` version.
+Inspect `.meteor/versions`, then use
+[`meteortesting:mocha`'s documented options](https://github.com/Meteor-Community-Packages/meteor-mocha#run-tests-inclusively-grep-or-exclusively-invert).
 
 ## Scripts
 
@@ -83,6 +89,9 @@ Node 20, 3.1 through 3.4 use Node 22, and 3.5+ uses Node 24. Run
 
 Server-only modules stay server-only when imported from tests. Client
 tests run in a browser instance the driver spawns.
+
+For focused execution and the separate `meteor.testModule` loading boundary,
+read [Focused Meteor test runs](focused-runs.md).
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/tutorials/testing/testing.md

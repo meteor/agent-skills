@@ -1,6 +1,7 @@
 {
   "bundles": {
     "essentials": [
+      "meteor-debugging",
       "meteor-modern-build-stack",
       "meteor-methods",
       "meteor-pubsub",
@@ -12,6 +13,7 @@
       "migrate-to-rspack"
     ],
     "fullstack": [
+      "meteor-debugging",
       "meteor-methods",
       "meteor-pubsub",
       "meteor-mongo-minimongo",
@@ -20,6 +22,7 @@
       "meteor-testing"
     ],
     "ops": [
+      "meteor-debugging",
       "meteor-deployment"
     ],
     "blaze": [

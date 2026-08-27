@@ -1,21 +1,24 @@
 ---
 name: meteor-testing
 description: >
-  Use when setting up or debugging tests in a Meteor 3 app. Triggers on
+  Use when setting up, designing, writing, or repairing tests and test
+  harnesses in a Meteor 3 app. Triggers on
   meteortesting:mocha, --driver-package, TEST_WATCH, TEST_BROWSER_DRIVER,
+  MOCHA_GREP, meteor.testModule, focused tests, .only,
   Meteor.server.method_handlers, Meteor.server.publish_handlers,
   DDP.connect, --full-app integration mode, sinon, async test signatures,
   Playwright/Cypress E2E. Use this skill when the user asks about test
   runners, asks about testing publications, or asks about Jest vs Mocha
-  in Meteor.
+  in Meteor. For a failing, hanging, or flaky test whose failing layer or root
+  cause is unknown, use meteor-debugging before changing the test or app.
 metadata:
   author: meteor
   kind: knowledge
   meteor: ">=3.0"
   area: testing
-  tagline: "Set up and debug tests (`meteortesting:mocha`, async test signatures, testing methods/publications, Playwright/Cypress E2E)."
+  tagline: "Set up and write Meteor 3 tests (`meteortesting:mocha`, async signatures, methods/publications, Playwright/Cypress E2E)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-08-27"
 license: MIT
 ---
 
@@ -25,16 +28,22 @@ license: MIT
 app in test mode (no app code runs except the test files) and reports
 results in the server console.
 
+If an existing test fails, hangs, or flakes and the failing layer is unknown,
+use `meteor-debugging` to isolate the cause. Return here when evidence points to
+test setup, design, driver behavior, fixtures, or regression coverage.
+
 ## Decision flow
 
-1. Pure logic, no Meteor APIs? Plain Mocha or any test runner; nothing
+1. Unknown failure in an existing test? Use `meteor-debugging` to classify
+   application, data, harness, browser, environment, or shared-state causes.
+2. Pure logic, no Meteor APIs? Plain Mocha or any test runner; nothing
    Meteor-specific.
-2. Method or publication? Integration test it with `meteortesting:mocha`
+3. Method or publication? Integration test it with `meteortesting:mocha`
    using `Meteor.server.method_handlers[name].apply(ctx, args)` or
    `publish_handlers`.
-3. Need to drive a real DDP client (cross-process or end-to-end DDP
+4. Need to drive a real DDP client (cross-process or end-to-end DDP
    semantics)? Use `--full-app` mode and `DDP.connect`.
-4. UI flow / browser interaction? Start the normal app with deterministic
+5. UI flow / browser interaction? Start the normal app with deterministic
    test settings and run Playwright or Cypress against it. Use
    `meteor test --full-app` only when the browser flow must load app-test
    modules.
@@ -61,10 +70,16 @@ Test-mode conventions:
 
 - Normal test mode eagerly loads `*.test[s].*` and `*.spec[s].*` files, while
   ordinary application code loads only when imported by a test.
-- Every `tests/` directory is ignored by Meteor's build tool. Use it only for
-  tests run by an external runner.
+- Filename discovery ignores `tests/` directories. A configured
+  `meteor.testModule` instead loads its explicit entry module and imports.
 - `--full-app` eagerly loads the normal app plus `*.app-test[s].*` and
   `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
+
+To focus an existing test, prefer a supported driver filter such as
+`MOCHA_GREP`; use `.only` only temporarily. These select registered tests but
+do not prevent other test modules from evaluating. If loading itself causes
+interference, inspect `meteor.testModule` and read
+`references/focused-runs.md` before narrowing entrypoint imports.
 
 ## Method test (server-side)
 
@@ -210,5 +225,6 @@ publication readiness.
 ## See also
 
 - `references/mocha-setup.md`
+- `references/focused-runs.md`
 - `references/ddp-test-helpers.md`
 - `references/eval-cases.md`
