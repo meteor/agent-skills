@@ -29,7 +29,7 @@ reaches users are methods (write paths) and publications (read paths).
 ## Decision flow
 
 1. Audit every method: does it `check()` every argument and guard on
-   `this.userId` when authentication matters?
+   `this.userId` or `Meteor.userId()` when authentication matters?
 2. Audit every publication: does it filter by `this.userId` (when
    user-specific) and project columns with `fields`?
 3. Add `audit-argument-checks` in dev to catch missing `check()`.
@@ -54,6 +54,13 @@ Meteor.methods({
       throw new Meteor.Error("not-authorized");
     }
     await Meteor.users.updateAsync(this.userId, { $set: { profile: payload } });
+  },
+  async updateAddress(payload) {
+    check(payload, String);
+    if (!Meteor.userId()) {
+      throw new Meteor.Error("not-authorized");
+    }
+    await Meteor.users.updateAsync(Meteor.userId(), { $set: { address: payload } });
   },
 });
 ```
