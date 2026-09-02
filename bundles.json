@@ -1,6 +1,7 @@
 {
   "bundles": {
     "essentials": [
+      "meteor-cli-installation",
       "meteor-debugging",
       "meteor-modern-build-stack",
       "meteor-methods",
@@ -9,10 +10,12 @@
       "meteor-security"
     ],
     "migration": [
+      "meteor-cli-installation",
       "migrate-to-meteor-3",
       "migrate-to-rspack"
     ],
     "fullstack": [
+      "meteor-cli-installation",
       "meteor-debugging",
       "meteor-methods",
       "meteor-pubsub",
@@ -22,13 +25,16 @@
       "meteor-testing"
     ],
     "ops": [
+      "meteor-cli-installation",
       "meteor-debugging",
       "meteor-deployment"
     ],
     "blaze": [
+      "meteor-cli-installation",
       "meteor-blaze"
     ],
     "react": [
+      "meteor-cli-installation",
       "meteor-react"
     ]
   }
