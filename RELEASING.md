@@ -22,6 +22,41 @@ human review.
 - Record affected manual cases and their results in the release PR.
 - Record supported clients and known limitations in the release notes.
 
+### Coordinated Meteor releases
+
+When this catalog is paired with a Meteor release, record the exact mapping in the
+release PR and handoff:
+
+```text
+Meteor version: <version>
+Meteor release commit: <commit SHA>
+Agent Skills audit: <committed audit path and revision>
+Agent Skills audit base: <default-branch ref and commit SHA>
+Agent Skills version: <X.Y.Z-beta.N or X.Y.Z>
+Agent Skills publish commit: <tag target commit SHA>
+Agent Skills tag: <vX.Y.Z-beta.N or vX.Y.Z>
+```
+
+Use a public Agent Skills beta for both Meteor beta and RC releases. Use a stable Agent
+Skills version for an official Meteor release only after its tagged beta passed local
+checks, exact-tag remote installations, and affected manual cases. The two projects
+have independent version sequences; never mirror the Meteor version automatically.
+
+The first release audit may include approved but uncommitted Meteor documentation.
+Before tagging, require an audit against the final Meteor release commit. Preserve a
+committed earlier report and add an incremental follow-up when needed.
+
+Resolve the initial audit from a clean worktree pinned to the freshly fetched Agent
+Skills default-branch SHA. Before version preparation, compare that audited SHA with
+the merged release candidate. If the default branch or distributable catalog changed,
+record the drift and rerun the affected audit and verification instead of silently
+publishing a different snapshot.
+
+Publish the catalog only after the paired Meteor packages, tool builds, and bootstrap
+tarballs are live. After the GitHub release and exact-tag installation tests pass,
+record its live URL in the Meteor changelog. Replace prerelease links with the stable
+tag for the official release.
+
 ## Verify
 
 ```bash
@@ -40,6 +75,10 @@ claude plugin validate . --strict
 - Install one ZIP manually and confirm its references load.
 - Test the complete plugin from the local repository in Codex and Claude Code.
 - Confirm CI is green on `main`.
+- For a coordinated Meteor beta or RC, run every affected manual case and at least one
+  realistic updated-skill workflow against the exact Meteor candidate.
+- For a coordinated official release, repeat the exact-tag installation smoke tests
+  with the stable catalog and confirm it preserves the accepted beta behavior.
 
 ## Test the plugin locally
 

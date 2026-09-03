@@ -16,12 +16,50 @@ This workflow adapts Meteor's `docs-gap` and `changelog` skill patterns while ke
 Determine these inputs before analysis:
 
 - Agent-skills repository root.
+- Agent-skills target ref and commit SHA. A coordinated release supplies the freshly
+  fetched default-branch ref and a clean worktree pinned to that SHA.
 - Meteor source checkout.
 - Audit mode: full catalog or incremental changes.
-- Base and target Git revisions for an incremental audit.
+- Meteor base and target Git revisions for an incremental audit.
 - Meteor version or release context when the audit targets a release.
+- Reviewed Meteor changelog, docs-gap report, and approved documentation changes
+  when a coordinated release supplies them.
 - Optional previous committed audit record.
 - Optional output path. Return the report in the response when no path is requested.
+
+## Coordinated Meteor release audits
+
+When the Meteor release process invokes this skill, start after its changelog and
+approved documentation gaps have been consolidated. Treat those artifacts as discovery
+and user-facing intent, then verify their claims against the release diff, current
+documentation, implementation, and tests. Do not copy core maintainer workflows into
+the public application-developer catalog.
+
+The Meteor release commit may not exist yet during the first audit. In that case,
+include approved working-tree documentation changes, record the Meteor commit SHA and
+dirty state, and identify the audit as pre-publication. Before the Agent Skills tag is
+published, audit the exact Meteor release commit from a clean Agent Skills worktree
+pinned to the catalog commit being prepared for publication. If the first report is
+already committed, preserve it and create an incremental follow-up instead of
+rewriting it.
+
+## Pin the Agent Skills snapshot
+
+For a coordinated release, require the caller to supply an Agent Skills target ref and
+commit SHA resolved after fetching the repository's default branch. Verify that the
+audit worktree is clean and that its `HEAD` equals the supplied SHA. Load this skill and
+inspect distributable content from that same worktree; do not load audit instructions
+from one revision while analyzing another.
+
+Record the target ref, exact commit SHA, and clean state in the report. If the checkout
+is dirty, stale, or at a different commit, stop and ask the caller to provide a clean
+pinned worktree. This audit does not fetch, switch branches, or create worktrees on its
+own.
+
+For a standalone audit without a supplied target, use the current `HEAD`, record its
+branch, SHA, and dirty state, and state that remote freshness was not established. Do
+not claim that it represents the latest published or default-branch catalog without
+evidence.
 
 ## Resolve the Meteor checkout
 
