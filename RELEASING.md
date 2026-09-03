@@ -59,8 +59,16 @@ publishing a different snapshot.
 
 Publish the catalog only after the paired Meteor packages, tool builds, and bootstrap
 tarballs are live. After the GitHub release and exact-tag installation tests pass,
-record its version and live URL in the dedicated Meteor Agent Skills changelog section.
-Replace prerelease links with the stable tag for the official release.
+request the dedicated Meteor Agent Skills changelog section only for this newly
+published paired tag. Omit the section entirely when no Agent Skills version was bumped
+or when the catalog release was independent; do not use an `N/A` placeholder.
+
+For a Meteor beta or RC, promote the exact `vX.Y.Z-beta.N` with the tested pinned Codex
+and Claude Code commands in this repository's README. The generic
+`npx skills add meteor/agent-skills` route is not an exact prerelease pin. For an
+official Meteor release, replace the beta with the verified stable tag and include the
+generic cross-agent installer. Link both changelog variants to the official
+[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills).
 
 ## Verify
 
