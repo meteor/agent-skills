@@ -76,13 +76,14 @@ only when this is a newly published paired tag and its remote installation tests
 otherwise the section must be omitted, not filled with `N/A`. Independent catalog
 releases never create that Meteor changelog section.
 
-For a Meteor beta or RC, the handoff must promote the exact `vX.Y.Z-beta.N` for testing
-and include the tested pinned Codex and Claude Code installation commands from the
-repository README. Do not use the generic `npx skills add meteor/agent-skills` command
-as an exact prerelease pin. For an official Meteor release, replace the prerelease with
-the verified stable tag and include that generic cross-agent installer. Both variants
-link to the official [Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills)
-for further installation options.
+Keep the Meteor changelog handoff concise and client-neutral. For a Meteor beta or RC,
+record the exact tested `vX.Y.Z-beta.N` release link and promote the generic
+`npx skills add meteor/agent-skills` installer. For an official Meteor release, use the
+same shape with the verified stable tag. The generic command does not pin the linked
+tag, so keep the tested exact-tag Codex and Claude Code commands in this catalog's
+release notes. Link the changelog section to the official
+[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills) for further
+installation options.
 
 ## Prepare the version
 
