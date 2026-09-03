@@ -65,11 +65,12 @@ or when the catalog release was independent; do not use an `N/A` placeholder.
 
 Keep the Meteor changelog entry concise and client-neutral. Record the exact tested
 `vX.Y.Z-beta.N` release link for a Meteor beta or RC, or the verified stable tag for an
-official release, then promote the generic `npx skills add meteor/agent-skills`
-installer and link the official
-[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills). The generic
-command does not pin the linked tag; keep tested exact-tag Codex and Claude Code
-commands in the Agent Skills release notes.
+official release. Use the same tag in the generic npm command:
+`npx skills@latest add 'meteor/agent-skills#vX.Y.Z-beta.N'` or
+`npx skills@latest add 'meteor/agent-skills#vX.Y.Z'`. Test the displayed command
+remotely and verify that the installed files match the tag. Link the official
+[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills), and keep
+client-specific commands in the Agent Skills release notes.
 
 ## Verify
 
