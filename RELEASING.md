@@ -59,8 +59,8 @@ publishing a different snapshot.
 
 Publish the catalog only after the paired Meteor packages, tool builds, and bootstrap
 tarballs are live. After the GitHub release and exact-tag installation tests pass,
-record its live URL in the Meteor changelog. Replace prerelease links with the stable
-tag for the official release.
+record its version and live URL in the dedicated Meteor Agent Skills changelog section.
+Replace prerelease links with the stable tag for the official release.
 
 ## Verify
 

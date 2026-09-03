@@ -71,9 +71,9 @@ passed local checks, remote installation tests, and affected behavioral cases. I
 guidance changed afterward, publish and test another beta before stable promotion.
 
 After publication, record the exact Meteor-to-catalog mapping and live GitHub release
-URL in the release handoff. Add the companion link to Meteor's changelog only after the
-tag exists and remote installation tests pass. For an official Meteor release, replace
-the prerelease link with the stable tag.
+URL in the release handoff. Add the companion version and link to Meteor's dedicated
+Agent Skills changelog section only after the tag exists and remote installation tests
+pass. For an official Meteor release, replace the prerelease link with the stable tag.
 
 ## Prepare the version
 
