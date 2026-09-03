@@ -22,6 +22,11 @@ human review.
 - Record affected manual cases and their results in the release PR.
 - Record supported clients and known limitations in the release notes.
 
+The catalog can release independently for skill and packaging changes. Those releases
+follow the normal preparation, verification, and publishing steps without waiting for
+a Meteor release or recording a Meteor compatibility mapping. The coordinated process
+below applies only when a catalog release is intentionally paired with Meteor.
+
 ### Coordinated Meteor releases
 
 When this catalog is paired with a Meteor release, record the exact mapping in the

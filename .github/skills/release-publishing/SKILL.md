@@ -23,6 +23,12 @@ A GitHub repository does not need to be public for local working-tree tests.
 It must be public before testing installation through
 `meteor/agent-skills@<tag>` or submitting to public directories.
 
+Catalog releases may be published independently for skill additions, corrections,
+evaluation improvements, packaging changes, or other catalog maintenance. For an
+independent release, follow the normal beta or stable flow without requiring a Meteor
+release audit, compatibility mapping, or Meteor artifact gates. Apply the coordinated
+rules below only when the catalog is intentionally paired with a Meteor release.
+
 ## Coordinate with a Meteor release
 
 When Meteor's release process requests a paired catalog, record the Meteor version,
