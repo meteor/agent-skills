@@ -3,7 +3,8 @@
 ## Run context
 
 ```text
-Agent-skills revision: <commit SHA and dirty state>
+Agent-skills target ref: <default-branch ref, explicit ref, or current HEAD>
+Agent-skills revision: <commit SHA and clean/dirty state>
 Meteor checkout: <resolved path for this run>
 Meteor remote: <remote URL>
 Meteor branch: <branch>
