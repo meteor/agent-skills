@@ -73,8 +73,11 @@ Accounts.config({
 });
 ```
 
-After this, the OAuth `secret` field stored in `Meteor.users.services.<provider>`
-is ciphertext.
+At startup, `accounts-oauth` seals the provider application secret in
+`ServiceConfiguration.configurations.secret`. Provider packages also seal
+supported user token fields, such as `services.github.accessToken` or Twitter's
+`accessTokenSecret`. There is no generic `services.<provider>.secret` field in
+`Meteor.users`; inspect the provider schema before checking ciphertext.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/service-configuration.md

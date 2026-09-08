@@ -168,3 +168,49 @@ Pass if the agent uses `meteor-debugging` first to measure and separate the
 tool, server, and browser boundaries. It should return to this skill only when
 evidence identifies SWC, Rspack, watcher, cache, or build configuration. Fail
 if it changes Rspack settings before locating the slow boundary.
+
+## Case 18: dependency opt-out on Meteor 3.5.2
+
+Prompt: "Our Meteor 3.5.2 build must not modify package.json or the lockfile.
+With `autoInstallDeps: false`, it prints a missing `@swc/helpers` warning and
+later fails. Should I ignore the warning? Would running `meteor update --npm`
+in CI still honor the opt-out?"
+
+Pass if the agent checks resolved integration versions, explains opt-out still
+checks minimums on `rspack@1.3.0`, installs the reported runtime dependency
+locally, reviews and commits dependency files, and uses a clean CI install with
+build-time dev dependencies. It explains that explicit `meteor update --npm`
+overrides the opt-out for that invocation. Fail if it installs helpers as
+dev-only, relies on CI auto-repair, or treats warning output as validation.
+
+## Case 19: earlier dependency opt-out
+
+Prompt: "Our app must stay on Meteor 3.5.1 with `rspack@1.2.0` and
+`autoInstallDeps: false`. Missing dependencies produce no helpful warning.
+Was automatic installation first introduced in 3.5.2?"
+
+Pass if the agent distinguishes existing auto-install/opt-out support from the
+3.5.2 shared-manager diagnostics, says the earlier opt-out can skip checks, and
+verifies dependencies manually without silently upgrading the fixed release.
+
+## Case 20: mixed build modes and generated ignores
+
+Prompt: "On Meteor 3.5.2, development and full-app tests run in one checkout.
+Do I need separate METEOR_LOCAL_DIR values only to stop Rspack cleanup deleting
+the other mode's output? ESLint now scans public/build-chunks-app-test too."
+
+Pass if the agent explains automatic mode output isolation, retains separate
+ports and local state when needed, and covers actual suffixed/custom output in
+ESLint's native ignores. It must not hide Meteor's handoff in `.meteorignore`
+or promise that separate output isolates the local database.
+
+## Case 21: TypeScript config cache boundary
+
+Prompt: "On Meteor 3.5.2 with `@meteorjs/rspack@2.2.0`, rspack.config.ts
+imports `./config/alias.ts` and also computes a dynamic import path. Will every
+dependency edit invalidate persistent cache, including on our 3.5.1 branch?"
+
+Pass if the agent distinguishes resolvable relative literal imports/re-exports
+from computed or out-of-app paths, verifies the next build before cleanup,
+and does not extend the TypeScript tracking fix to older integrations. Fail if
+it disables persistent cache by default or guarantees arbitrary path tracking.

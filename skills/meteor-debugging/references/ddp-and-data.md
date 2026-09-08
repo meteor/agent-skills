@@ -45,6 +45,19 @@ A changed transport is not a generic reconnect fix. Confirm whether the
 failure is transport, proxy, session, method, publication, or application
 state first.
 
+With `ddp-client@3.4.1` (Meteor 3.5.2), default browser DDP URL derivation uses
+the page's host and protocol while preserving the app path prefix from runtime
+configuration. `DDP_DEFAULT_CONNECTION_URL` still overrides the default.
+Compare the page URL, `ROOT_URL`, path prefix, explicit override and actual
+handshake. Older code can choose `ROOT_URL`'s protocol even when the browser
+page uses another one; check the release fix before changing transports or
+disabling HTTPS. `ROOT_URL` still matters for generated absolute URLs and OAuth.
+
+For intermittent login disconnects on Meteor 3.5/3.5.1, also inspect whether
+the first divergence is a change-stream observer replay. `mongo@2.5.1` in
+3.5.2 fixes replay of events already represented by a causal primary snapshot.
+Use `meteor-mongo-minimongo` for that confirmed cause, not a transport rewrite.
+
 ## Mongo and Minimongo inspection
 
 Use the local shells for read-first evidence:
@@ -58,6 +71,14 @@ Record the database, collection, selector, user or tenant scope, and relevant
 field types. Inspect selected fields rather than dumping complete collections.
 Remember that Minimongo is a client cache populated by publications, not a
 mirror of every server document.
+
+`npm-mongo@6.16.3` (Meteor 3.5.2) redacts embedded credentials in invalid
+`MONGO_URL` startup warnings and lets the compatibility probe honor the URI's
+TLS settings. Older probes forced TLS with invalid-certificate acceptance.
+Keep copied diagnostics redacted on every version. Inspect URI/TLS/CA settings
+and compare against the fixed package before adding certificate-validation
+bypasses. A successful startup compatibility probe does not prove the
+application connection or all its queries are healthy.
 
 `meteor reset --db` deletes the local database. It is not diagnosis. Never run
 it without confirming the exact target, proving the data is disposable, and
@@ -73,3 +94,4 @@ condition, current connection state, and selected document count.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/performance/ddp-transport.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.5.2.md

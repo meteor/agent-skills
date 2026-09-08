@@ -17,7 +17,7 @@ metadata:
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
@@ -117,6 +117,13 @@ Meteor.startup(() => {
 After restart and login, `Meteor.loginToken*` no longer appears in
 `localStorage`; the browser receives an HttpOnly `meteor_login_token`
 cookie. Each tab keeps its own in-memory credentials.
+
+With `accounts-base@3.3.1` (Meteor 3.5.2), the server handles cookie endpoints
+only when it is opted in too. A client-only setting can therefore produce an
+HTML response or 404 from later handlers. The `/set` body limit is 4096 bytes;
+larger requests return HTTP 413. See
+[cookie endpoint troubleshooting](references/http-only-cookies.md) for the
+routes, version boundary, and diagnostic checks.
 
 ## OAuth (Google example)
 

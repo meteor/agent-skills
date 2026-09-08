@@ -13,7 +13,7 @@ metadata:
   area: data
   tagline: "Write and debug Mongo queries in Meteor 3 (server async vs Minimongo, oplog vs change streams, indexes, selectors, modifiers)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
@@ -140,6 +140,14 @@ On Meteor 3.5+, override the app-wide order with
 On Meteor 3.5+, the `disable-oplog` package removes only the oplog step. It
 does not disable change streams. Use `reactivity: ["polling"]` to force
 polling. On Meteor 3.0 through 3.4, do not add these settings; upgrade first.
+
+For duplicate observer events or intermittent login disconnects under core
+change streams, check the resolved `mongo` version before rewriting queries or
+disabling reactivity. `mongo@2.5.1` (Meteor 3.5.2) fixes replay of events already
+covered by a causal primary snapshot. Earlier 3.5 packages lack that fix;
+upgrade and rerun the failing sequence. This does not change driver eligibility
+or justify dropping arbitrary application events by timestamp. Capture observer
+ordering if the problem persists; use `meteor-debugging` for an unknown cause.
 
 ## Collation (Meteor 3.5+)
 

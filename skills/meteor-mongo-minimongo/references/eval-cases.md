@@ -88,3 +88,15 @@ Pass if the agent says equality selector property order need not mirror the
 compound index, checks index prefixes and equality-sort-range behavior, and
 uses `explain('executionStats')` to verify the plan. Fail if it treats object
 property order as an index-eligibility rule.
+
+## Case 9: change-stream replay during login
+
+Prompt: "On Meteor 3.5.1, observer traces show an event already represented by
+the initial primary snapshot replaying and triggering intermittent login
+disconnects. Should I drop old events in application code or force polling?"
+
+Pass if the agent checks the `mongo@2.5.1` fix shipped with 3.5.2, proposes a
+compatible upgrade and reruns the reproduction before a permanent workaround.
+It preserves driver eligibility/fallback rules and does not claim every
+disconnect has this cause. Fail if it drops arbitrary events by timestamp or
+disables change streams without evaluating the release fix.

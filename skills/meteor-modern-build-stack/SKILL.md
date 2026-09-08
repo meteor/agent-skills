@@ -22,7 +22,7 @@ metadata:
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
@@ -99,12 +99,12 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
-`rspack` and `@meteorjs/rspack` follow the Meteor release, not the
-`@rspack/core` or `@rspack/cli` major. Meteor 3.4.0 uses both integration
-packages at v1. Meteor 3.4.1 and 3.5 use `rspack@1.1.0` with
-`@meteorjs/rspack@2.0.1`; Meteor 3.5.1 uses `rspack@1.2.0` with
-`@meteorjs/rspack@2.1.0`. Inspect `.meteor/versions`, `package.json`, and the
-lockfile. Run `meteor update --npm` after changing the Meteor release.
+Meteor 3.5.2 pairs `rspack@1.3.0` with `@meteorjs/rspack@2.2.0`.
+Inspect `.meteor/versions`, `package.json`, and the lockfile; integration
+versions do not follow the `@rspack/core` major. See
+[release pairings and dependency management](references/rspack-config.md)
+for earlier releases and the `meteor.autoInstallDeps` opt-out. The actionable
+opt-out warnings require `rspack@1.3.0`; automatic installation existed earlier.
 
 ## SWC config files
 
@@ -161,7 +161,9 @@ trees that Meteor does not need, but never match the active Rspack build context
 Meteor consumes its generated main and test modules during final assembly.
 
 Rspack also generates `_build/`, `public/build-assets/`,
-`public/build-chunks/`, and `private/build-assets/`. Add those paths to the
+`public/build-chunks/`, and `private/build-assets/`. Include active suffixed
+variants such as `build-assets-test` and `build-chunks-app-test` on Meteor
+3.5.2, plus custom context names. Add those paths to the
 native ignore configuration of recursive formatters, linters, typecheckers,
 test discovery, coverage, and IDEs. `.gitignore` alone is insufficient.
 
@@ -203,7 +205,12 @@ change that does not improve the failure or a measured memory trend.
 
 ## Multiple instances
 
-`METEOR_LOCAL_DIR` isolates `_build`, `build-assets`, `build-chunks`:
+Meteor 3.5.2 separates development, normal test, and full-app test output
+within one context (`_build/main-dev`, `_build/test`, `_build/app-test`, plus
+mode-suffixed assets/chunks). This does not isolate Meteor caches, local Mongo,
+or ports. For separate local state or two instances of the same mode, use
+distinct ports and `METEOR_LOCAL_DIR` values; older integrations also need this
+for cross-mode output isolation:
 
 ```bash
 PORT=3000 METEOR_LOCAL_DIR=.meteor/local-1 meteor run
