@@ -29,6 +29,9 @@ the matching Node.js version runs. Galaxy is the first-party host;
 Docker / Kubernetes / SSH-to-a-Node-host all work too.
 
 For Android/iOS artifacts and native HCP compatibility, use `meteor-native`.
+Check actual native configuration as well as compatibility hashes: permission
+or other native configuration changes can require a new binary with an
+unchanged hash.
 
 Match the Node version to the bundled Meteor Node:
 
