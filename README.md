@@ -2,7 +2,7 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: beta. Fourteen Meteor 3 skills are available in `v1.0.0-beta.2`.
+> Status: beta. Fifteen Meteor 3 skills are available in the current catalog.
 
 ## Install
 
@@ -137,6 +137,12 @@ Already installed? See [Manage an installation](#manage-an-installation).
 
 ### Ops
 
+- **`meteor-cli-installation`**: Install, locate, repair, reset, or cleanly reinstall the Meteor 3 CLI with correct version and PATH handling.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-cli-installation
+  ```
+
 - **`meteor-debugging`**: Diagnose Meteor 3 failures across builds, server/client runtime, DDP, Mongo, tests, browsers, mobile, and production.
 
   ```bash
@@ -174,7 +180,7 @@ Install a curated group of skills with one command.
 ### `essentials`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-modern-build-stack --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-security
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill meteor-debugging --skill meteor-modern-build-stack --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-security
 ```
 
 Or via `bundles.json`:
@@ -188,7 +194,7 @@ npx skills add meteor/agent-skills \
 ### `migration`
 
 ```bash
-npx skills add meteor/agent-skills --skill migrate-to-meteor-3 --skill migrate-to-rspack
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill migrate-to-meteor-3 --skill migrate-to-rspack
 ```
 
 Or via `bundles.json`:
@@ -202,7 +208,7 @@ npx skills add meteor/agent-skills \
 ### `fullstack`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-accounts --skill meteor-security --skill meteor-testing
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill meteor-debugging --skill meteor-methods --skill meteor-pubsub --skill meteor-mongo-minimongo --skill meteor-accounts --skill meteor-security --skill meteor-testing
 ```
 
 Or via `bundles.json`:
@@ -216,7 +222,7 @@ npx skills add meteor/agent-skills \
 ### `ops`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-debugging --skill meteor-deployment
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill meteor-debugging --skill meteor-deployment
 ```
 
 Or via `bundles.json`:
@@ -230,7 +236,7 @@ npx skills add meteor/agent-skills \
 ### `blaze`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-blaze
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill meteor-blaze
 ```
 
 Or via `bundles.json`:
@@ -244,7 +250,7 @@ npx skills add meteor/agent-skills \
 ### `react`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-react
+npx skills add meteor/agent-skills --skill meteor-cli-installation --skill meteor-react
 ```
 
 Or via `bundles.json`:

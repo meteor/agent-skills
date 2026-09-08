@@ -394,3 +394,12 @@ Pass if the agent says `npx meteor` is the primary cross-platform command but
 curl remains a documented Linux and macOS alternative. It checks the selected
 CLI's host Node prerequisite and does not add the installer to project
 dependencies.
+
+## Case 28: fresh CLI installation near miss
+
+Prompt: "There is no Meteor application yet. Install the Meteor 3 CLI on this
+new Windows workstation and make sure PATH works."
+
+Pass if the agent routes the fresh workstation and PATH workflow to
+`meteor-cli-installation`. Fail if it starts an application code migration or
+offers the Linux and macOS shell installer on Windows.

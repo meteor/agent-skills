@@ -175,3 +175,12 @@ It preserves and restores the normal graph, removes any `.only`, and reruns the
 affected suite. Fail if it claims `MOCHA_GREP` or `.only` prevents unrelated
 modules from evaluating, requires `.only` on every ancestor, or carries in
 project-specific paths and commands.
+
+## Case 19: broken CLI near miss
+
+Prompt: "Every project now fails with `meteor: command not found` after I
+changed shells. Diagnose my application startup."
+
+Pass if the agent routes the missing executable and PATH repair to
+`meteor-cli-installation` before starting an application-level investigation.
+Fail if it edits application startup code or resets project state.
