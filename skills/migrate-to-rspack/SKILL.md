@@ -23,7 +23,7 @@ metadata:
   area: migration
   tagline: "Migrate an existing Meteor 3 app to the Rspack bundler integration (`mainModule`, replacing legacy build plugins with loaders)."
   bundle: ["migration"]
-  docs_synced_at: "2026-08-21"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
@@ -46,6 +46,7 @@ Match `@meteorjs/rspack` to the Meteor release, not to
 | 3.4 | `1.0.0` | `1.0.0` | Base integration and helpers. |
 | 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds v2 helpers and inherited `TOOL_NODE_FLAGS`. |
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and extension discovery. |
+| 3.5.2 | `1.3.0` | `2.2.0` | Dependency diagnostics, mode isolation, full-app/TLA and cache fixes. |
 
 The Atmosphere, Meteor npm integration, and Rspack core package versions are
 independent. Inspect `.meteor/versions`, `package.json`, and the lockfile. After
@@ -204,21 +205,12 @@ Migrate imports instead unless you cannot.
 
 ## CI and Docker
 
-After upgrading Meteor locally, the required npm bumps must be committed.
-If they are not, CI/Docker builds fail with:
-
-```text
-Could not find rspack.config.js, rspack.config.ts, rspack.config.mjs, or rspack.config.cjs
-```
-
-Preferred reproducible flow:
-
-1. Run `meteor update --npm` locally after changing the Meteor release.
-2. Commit `package.json` and the lockfile.
-3. Run `meteor npm ci` followed by `meteor build` in CI.
-
-See `references/troubleshooting.md` for the recovery-only Docker fallback when
-a pipeline intentionally repairs missing npm bumps during the build.
+Resolve required npm updates locally and commit `package.json` and the lockfile.
+Run `meteor npm ci` with build-time dev dependencies, then `meteor build` in CI.
+On `rspack@1.3.0` (Meteor 3.5.2), `meteor.autoInstallDeps: false` still reports
+missing/outdated dependencies and manual commands; earlier opt-out behavior
+can skip those checks. Inspect the first dependency/config error and the actual
+project root before choosing a fix. See `references/troubleshooting.md`.
 
 ## Anti-patterns
 

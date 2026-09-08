@@ -8,16 +8,26 @@ expected artifact. Change one variable per attempt. Keep a change only when the
 failure or a quantitative measurement improves, and revert disproven changes
 before testing the next hypothesis.
 
-## Reset state
+## Startup failure and cache recovery
+
+Meteor 3.5.2 stops promptly when Rspack cannot spawn, exits, or panics before
+its first compilation. Read the preceding child-process error before retrying.
+Older integrations can hang at this boundary; check the release before adding
+timeouts or application startup delays.
+
+After capturing the failure, if it identifies a stale or incompatible
+persistent cache, stop the affected build processes and remove only the Rspack
+cache (resolve a custom cache path before deleting anything):
 
 ```bash
-meteor reset
-rm -rf .meteor/local _build public/build-assets public/build-chunks private/build-assets
+rm -rf ./node_modules/.cache/rspack
+meteor run
 ```
 
-Clears every cache the integration owns. Capture logs or generated output first;
-resetting state can erase the evidence needed to distinguish a stale cache from
-a deterministic compiler failure.
+If that fails, inspect the new error before considering `meteor reset`.
+Meteor 3's default reset preserves local Mongo; `meteor reset --db` and direct
+deletion of `.meteor/local` do not. Never use either database-deleting form as
+a routine build-cache fix. Preserve generated evidence before any reset.
 
 ## Memory crashes (OOM)
 
@@ -71,10 +81,20 @@ Error in CI or Docker:
 Could not find rspack.config.js, rspack.config.ts, rspack.config.mjs, or rspack.config.cjs
 ```
 
-Root cause: the npm-side deps required by the current Meteor version are
-not in the lockfile because `meteor update --npm` was not committed after
-the local Meteor upgrade. Also check the release contract: Meteor 3.4.0 uses
-`@meteorjs/rspack` v1, while Meteor 3.4.1 uses v2.
+Check the app root, config file, resolved integration versions, and preceding
+dependency warnings. An incomplete npm upgrade is one possible cause, not
+proof from this error alone. Meteor 3.4.0 uses `@meteorjs/rspack` v1;
+3.4.1 uses v2; 3.5.2 pairs `rspack@1.3.0` and `@meteorjs/rspack@2.2.0`.
+
+In ordinary builds with `rspack@1.3.0`, `meteor.autoInstallDeps: false` suppresses installs but
+retains minimum-version checks and manual commands. Resolve those commands
+locally, preserving runtime versus dev dependency categories. Older opt-out
+implementations can skip checks entirely. Automatic installation existed before
+3.5.2; the shared manager and actionable opt-out warnings are the new behavior.
+
+`meteor update --npm` explicitly requests dependency updates and overrides the
+opt-out for that invocation without changing the stored flag. Run it during
+local dependency preparation, not inside an immutable CI build.
 
 Preferred fix: run the update locally, review it, and commit the lockfile:
 
@@ -85,19 +105,11 @@ git add package.json package-lock.json
 git commit -m "update rspack npm dependencies"
 ```
 
-CI can then run `meteor npm ci && meteor build`. If the pipeline must repair
-an incomplete upgrade defensively, use this fallback in the build step:
-
-```dockerfile
-RUN (meteor update --npm 2>/dev/null || true) && meteor npm install && meteor build [...]
-```
-
-The `2>/dev/null || true` keeps the step compatible with older Meteor
-versions that lack `--npm` (3.4 introduced it).
-
-Each Docker step or CI stage is isolated. Uncommitted npm bumps from one
-stage do not carry into another. Prefer the committed dependency changes;
-the fallback is a recovery mechanism, not the reproducible default.
+CI can then run `meteor npm ci` followed by the project's `meteor build`
+command. Install dev dependencies in the build stage. Set the opt-out when
+builds must not mutate dependencies; verify the clean build leaves the manifest
+and lockfile unchanged. Do not suppress update/install failures. A separate
+Docker stage needs the reviewed dependency files copied into it.
 
 ## thread-stream worker error
 
@@ -122,14 +134,23 @@ internals, large precompiled deps.
 
 ## Multiple instances on one machine
 
-Default `.meteor/local` and `_build` paths conflict if two instances run.
-Set `METEOR_LOCAL_DIR` per instance; the integration uses its basename as
-a suffix for `_build`, `build-assets`, `build-chunks`.
+Meteor 3.5.2 isolates development, normal-test and full-app-test module output
+and mode-specific assets/chunks automatically. This prevents one mode from
+cleaning another's output; it does not provide separate Meteor caches, local
+Mongo data, or ports. Earlier integrations do not provide the same protection.
+
+Set `METEOR_LOCAL_DIR` when processes need separate Meteor local state or run
+the same mode. Its basename suffixes `_build`, `build-assets`, and
+`build-chunks`, composing with 3.5.2's `-test` and `-app-test` asset suffixes.
 
 ```bash
 PORT=3000 METEOR_LOCAL_DIR=.meteor/local-1 meteor run
 PORT=3001 METEOR_LOCAL_DIR=.meteor/local-2 meteor run
 ```
+
+Use distinct `RSPACK_DEVSERVER_PORT` values too if the derived ports collide.
+Include all active suffixed outputs in external tools' ignore rules, but never
+hide Meteor's generated entry modules in `.meteorignore`.
 
 ## Verbose mode
 

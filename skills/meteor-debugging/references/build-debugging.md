@@ -63,5 +63,17 @@ proof that the application has no leak.
 Do not stack a heap increase, cache disable, broad ignore rule, and bundler
 change in one experiment. The result cannot identify which variable mattered.
 
+Meteor 3.5.2 fails promptly if Rspack exits or panics before its first compile.
+Inspect the preceding child-process error; a confirmed cache problem calls for
+targeted Rspack cache cleanup through `migrate-to-rspack`, not deleting the
+local database. `rspack@1.3.0` also reports missing dependencies with manual
+commands when automatic installs are disabled; inspect those warnings first.
+
+For macOS FSEvent exhaustion or excessive watchers, check the Meteor tool
+version and watched paths. Meteor 3.5.2 stops watching immutable package
+warehouse files. Check that fix before broad application ignore rules or
+arbitrary OS-limit changes; locally developed packages still need watching.
+
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/cli/index.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.5.2.md

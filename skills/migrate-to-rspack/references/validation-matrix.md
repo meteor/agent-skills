@@ -11,6 +11,7 @@ results. Run the applicable rows after Rspack activation.
 | Server tests | Server tests exist | Expected suites execute; reject zero-test output. |
 | Client tests | Client tests exist | Browser bundle compiles and expected suites execute. |
 | Test-mode compilation | Client or test-only entry exists | The configured client test root and generated inputs compile through Meteor and Rspack. |
+| Full-app initialization | App-test modules or server top-level await exist | On Meteor 3.5.2, configured app client/server bundles remain present with server-only test entries; awaited module initialization settles and the expected tests execute. Earlier integrations need a release-specific reproduction. |
 | Production build | Always | Command exits nonzero on failure and the expected artifact exists. |
 | Extracted bundle boot | Deployable app | Server reaches readiness from the production artifact. |
 | Browser against production bundle | Client app | The real page starts; HTTP 200 from the server alone is insufficient. |

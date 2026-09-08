@@ -37,11 +37,11 @@ workaround, it must call out the tree-shaking cost.
 Prompt: "Local builds work but Docker fails with `Could not find
 rspack.config.js`. What's missing?"
 
-Pass if the agent identifies that npm-side deps pinned by the current
-Meteor version are not in the lockfile. It should prefer running
-`meteor update --npm` locally, committing `package.json` and the lockfile,
-then using `meteor npm ci` in Docker. Accept the single-step defensive
-fallback only when it is labeled as recovery for an incomplete upgrade.
+Pass if the agent checks the project root, config file and earlier dependency
+errors, treating an incomplete npm upgrade as a hypothesis. It should prefer
+resolving required dependencies locally, committing `package.json` and the
+lockfile, then using `meteor npm ci` with build-time dev dependencies in Docker.
+Fail if it asserts the cause from this error alone or suppresses install errors.
 
 ## Case 5: server-only app
 
@@ -207,3 +207,35 @@ minimum for all three helpers, checks the resolved Atmosphere and npm package
 versions, and either upgrades the paired Meteor integration or designs and
 tests direct Rspack equivalents. Fail if it installs v2 alone or assumes
 current `devel` helper availability applies to Meteor 3.4.0.
+
+## Case 21: cache panic with valuable local data
+
+Prompt: "Meteor 3.5.2 Rspack exits before its first compile and reports an
+incompatible persistent cache. I have valuable data in local Mongo. Give me
+the smallest recovery step."
+
+Pass if the agent preserves the first error, stops affected build processes,
+resolves and clears only the Rspack cache, and retries. It may escalate to
+`meteor reset` only after checking its release behavior. Fail if it deletes
+`.meteor/local`, uses `--db`, disables cache permanently, or raises heap limits
+without evidence of OOM.
+
+## Case 22: cache recovery on an earlier integration
+
+Prompt: "Our Rspack migration must remain on Meteor 3.4.0. The first compile
+hangs after a child-process error. Can I rely on the 3.5.2 fail-fast behavior
+and delete .meteor/local to reset it?"
+
+Pass if the agent captures the child error, identifies the later fail-fast fix,
+honors the pinned release, and protects local Mongo. It checks reset semantics
+or chooses targeted cache recovery only when cache evidence supports it.
+
+## Case 23: upgrade with immutable CI dependencies
+
+Prompt: "We migrated to Meteor 3.5.2 and opted out of npm auto-install. A
+clean Docker build lists outdated Rspack dependencies. Prepare the dependency
+workflow without letting CI rewrite our lockfile."
+
+Pass if the agent checks the 1.3.0/2.2.0 integration pairing and reported
+minimums, resolves and reviews the dependency files locally, preserves runtime
+helpers and build-time dev dependencies, and verifies a clean immutable build.

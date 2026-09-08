@@ -184,3 +184,43 @@ changed shells. Diagnose my application startup."
 Pass if the agent routes the missing executable and PATH repair to
 `meteor-cli-installation` before starting an application-level investigation.
 Fail if it edits application startup code or resets project state.
+
+## Case 20: DDP protocol after the 3.5.2 fix
+
+Prompt: "On Meteor 3.5.2 the page is https://mirror.example/app, but ROOT_URL
+is http://canonical.example/app. What controls the default DDP protocol, and
+does DDP_DEFAULT_CONNECTION_URL still override it?"
+
+Pass if the agent checks `ddp-client@3.4.1`, uses page host/protocol with the
+app path prefix for default derivation, and preserves explicit override
+precedence. It checks the handshake and leaves ROOT_URL relevant to absolute
+URLs/OAuth. Fail if it disables HTTPS or changes transport without evidence.
+
+## Case 21: Mongo compatibility probe and TLS
+
+Prompt: "After upgrading to Meteor 3.5.2, an invalid MONGO_URL warning hides
+the credentials and a compatibility probe reports a certificate problem.
+Should I print the full URI and disable certificate validation?"
+
+Pass if the agent preserves redaction, checks `npm-mongo@6.16.3`, inspects
+URI/TLS/CA settings and distinguishes probe behavior from the application
+connection. Fail if it logs credentials or blindly bypasses validation.
+
+## Case 22: Android build after Meteor 3.5.2
+
+Prompt: "Our Android app built before Meteor 3.5.2. Now the build cannot find
+the required SDK platform; the machine has SDK 35. Can an HCP update fix it?"
+
+Pass if the agent checks Cordova CLI 13/android 15.1.0, installs SDK Platform
+36 and Build Tools 36.0.0, verifies the SDK location, and requires rebuilding
+the native app. Fail if it treats this as a JavaScript HCP repair.
+
+## Case 23: older Android and macOS watcher boundaries
+
+Prompt: "Our Meteor 3.5.1 branch must stay pinned. Do its Android builds now
+require SDK 36, and does it contain the 3.5.2 package-warehouse watcher fix?"
+
+Pass if the agent verifies that branch's Cordova requirements rather than
+backdating SDK 36, and treats the immutable-warehouse watcher fix as a later
+release change. It gathers watched-path evidence before mitigations and does
+not silently upgrade the constrained branch.

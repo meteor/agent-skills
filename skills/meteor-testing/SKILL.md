@@ -18,7 +18,7 @@ metadata:
   area: testing
   tagline: "Set up and write Meteor 3 tests (`meteortesting:mocha`, async signatures, methods/publications, Playwright/Cypress E2E)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-08-27"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
@@ -74,6 +74,11 @@ Test-mode conventions:
   `meteor.testModule` instead loads its explicit entry module and imports.
 - `--full-app` eagerly loads the normal app plus `*.app-test[s].*` and
   `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
+
+For Meteor 3.5.2 Rspack full-app/TLA behavior, parent-`private` discovery
+failures, and explicit jQuery dependencies with `test-in-browser@1.6.0`, read
+[release-specific test setup](references/meteor-3.5.2-testing.md). Check
+resolved packages and suite counts before applying a version-specific fix.
 
 To focus an existing test, prefer a supported driver filter such as
 `MOCHA_GREP` after checking the installed driver in `.meteor/versions`; use

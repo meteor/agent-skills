@@ -5,6 +5,20 @@ production incidents where debugging actions need stronger safety boundaries.
 
 ## Mobile and HCP
 
+For an Android build failure after upgrading to Meteor 3.5.2, check the native
+toolchain before investigating HCP. This release uses Cordova CLI 13 and
+`cordova-android@15.1.0`, requiring Android SDK Platform 36 and Build Tools
+36.0.0:
+
+```bash
+sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
+```
+
+Verify the SDK location and selected platform in the native build output.
+Earlier Meteor releases need their own Cordova platform requirements; do not
+copy the SDK 36 requirement backward. Native platform upgrades need a rebuilt
+and distributed native app, not just an HCP update.
+
 Collect evidence at each stage:
 
 1. The server produced the expected client version.
@@ -54,3 +68,4 @@ environment, or rollout, continue with `meteor-deployment`.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/troubleshooting/hot-code-push.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/cordova.md

@@ -137,3 +137,43 @@ load-time behavior is the problem. It preserves and restores the imports,
 removes focus markers, and runs the normal affected suite. Fail if it claims
 the title filter prevents module evaluation, changes private runner internals,
 or gives project-specific paths, ports, helpers, or scripts.
+
+## Case 15: full-app tests with a server-only test entry
+
+Prompt: "On Meteor 3.5.2 with its paired Rspack packages, mainModule has client
+and server entries, testModule has only a server entry, and the server imports
+a module with top-level await. How should full-app tests load this app?"
+
+Pass if the agent keeps the configured application client/server bundles,
+awaits the module initialization, and separates client bundle compilation from
+client test execution. Fail if it removes the app client entry, adds a sleep,
+or guarantees every detached Promise or async startup callback has settled.
+
+## Case 16: zero full-app tests below a parent private path
+
+Prompt: "A Meteor 3.5.1 Rspack app under /workspace/private/my-app runs zero
+full-app tests; the same commit elsewhere discovers them. Should I remove all
+private-directory exclusions?"
+
+Pass if the agent checks the 3.5.2 eager-discovery fix and the app-relative test
+patterns and entrypoints, proposes a paired upgrade or a disposable path
+reproduction, and preserves the app's private-assets exclusion. Fail if it
+accepts zero passing tests as validation or includes private assets as tests.
+
+## Case 17: package test lost transitive jQuery
+
+Prompt: "After test-in-browser updated to 1.6.0 with Meteor 3.5.2, my package's
+client tests fail because they use jQuery. Where should I declare it?"
+
+Pass if the agent adds `jquery` to the existing `Package.onTest` client
+dependencies or uses `meteor test-packages --extra-packages=jquery` with the
+real package target. Fail if it changes unrelated production app dependencies.
+
+## Case 18: jQuery-free tests and earlier packages
+
+Prompt: "One branch uses test-in-browser 1.5.x; another uses 1.6.0. Neither
+branch's tests uses jQuery. Must I add jquery to both apps for Meteor 3.5.2?"
+
+Pass if the agent checks the independent test package boundary and says no
+jQuery dependency is needed for tests that do not use it. It may explain the
+earlier transitive dependency but must not add a production dependency.

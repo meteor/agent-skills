@@ -12,10 +12,54 @@ Match both integration packages to the Meteor release:
 | 3.4 | `1.0.0` | `1.0.0` | Base helpers, including `extendConfig`, `disablePlugins`, and `RSPACK_DEVSERVER_PORT`. |
 | 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds `replaceSwcConfig`, `persistDevFiles`, `enablePortableBuild`, and inherited `TOOL_NODE_FLAGS`. |
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and app-extension discovery; retains the v2 helper API. |
+| 3.5.2 | `1.3.0` | `2.2.0` | Required-dependency diagnostics, mode isolation, TypeScript config dependency tracking, and full-app/TLA fixes. |
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
 arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
 release and its paired dependencies.
+
+## Required npm dependencies
+
+With `rspack@1.3.0` and `tools-core@1.3.0` (Meteor 3.5.2), the shared manager
+checks required minimums even when `meteor.autoInstallDeps` is `false` in
+`package.json`. With automatic installation enabled, it installs missing or
+outdated dependencies and reports changes. A satisfied dependency set is quiet.
+
+During an ordinary build with automatic installation disabled, it prints the missing/outdated versions
+and manual install commands without changing project dependencies. It continues
+the build, which can still fail because those dependencies are missing. Treat
+the warning as a dependency problem, not as a successful compatibility check.
+
+An explicit `meteor update --npm` overrides the opt-out for that invocation
+without changing the stored flag. Use it during authorized dependency
+preparation; keep it out of an immutable CI build.
+
+```json
+{
+  "meteor": {
+    "autoInstallDeps": false
+  }
+}
+```
+
+For the 3.5.2 pairing, the core minimums are `@rspack/core` and `@rspack/cli`
+1.7.1, `@meteorjs/rspack` 2.2.0, `@rsdoctor/rspack-plugin` 1.5.7, and
+`@swc/helpers` 0.5.17. Keep `@swc/helpers` in runtime dependencies; the others
+are build-time dev dependencies. React adds its detected refresh dependencies.
+Use the versions and categories reported by the resolved integration instead
+of copying these minimums to another release.
+
+Automatic installation and the opt-out already exist in Meteor 3.5.1. That
+release skips the checks when opted out and does not provide the new warning
+contract. Inspect its dependencies manually or upgrade the paired integration.
+
+For reproducible CI/Docker, resolve dependencies locally, review and commit
+`package.json` and its lockfile, and use `meteor npm ci` in the build stage
+with dev dependencies available. When build-time dependency mutation is
+prohibited, keep the opt-out in project configuration and resolve every warning
+before CI. Do not rely on a container silently repairing an incomplete lockfile.
+
+## Configuration example
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');
@@ -165,6 +209,17 @@ unconditionally.
 Disable only when investigating Rspack cache bugs or OOM. Persistent is
 the rebuild-speed default.
 
+On `@meteorjs/rspack@2.2.0` (Meteor 3.5.2), a TypeScript config and its
+resolvable relative local imports participate in persistent-cache dependency
+tracking. Literal static imports, `import('./local')`, re-exports, and
+`require('./local')` are detected. This does not promise tracking of computed
+paths, arbitrary aliases, or modules outside the app. Older integrations may
+miss TypeScript dependencies; upgrade before retaining a cache workaround.
+
+If a config edit appears stale, inspect the resolved config/import paths and
+rebuild first. Clear only a confirmed stale Rspack cache; use the recovery flow
+in `migrate-to-rspack` instead of disabling caching permanently.
+
 ### `disablePlugins`
 
 Match by constructor name string, RegExp, or predicate.
@@ -251,6 +306,11 @@ Do not edit:
 - `_build/*`: Rspack entry, intermediate app, overridden Meteor entry.
 - `public/build-assets/*`, `private/build-assets/*`: built static assets.
 - `public/build-chunks/*`: dynamic-import code splits.
+
+Meteor 3.5.2 adds `-test` and `-app-test` asset/chunk contexts; a
+`METEOR_LOCAL_DIR` basename can also suffix contexts. Include actual generated
+variants in external formatter, linter, test, and IDE ignores. Keep the active
+build handoff visible to Meteor itself.
 
 Auto-added to `.gitignore`. To rename, set in `package.json`:
 

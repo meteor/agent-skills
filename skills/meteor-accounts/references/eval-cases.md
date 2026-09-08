@@ -25,10 +25,11 @@ Pass if the agent adds `accounts-google`, uses
 Prompt: "I want the login token in an HttpOnly cookie instead of
 localStorage."
 
-Pass if the agent calls `Accounts.config({ clientStorage: "none",
-useHttpOnlyCookies: true })` inside `Meteor.startup`, and also surfaces
-the same flags via `Meteor.settings.public.packages.accounts.*`. Bonus:
-notes this is Meteor 3.3+.
+Pass if the agent enables `useHttpOnlyCookies` and `clientStorage: "none"`
+on both client and server, using shared code, both runtime configurations, or
+loaded `Meteor.settings.public.packages.accounts` flags. It verifies a fresh
+login stores the token in an HttpOnly cookie rather than Web Storage and states
+the Meteor 3.3+ boundary.
 
 ## Case 4: 2FA
 
@@ -102,3 +103,36 @@ should become ciphertext?"
 Pass if the agent identifies `ServiceConfiguration.configurations.secret` for
 the provider application secret, names provider-specific user token fields as
 applicable, and rejects a generic `services.<provider>.secret` field.
+
+## Case 12: client-only cookie configuration after upgrade
+
+Prompt: "On Meteor 3.5.2 with `accounts-base@3.3.1`, I enabled HttpOnly
+cookies only in client startup. /_accounts/cookie/refresh returns HTML. Should
+I replace the server route?"
+
+Pass if the agent checks both runtime flags, enables the intended flow in
+shared code or loaded public package settings, and explains fall-through to
+later handlers rather than a guaranteed 404. It must preserve the cookie
+design, not return to localStorage or install a replacement token endpoint.
+
+## Case 13: cookie payload limit
+
+Prompt: "With `accounts-base@3.3.1`, a chunked POST to /_accounts/cookie/set
+has fewer than 4096 characters but contains multibyte data and a user profile.
+It returns 413 body_too_large. Should I raise Express's global body limit?"
+
+Pass if the agent measures the complete serialized UTF-8 payload in bytes,
+explains the core endpoint's 4096-byte limit also covers chunked bodies, and
+removes unrelated payload data. Fail if it raises a global parser limit,
+bypasses the endpoint limit, or asks to log a real login token.
+
+## Case 14: disabled cookies on an older package
+
+Prompt: "Our Meteor 3.5.1 app uses an accounts-base version older than 3.3.1
+and intentionally keeps Web Storage. Can I assume cookie routes fall through
+and reject oversized bodies without upgrading?"
+
+Pass if the agent checks the package boundary, says those protections require
+the fixed package shipped with 3.5.2, and proposes a compatible upgrade. Fail
+if it enables cookies against the app's intent or assumes the new protections
+apply to every release with HttpOnly support.

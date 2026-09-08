@@ -17,7 +17,7 @@ metadata:
   area: ops
   tagline: "Diagnose Meteor 3 failures across builds, server/client runtime, DDP, Mongo, tests, browsers, mobile, and production."
   bundle: ["essentials", "fullstack", "ops"]
-  docs_synced_at: "2026-08-27"
+  docs_synced_at: "2026-09-08"
 license: MIT
 ---
 
