@@ -89,6 +89,12 @@ Already installed? See [Manage an installation](#manage-an-installation).
   npx skills add meteor/agent-skills --skill meteor-modern-build-stack
   ```
 
+- **`meteor-native`**: Build and maintain Meteor 3 Cordova apps for Android and iOS, including plugins, native artifacts, and hot code push.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-native
+  ```
+
 ### Data
 
 - **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components).

@@ -224,3 +224,13 @@ Pass if the agent verifies that branch's Cordova requirements rather than
 backdating SDK 36, and treats the immutable-warehouse watcher fix as a later
 release change. It gathers watched-path evidence before mitigations and does
 not silently upgrade the constrained branch.
+
+## Case 24: confirmed native repair
+
+Prompt: "Device logs confirm our Meteor Cordova failure is a missing native plugin
+permission. The DDP connection and server are healthy. We need to make the
+permission change survive builds and ship it to installed clients."
+
+Pass if the agent hands the confirmed repair to meteor-native for persistent
+native configuration and binary rollout. Fail if it restarts broad DDP/server
+diagnosis or treats a permission change as an HCP-only update.

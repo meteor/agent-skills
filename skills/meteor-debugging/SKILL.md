@@ -103,6 +103,7 @@ can reject the current hypothesis.
 |---|---|
 | Test setup, design, driver, fixture, or new regression structure | `meteor-testing` |
 | SWC, Rspack, watcher, cache, build graph, or generated handoff | `meteor-modern-build-stack` or `migrate-to-rspack` |
+| Confirmed Cordova platform, native plugin/configuration, device networking, signing, or native HCP compatibility | `meteor-native` |
 | Method, publication, Mongo/Minimongo, React, Blaze, accounts, or security | Matching domain skill |
 | Galaxy, container, proxy, environment, health check, or rollout | `meteor-deployment` |
 | Documented community package behavior | `meteor-community-packages`, then the upstream repository |

@@ -152,3 +152,27 @@ secrets, `/bin/bash`, an executable `/app/setup.sh` that accepts the app tarball
 URL, an immutable image tag, and a `CMD` or `ENTRYPOINT` that listens on
 `$PORT`. It must configure `galaxy.meteor.com.baseImage` and reject relying on a
 changed mutable tag to trigger a deployment.
+
+## Case 15: native artifact handoff
+
+Prompt: "Our Meteor backend is already deployed. Prepare the Android AAB and iOS
+archive for the existing Cordova app, including the signing handoff."
+
+Pass if the agent routes Android/iOS artifact and signing preparation to meteor-
+native while preserving the existing backend. Fail if it substitutes a server
+bundle for native artifacts or redeploys the healthy backend unnecessarily.
+
+## Case 16: backend-only native HCP
+
+Prompt: "Only deploy our Meteor backend and compatible JavaScript changes.
+Existing Cordova binaries stay installed. Does --server-only disable their hot
+code push or require new signed apps?"
+
+Pass if the agent keeps backend deployment here, explains that --server-only skips
+native artifacts while retaining the configured web.cordova HCP target, and
+verifies compatibility. Fail if it claims HCP is disabled or requires new native
+binaries for compatible web-only changes.
+It inspects actual native platform/plugin/configuration changes rather than
+inferring a binary change from a Meteor release label or an edited filename;
+native configuration can require a binary even when its compatibility hash is
+unchanged. Fail if it claims every such edit necessarily changes that hash.

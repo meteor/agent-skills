@@ -8,7 +8,9 @@ description: >
   NODE_OPTIONS, health checks, pre-deploy commands, hot code push,
   --architecture os.linux.x86_64, --server-only, or a deployed Node.js
   version mismatch. Use this skill when the user asks about shipping the app,
-  asks about production config, or asks about containerizing.
+  asks about production config, or asks about containerizing. For Cordova
+  Android/iOS artifacts, signing, and native HCP compatibility use
+  meteor-native; this skill owns the backend deployment.
 metadata:
   author: meteor
   kind: knowledge
@@ -25,6 +27,11 @@ license: MIT
 `meteor build` produces a self-contained Node bundle that runs anywhere
 the matching Node.js version runs. Galaxy is the first-party host;
 Docker / Kubernetes / SSH-to-a-Node-host all work too.
+
+For Android/iOS artifacts and native HCP compatibility, use `meteor-native`.
+Check actual native configuration as well as compatibility hashes: permission
+or other native configuration changes can require a new binary with an
+unchanged hash.
 
 Match the Node version to the bundled Meteor Node:
 
