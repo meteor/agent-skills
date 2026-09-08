@@ -32,11 +32,13 @@ Collect evidence at each stage:
 Use the browser console for a local WebView or remote device debugging to read
 client logs. When the failure crosses into native networking, storage,
 permissions, plugins, signing, or the embedded WebView, reproduce with Android
-Studio or Xcode and route the confirmed native cause to the platform workflow.
+Studio or Xcode and continue the confirmed native repair with `meteor-native`.
 
-Meteor, Cordova, and plugin changes are not delivered through HCP. Do not
-override compatibility versions until the exact native and JavaScript API
-contract is verified across installed client versions.
+Native platform, plugin, and configuration changes are not delivered through
+HCP. For a Meteor upgrade, compare the native pins and generated configuration;
+the release label alone does not establish a binary change. Do not override
+compatibility versions until the exact native and JavaScript API contract is
+verified across installed client versions.
 
 Avoid unrestricted logging inside reactive HCP watchers. Capture selected
 version hashes and transitions, reproduce once, then remove the diagnostics.
