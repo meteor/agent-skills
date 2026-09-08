@@ -18,6 +18,19 @@ Use this order:
 
 Never overwrite a committed audit report. A later report points to its predecessor and records the new comparison revisions. Do not convert `docs_synced_at` into an exact Git baseline; use it only as a search hint when no recorded commit SHA exists.
 
+## Pin the current Agent Skills revision
+
+Resolve the Agent Skills worktree's `HEAD` and dirty state before inventorying the
+catalog. For a coordinated Meteor release, require a clean worktree whose `HEAD`
+matches the supplied target SHA from the freshly fetched default branch. Record both
+the target ref and resolved SHA.
+
+Use that pinned revision for the skill inventory, previous-audit comparison, claim
+matrix, and evidence paths. If the caller supplies a different revision, or the
+worktree changes during the audit, stop instead of silently switching or auditing a
+mixed snapshot. Fetching remotes, changing branches, and creating worktrees remain
+outside the read-only audit.
+
 ## Choose the audit mode
 
 ### Full audit
