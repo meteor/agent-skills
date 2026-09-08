@@ -2,7 +2,9 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: beta. Fifteen Meteor 3 skills are available in the current catalog.
+> Status: beta. Sixteen Meteor 3 skills are available in the current catalog.
+
+See [the changelog](./CHANGELOG.md) for additions and updates.
 
 ## Install
 
@@ -23,7 +25,7 @@ To test a specific prerelease, pin the marketplace checkout to its repository
 tag before installing:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.0.0-beta.2
+codex plugin marketplace add meteor/agent-skills --ref v1.0.0-beta.3
 codex plugin add meteor@meteor
 ```
 
@@ -40,7 +42,7 @@ To test a specific prerelease, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills@v1.0.0-beta.2
+claude plugin marketplace add meteor/agent-skills@v1.0.0-beta.3
 claude plugin install meteor@meteor
 ```
 

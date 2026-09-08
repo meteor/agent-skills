@@ -82,6 +82,7 @@ pnpm run catalog:check
 pnpm test
 pnpm run build:zips
 claude plugin validate . --strict
+claude plugin validate .claude-plugin/plugin.json --strict
 ```
 
 - Confirm `skills/` contains one ZIP for each published skill.
