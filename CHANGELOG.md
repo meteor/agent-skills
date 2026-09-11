@@ -31,6 +31,8 @@ by this preparation.
 
 ### Maintenance
 
+- Update the build-time `js-yaml@3` override to 3.15.2 for
+  [GHSA-2883-xcg3-v3hh](https://github.com/advisories/GHSA-2883-xcg3-v3hh).
 - Preserve the incremental source audit against the exact Meteor beta commit.
 - Preserve the pinned examples follow-up audit and add nine Rspack migration
   acceptance cases, including older-version and working-plugin near misses.
