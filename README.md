@@ -6,11 +6,10 @@ Agent Skills for AI assistants helping developers build, debug, migrate, and ope
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-This branch prepares `1.1.0-beta.0` for Meteor `3.6-beta.0`. It is an
-unpublished review candidate based on `v1.0.0-beta.3`; the installation
-examples below still identify the published beta. See the
-[comparison and verification handoff](./docs/releases/v1.1.0-beta.0.md)
-to review or test this working tree.
+[Version 1.1.0-beta.0](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.0)
+is published for Meteor `3.6-beta.0`, building on `v1.0.0-beta.3` while keeping
+earlier Meteor 3 compatibility branches. See the
+[comparison and verification handoff](./docs/releases/v1.1.0-beta.0.md).
 
 ## Install
 
@@ -31,7 +30,7 @@ To test a specific prerelease, pin the marketplace checkout to its repository
 tag before installing:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.0.0-beta.3
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.0
 codex plugin add meteor@meteor
 ```
 
@@ -48,7 +47,7 @@ To test a specific prerelease, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills@v1.0.0-beta.3
+claude plugin marketplace add meteor/agent-skills@v1.1.0-beta.0
 claude plugin install meteor@meteor
 ```
 
@@ -58,6 +57,18 @@ The open `skills` CLI installs individual skills or the complete catalog into
 Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and other supported
 agents. Use this route when you want only selected skills instead of the full
 Meteor plugin.
+
+To install this exact beta from your project directory:
+
+```bash
+npx skills@latest add 'meteor/agent-skills#v1.1.0-beta.0'
+```
+
+The tag pins the skill contents; `@latest` selects the installer. Reinstalling
+replaces the selected existing skill directories, leaving unselected skills
+in place. Restart your agent after installation.
+
+For the current default-branch catalog:
 
 ```bash
 # all skills (interactive picker)

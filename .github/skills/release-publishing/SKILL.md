@@ -29,6 +29,23 @@ independent release, follow the normal beta or stable flow without requiring a M
 release audit, compatibility mapping, or Meteor artifact gates. Apply the coordinated
 rules below only when the catalog is intentionally paired with a Meteor release.
 
+## Preserve the release branch
+
+For a beta or a catalog paired with a Meteor beta/RC, publish from the existing
+release PR branch. Record its repository, branch, PR and freshly fetched head SHA.
+Keep preparation, audits and post-publication records on that same branch/PR.
+Leave the PR open and the branch unmerged after publication; do not merge, close
+or delete either project's release branch/PR just to publish or finish cleanup.
+Publication approval is not merge approval. A merge requires a separate explicit
+user request, including during stable promotion.
+
+Use the clean reviewed PR head as the beta candidate, not `main` or a synthetic
+PR merge commit. Green CI must cover that exact content; default-branch CI alone
+is insufficient. For stable publication, retain the reviewed, merged default-branch
+candidate gate, but ask for merge authorization if it is not already granted.
+For beta/RC, if the PR is already merged/closed or its branch is missing, ask which
+branch to use; do not silently create a replacement PR or rewrite history.
+
 ## Coordinate with a Meteor release
 
 When Meteor's release process requests a paired catalog, record the Meteor version,
@@ -48,20 +65,21 @@ with an Agent Skills beta unless the repository adopts a separate RC policy.
 Before preparing the catalog version:
 
 1. Require a completed release audit against the final Meteor release commit and a
-   clean Agent Skills candidate revision resolved from the freshly fetched default
-   branch. If an earlier audit used uncommitted documentation or a different Agent
-   Skills revision, require a new incremental report and preserve the earlier committed
-   record.
+   clean Agent Skills candidate from the freshly fetched release PR branch for
+   beta/RC, or default branch for stable. If an earlier audit used uncommitted
+   documentation or a different Agent Skills revision, require a new incremental
+   report and preserve the earlier committed record.
 2. Confirm every authorized release-blocking finding is implemented and its affected
    manual cases pass.
-3. Confirm the maintenance branch is merged and CI is green on the candidate commit.
+3. Confirm CI is green on the candidate commit. Beta/RC PRs remain open; only
+   stable publication requires the authorized merge into the default branch.
 4. Select the catalog version explicitly. A user may approve a new beta snapshot with
    no distributable skill change when the purpose is to record tested compatibility
    with a Meteor candidate.
 
 Load this publishing skill from the same clean checkout and revision selected for the
-release candidate. Record that commit as `AGENT_SKILLS_CANDIDATE_SHA`. If the remote
-default branch advances before version preparation, report the drift and explicitly
+release candidate. Record that commit as `AGENT_SKILLS_CANDIDATE_SHA`. If the selected
+remote branch advances before version preparation, report the drift and explicitly
 choose whether to keep the reviewed candidate or update it. Updating requires a new
 audit of every affected catalog claim and another validation pass.
 
@@ -117,22 +135,29 @@ Test from the working tree before making the repository public. After pushing a
 beta tag, repeat the Codex, Claude Code, and individual-skill installations
 from that exact tag.
 
+For branch-policy changes, run the affected
+[release acceptance cases](references/eval-cases.md) in read-only fresh conversations.
+
 ## Publish
 
 Treat preparation and publication as separate operations.
 
 - A request to prepare a release authorizes local version changes and checks.
 - A request to publish a release authorizes the requested commit, tag, push,
-  and GitHub release flow.
+  and GitHub release flow on the selected branch, not a PR merge or closure.
 - Marketplace submissions require the publisher account, approved listing
   details, and explicit authorization for that submission.
 
-When publication is authorized, commit the verified release preparation and resolve
-that commit as `AGENT_SKILLS_PUBLISH_SHA`. Show the diff from
+When publication is authorized, commit the verified preparation on the selected
+branch and resolve it as `AGENT_SKILLS_PUBLISH_SHA`. Show the diff from
 `$AGENT_SKILLS_CANDIDATE_SHA` and require it to contain only the approved maintenance
 and deterministic release preparation. Run the release checks from that clean exact
 commit, tag that commit with the matching `v` prefix, and push the tag. Do not load the
 publishing skill from one revision and tag another.
+
+For beta/RC, push preparation to the existing PR and confirm its head SHA and CI
+before tagging. Add verified installation links and results to that same PR branch
+after publication. These documentation commits do not move the published tag.
 
 The GitHub workflow validates the version again, builds skill ZIPs, and creates the
 GitHub release. Beta tags are marked as prereleases. Confirm the release succeeds
