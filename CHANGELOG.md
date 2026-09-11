@@ -1,5 +1,39 @@
 # Changelog
 
+## 1.1.0-beta.0 - Unreleased
+
+Review candidate for Meteor 3.6-beta.0 (`release-3.6`). The catalog keeps its
+16 skills and existing Meteor 3 compatibility branches. No tag is published
+by this preparation.
+
+### Updated
+
+- Match the exact beta Rspack integration and coordinated Rspack 2 dependencies;
+  migrate app-owned CSS, cache, merge, and output configuration.
+- Add pnpm workspace scaffolding, root package-manager and lockfile ownership,
+  local dependency protocols, and immutable CI installation guidance.
+- Support SWC React Compiler on the beta pairing, with React 17/18 runtime
+  targets and the Babel fallback for earlier integrations.
+- Correct the `test-in-browser@1.6.0` jQuery harness regression and document
+  the restored dependency in `1.6.1-beta360.0` without adding production jQuery.
+- Diagnose package shrinkwrap migration, exact Git dependency caching,
+  isolated Windows argon2 installation, scoped proxy failures, SWC cache
+  writes, and development-only web HMR.
+- Add the dependency-free Blaze PWA scaffold, URL-prefix and cache/update
+  checks, and boundaries for offline data, native apps, and existing Workbox.
+- Distinguish interactive Atmosphere discovery from scripted installation and
+  reviewed Git-source adoption with reproducible local-package provenance.
+
+### Maintenance
+
+- Preserve the incremental source audit against the exact Meteor beta commit.
+- Add version-boundary acceptance cases and record local verification and
+  remaining publication gates in the [review handoff](docs/releases/v1.1.0-beta.0.md).
+- Prepare both plugin manifests as `1.1.0-beta.0`; retain the currently
+  published `v1.0.0-beta.3` installation examples until publication.
+
+Compare locally with `git diff v1.0.0-beta.3...release/v1.1.0-beta.0`.
+
 ## 1.0.0-beta.3 - 2026-09-08
 
 The catalog grows from 14 to 16 skills and adds guidance for Meteor 3.5.2.

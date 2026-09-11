@@ -6,6 +6,12 @@ Agent Skills for AI assistants helping developers build, debug, migrate, and ope
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
+This branch prepares `1.1.0-beta.0` for Meteor `3.6-beta.0`. It is an
+unpublished review candidate based on `v1.0.0-beta.3`; the installation
+examples below still identify the published beta. See the
+[comparison and verification handoff](./docs/releases/v1.1.0-beta.0.md)
+to review or test this working tree.
+
 ## Install
 
 The GitHub installation commands below require a public repository. Maintainers
