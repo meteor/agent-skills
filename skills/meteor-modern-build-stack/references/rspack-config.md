@@ -13,6 +13,7 @@ Match both integration packages to the Meteor release:
 | 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds `replaceSwcConfig`, `persistDevFiles`, `enablePortableBuild`, and inherited `TOOL_NODE_FLAGS`. |
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and app-extension discovery; retains the v2 helper API. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Required-dependency diagnostics, mode isolation, TypeScript config dependency tracking, and full-app/TLA fixes. |
+| 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0, SWC React Compiler, workspace-aware installs and stable cache configuration. |
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
 arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
@@ -54,10 +55,29 @@ release skips the checks when opted out and does not provide the new warning
 contract. Inspect its dependencies manually or upgrade the paired integration.
 
 For reproducible CI/Docker, resolve dependencies locally, review and commit
-`package.json` and its lockfile, and use `meteor npm ci` in the build stage
+`package.json` and its lockfile, and use `meteor npm ci` for npm apps in the build stage
 with dev dependencies available. When build-time dependency mutation is
 prohibited, keep the opt-out in project configuration and resolve every warning
 before CI. Do not rely on a container silently repairing an incomplete lockfile.
+
+For Meteor 3.6-beta.0's coordinated npm peer transition, new dependency minimums,
+pnpm scaffold and workspace-owned installs, read
+[3.6 dependencies and workspaces](meteor-3.6-workspaces.md).
+Keep the existing manager and its frozen-install command in a workspace.
+
+## Rspack 2 configuration boundary
+
+Meteor 3.6-beta.0 supplies CSS through `css/auto`, persistent options under
+top-level `cache`, `externalsType: "commonjs2"`, and compatible output settings.
+Preserve those defaults. Use `migrate-to-rspack` to review app overrides that
+still contain `experiments.css`, `experiments.cache`, `output.libraryTarget`,
+or a hand-written `webpack-merge` integration.
+
+Rspack 2's built-in SWC loader no longer discovers `.swcrc` itself, but
+`@meteorjs/rspack@3.0.0-beta.1` still reads Meteor's `.swcrc`, `swc.config.js`
+or `swc.config.ts` and passes options to the loader. Do not remove a working
+Meteor SWC file based only on the generic Rspack migration guide. Inspect the
+effective configuration; extend it with `Meteor.extendSwcConfig`.
 
 ## Configuration example
 

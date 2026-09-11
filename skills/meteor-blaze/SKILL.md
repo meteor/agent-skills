@@ -9,7 +9,7 @@ description: >
   reactivity after await, data-context lookup surprises, duplicate DOM
   integrations after HMR, Rspack full reloads, or raw
   HTML in triple braces. Use this skill when the user asks about reusable Blaze
-  components, current Blaze packages, Rspack entry imports, or testing Blaze
+  components, the Blaze PWA scaffold, current Blaze packages, Rspack entry imports, or testing Blaze
   templates. For Meteor 2 to 3 upgrades, use migrate-to-meteor-3 instead.
 metadata:
   author: meteor
@@ -18,7 +18,7 @@ metadata:
   area: data
   tagline: "Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components)."
   bundle: ["blaze"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
@@ -71,6 +71,11 @@ Do not infer the installed Blaze runtime from the release name alone. Inspect
 `.meteor/versions`, then use the
 [Blaze history](https://github.com/meteor/blaze/blob/master/HISTORY.md) for
 feature floors and compatibility changes.
+
+Meteor 3.6-beta.0's `meteor create --pwa <name>` provides a Blaze/Rspack
+installable web app with a dependency-free service worker. It does not supply
+offline Meteor data or native binaries. Read
+[PWA boundaries](references/pwa-scaffold.md) before changing caching or scope.
 
 ## Component scaffold
 

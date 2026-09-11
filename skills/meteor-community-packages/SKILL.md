@@ -6,7 +6,8 @@ description: >
   package to a promoted core package such as roles. Triggers on community
   package recommendations, Atmosphere vs npm selection, Packosphere maintenance
   checks, jam:* helpers, Meteor.publish.once, Meteor.publish.stream, meteor-rpc,
-  Wormhole, cluster, and mail-preview. Use this skill when the user asks which
+  Wormhole, cluster, mail-preview, meteor add --search, or adopting a Git-hosted
+  Atmosphere package. Use this skill when the user asks which
   maintained package fits or how its documented integration works. Route
   Meteor 2-to-3 package failures to migrate-to-meteor-3 and underlying core API
   design to its owning skill.
@@ -16,7 +17,7 @@ metadata:
   meteor: ">=3.0"
   area: build
   tagline: "Choose, integrate, and verify documented Meteor community packages with version, ownership, and support boundaries."
-  docs_synced_at: "2026-08-26"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
@@ -62,6 +63,9 @@ builds, or deployment.
    Atmosphere package and `meteor npm install` for an npm package. Do not invent
    a version constraint. After installation, confirm the resolved version in
    `.meteor/versions` or the npm lockfile.
+   For Meteor 3.6-beta.0 interactive or Git-based Atmosphere adoption, read
+   [package installation](references/package-installation.md). Use explicit
+   registry names in scripts; preserve the npm workspace's selected manager.
 8. Apply every relevant required check from the selected package guide. Do not
    stop after asking for a project path. If files are unavailable, state the
    exact version, security, behavior, and test checks as required next steps.

@@ -100,11 +100,15 @@ offline. Clear private data on logout and replay inserts safely after reconnect.
 
 Pass if the agent checks the current package version, sets `keepAll: false`,
 defines a user-scoped `Todos.keep` filter with a limit, handles logout cleanup
-with `clear` or `clearAll`, and accounts for replay errors and idempotency. It
-should use `noRetry: true` for manually queued methods, require inserts to
+with a collection's `clear` or the named `clearAll` export, and accounts for
+replay errors and idempotency. Configuration and `.keep` declarations load on
+both client and server. It should use `Meteor.applyAsync` with `noRetry: true`
+for manually queued methods while still invoking the offline client stub,
+require inserts to
 return their `_id`, and note that `jam:method` handles queuing automatically
 when used. Fail if it persists every collection with the default `keepAll`
-without reviewing the data boundary.
+without reviewing the data boundary, invents `Offline.clearAll` or
+`Offline.queueMethod`, or passes `noRetry` as data through `Meteor.callAsync`.
 
 ## Case 11: jam method server-only secrets
 
@@ -139,3 +143,43 @@ default automatic retry behavior. It should keep non-idempotent external side
 effects such as email outside the retried callback or make them independently
 idempotent. Fail if it passes raw sessions manually without need or assumes the
 client simulation performs a real database transaction.
+
+## Case 14: interactive versus scripted adoption
+
+Prompt: "On Meteor 3.6-beta.0 I want to search for an Atmosphere package locally and then install it in CI. Should both environments run meteor add --search?"
+
+Pass if the agent: Uses the TTY picker only interactively and explicit inspected registry names for CI, retaining owner/version/security checks.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 15: Git package adoption provenance
+
+Prompt: "Adopt a reviewed Atmosphere package from a Git monorepo on Meteor 3.6-beta.0. We have its commit SHA and package subdirectory, but the destination already exists and its Package.describe name differs from the repo name."
+
+Pass if the agent: Uses the source/ref/subdirectory/destination options, inspects and preserves the existing target without automatic force, reads the registered name, explains local override and reproducible provenance, and requires integration checks.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 16: older Git adoption and publishing near miss
+
+Prompt: "On Meteor 3.5.2 can meteor add owner/repo publish our fork to Atmosphere and automatically maintain it?"
+
+Pass if the agent: States the 3.6 Git-adoption boundary, separates local clone from publication and maintenance, and offers a verified registry package or scoped manual checkout on the older release.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 17: manual offline replay invocation
+
+Prompt: "Our Meteor 3 app uses jam:offline without jam:method. I call
+Offline.queueMethod('todos.insert', todo), then
+Meteor.callAsync('todos.insert', todo, { noRetry: true }). Will that avoid
+duplicate retries? Is Offline.clearAll() the logout cleanup API?"
+
+Pass if the agent checks the installed package API, uses the named
+`queueMethod`/`clearAll` exports, queues only while disconnected, and invokes
+the method in both connection states with
+`Meteor.applyAsync('todos.insert', [todo], { noRetry: true })` so its client
+stub still runs offline.
+It explains that `callAsync` would send the options object as method data,
+requires an isomorphic method and replay error/idempotency checks, and avoids
+adding a manual queue if `jam:method` is later adopted. Fail if it preserves
+the unsupported namespace calls, skips the offline invocation, or claims
+`noRetry` removes the need for
+server authorization and replay safety.

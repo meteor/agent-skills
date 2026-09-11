@@ -234,3 +234,45 @@ permission change survive builds and ship it to installed clients."
 Pass if the agent hands the confirmed repair to meteor-native for persistent
 native configuration and binary rollout. Fail if it restarts broad DDP/server
 diagnosis or treats a permission change as an HCP-only update.
+
+## Case 25: package shrinkwrap migration
+
+Prompt: "After our first Meteor 3.6-beta.0 build a local Atmosphere package reinstalled npm dependencies and changed .npm/package/npm-shrinkwrap.json to lockfileVersion 5. Should we delete this and the app lockfile?"
+
+Pass if the agent: Distinguishes package shrinkwrap migration from app lockfiles, reviews meteorNpmDependencies and exact pins, repeats an unchanged build, and preserves committed locks rather than clearing everything.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 26: Rspack proxy log deduplication
+
+Prompt: "Our Meteor 3.6 beta Rspack asset proxy logs ECONNREFUSED once while many requests return 502, and its development WebSocket closes. Is the missing logging proof that DDP recovered?"
+
+Pass if the agent: Identifies separate asset/WS proxy scopes and five-second deduplication, checks target and Rspack child, preserves per-request failure semantics, and does not infer DDP recovery.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 27: HMR excluded from native and builds
+
+Prompt: "Meteor 3.6-beta.0 has no Rspack HMR client in my native target or meteor build output even with NODE_ENV=development. Should I inject the client manually?"
+
+Pass if the agent: Checks command/mode/architecture, recognizes the development web app-run boundary, and rejects manual injection as a repair for expected absence.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 28: SWC temporary path versus application failure
+
+Prompt: "On the 3.6 beta a SWC temporary cache write races with cleanup and gets ENOENT. Our application also reports ENOENT while reading a required configuration file. Can we ignore both?"
+
+Pass if the agent: Scopes non-fatal missing-path handling to compiler cache writes, checks compile outcome and verbose warnings, and separately diagnoses the application error.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 29: Git cache and Windows isolated argon2
+
+Prompt: "For the 3.6 beta, should we switch a pinned git+https npm dependency to a branch to improve caching, and install cross-env globally for isolated argon2 builds on Windows?"
+
+Pass if the agent: Rejects both blanket fixes, compares exact Git spec/recorded/installed source, checks the beta tool's isolated cross-env dependency, and does not change accounts libraries.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 30: older package cache boundary
+
+Prompt: "A Meteor 3.5.2 local Atmosphere package keeps reinstalling npm dependencies. Is its shrinkwrap already using the 3.6 lockfileVersion 5 and new Git-cache behavior?"
+
+Pass if the agent: Checks actual tool and shrinkwrap instead of attributing new behavior to 3.5.2, proposes a controlled reproduction and only an authorized paired upgrade, and preserves local data.
+Fail if it contradicts these boundaries or invents unsupported commands.

@@ -1,21 +1,19 @@
 ---
 name: migrate-to-rspack
 description: >
-  Use when migrating an existing Meteor 3 app to the Rspack bundler
-  integration (`rspack` Atmosphere package, Meteor 3.4+). Triggers on
-  removing nested imports, defining mainModule entry points, server-only
-  apps, replacing fourseven:scss / meteor/less / coffeescript /
-  jorgenvatle:vite / zodern:melte build plugins with Rspack loaders,
-  "Error: 'import' and 'export' cannot be used outside of module code",
-  CommonJS default-import interop, _build / build-assets / build-chunks
-  folders, module.exports in a client graph, Node built-ins in browser code,
-  .meteorignore hiding mainModule handoff files, dynamic chunks under ROOT_URL,
-  meteor.modules for CSS or HTML, resolve.symlinks in a monorepo,
-  resolve.alias migration, meteor update --npm in CI/Docker.
-  Use this skill when the user asks about converting an app to Rspack,
-  asks about a build plugin's Rspack replacement, or asks about CI/Docker
-  errors after upgrading. For setup and rspack.config.js helpers, use
-  meteor-modern-build-stack instead.
+  Use when migrating an existing Meteor app to Rspack (Meteor 3.4+), or
+  upgrading Rspack 1 to 2 on Meteor 3.6 beta. Triggers on nested imports,
+  mainModule entry points, server-only apps, replacing fourseven:scss /
+  meteor/less / coffeescript / jorgenvatle:vite / zodern:melte with loaders,
+  Svelte/TypeScript preprocessing or Lingui SWC plugin failures after upgrade,
+  CommonJS default-import interop, module.exports in client graphs, Node
+  built-ins in browser code, _build / build-assets / build-chunks,
+  .meteorignore hiding handoff files, dynamic chunks under ROOT_URL,
+  meteor.modules for CSS/HTML, resolve.symlinks or resolve.alias migration,
+  automatic dependency updates and immutable CI/Docker builds.
+  Use this skill when the user asks about migration compatibility or a build
+  plugin's Rspack replacement. For new-app setup and rspack.config.js helpers,
+  use meteor-modern-build-stack instead.
 metadata:
   author: meteor
   kind: knowledge
@@ -23,20 +21,18 @@ metadata:
   area: migration
   tagline: "Migrate an existing Meteor 3 app to the Rspack bundler integration (`mainModule`, replacing legacy build plugins with loaders)."
   bundle: ["migration"]
-  docs_synced_at: "2026-09-08"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
 # Migrate an existing app to Rspack
 
-Rspack compiles app code while Meteor builds Atmosphere packages and assembles
-the final bundle. Do not rewrite packages merely because Rspack is enabled, but
-audit their architecture declarations and browser-incompatible dependencies.
+Rspack compiles app code; Meteor builds Atmosphere packages and assembles the
+bundle. Keep packages, but audit their architecture and browser dependencies.
 
-Prerequisite: Meteor 3.4+. Strongly recommended to enable
-`"meteor": { "modern": true }` first (Meteor 3.3+) and fix Babel fallbacks,
-then add Rspack. See the `meteor-modern-build-stack` skill for the
-activation knobs and `rspack.config.js` shape.
+Prerequisite: Meteor 3.4+. Recommended before activation: enable
+`"meteor": { "modern": true }` and fix Babel fallbacks. For setup and helpers,
+use `meteor-modern-build-stack`.
 
 Match `@meteorjs/rspack` to the Meteor release, not to
 `@rspack/core` or `@rspack/cli`:
@@ -47,12 +43,18 @@ Match `@meteorjs/rspack` to the Meteor release, not to
 | 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds v2 helpers and inherited `TOOL_NODE_FLAGS`. |
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and extension discovery. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Dependency diagnostics, mode isolation, full-app/TLA and cache fixes. |
+| 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0 and workspace-aware installs. |
 
 The Atmosphere, Meteor npm integration, and Rspack core package versions are
-independent. Inspect `.meteor/versions`, `package.json`, and the lockfile. After
-changing the Meteor release, run `meteor update --npm`, inspect the npm changes,
-and commit the dependency files. Do not pair a newer integration major with an
-older Meteor release only to copy a current helper.
+independent. Inspect `.meteor/versions`, `package.json`, and the lockfile.
+Normal startup aligns required dependencies when automatic installation is
+enabled. Review and commit those changes. Explicit `meteor update --npm` is
+an alternative, not an extra required step. Do not pair a newer integration
+major with an older Meteor release to copy a helper.
+
+Already using Rspack? For the Meteor 3.6 beta upgrade, follow
+[Rspack 1 to 2](references/rspack-2-upgrade.md) and its toolchain checks.
+Keep valid entries/configuration; skip the first-activation steps below.
 
 ## Decision flow
 
@@ -172,7 +174,7 @@ See `references/framework-and-css.md`.
 | `meteor/coffeescript`     | `coffee-loader` (optionally chained with `swc-loader`).              |
 | `zodern:melte` (Svelte)   | Official Rspack Svelte loader.                                       |
 | `jorgenvatle:vite` (Vue/Solid) | Native Rspack Vue/Solid loaders.                                |
-| `babel-plugin-react-compiler` | Babel via Rspack loader on `.jsx`/`.tsx`; SWC for everything else. |
+| `babel-plugin-react-compiler` | SWC on the 3.6 beta pairing; earlier integrations retain Babel. See framework reference. |
 | `zodern:types`            | Still compatible. Keep it.                                           |
 
 Plugins acting only on Atmosphere package files can stay. Plugins acting on
@@ -206,7 +208,7 @@ Migrate imports instead unless you cannot.
 ## CI and Docker
 
 Resolve required npm updates locally and commit `package.json` and the lockfile.
-Run `meteor npm ci` with build-time dev dependencies, then `meteor build` in CI.
+Use the existing manager's frozen install with dev dependencies, then build.
 On `rspack@1.3.0` (Meteor 3.5.2), `meteor.autoInstallDeps: false` still reports
 missing/outdated dependencies and manual commands; earlier opt-out behavior
 can skip those checks. Inspect the first dependency/config error and the actual
@@ -221,16 +223,10 @@ project root before choosing a fix. See `references/troubleshooting.md`.
   imports. Trades real bundle-size wins for short-term convenience.
 - Commit `_build/`, `public/build-assets/`, `public/build-chunks/`,
   `private/build-assets/`. Autogenerated.
-- Change the Meteor release without running `meteor update --npm` and
-  committing its npm dependency changes. A stale lockfile makes clean CI
-  builds fail or pick an incompatible integration major.
+- Change the release without reviewing its paired dependencies and committing
+  the authoritative lockfile. Validate a clean install and production build.
 
 ## See also
 
-- `references/code-migrations.md`
-- `references/client-graph-preflight.md`
-- `references/validation-matrix.md`
-- `references/framework-and-css.md`
-- `references/troubleshooting.md`
 - `references/eval-cases.md`
 - For setup, helpers, and `rspack.config.js` API: `meteor-modern-build-stack`.

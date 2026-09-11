@@ -18,8 +18,13 @@ skips adding React-only dependencies (no `react-refresh`). No extra config.
 
 ## React Compiler
 
-Babel-only. Configure a Babel loader in `rspack.config.js` against
-`.jsx`/`.tsx`. See [Rspack React Compiler guide](https://rspack.rs/guide/tech/react#react-compiler).
+On Meteor 3.6-beta.0's Rspack 2.2.0 / `@meteorjs/rspack@3.0.0-beta.1`
+pairing, prefer the built-in SWC compiler through `Meteor.extendSwcConfig`.
+Use `meteor-react` for React 19 and React 17/18 target/runtime setup.
+Earlier integrations retain a Babel loader scoped to `.jsx`/`.tsx`; Babel
+also remains valid for options unsupported by SWC. Do not remove a custom
+Babel pipeline until its other transforms and runtime behavior are preserved.
+See the [Rspack React Compiler guide](https://rspack.rs/guide/tech/react#react-compiler).
 
 ## Vue
 
@@ -81,7 +86,7 @@ Skeleton: `meteor create --angular`.
 ## Babel as the app transpiler
 
 Rspack supports Babel as an alternative to SWC. Slower. Useful for
-Babel-only plugins (React Compiler in particular). Prefer SWC; if a single
+Babel-only plugins or compiler requirements unsupported by SWC. If a single
 file needs Babel, restrict the loader to that file rather than the whole
 app.
 
@@ -151,7 +156,8 @@ and remove the workaround immediately after upgrading. Never ignore the active
 Rspack build context.
 
 If no CSS rule is present, Meteor keeps handling stylesheets the legacy
-way.
+way. Meteor 3.6-beta.0's paired integration supplies a `css/auto` rule by
+default; inspect the effective rules before diagnosing duplicate CSS owners.
 
 ## CSS Modules
 
@@ -248,7 +254,11 @@ Skeleton: `meteor create --tailwind`.
 
 ## Service Worker
 
-Use `workbox-webpack-plugin`'s `GenerateSW` plugin. Three things to know:
+For an existing Workbox integration or a generated worker, use
+`workbox-webpack-plugin`'s `GenerateSW`. Meteor 3.6-beta.0 also supplies a
+dependency-free Blaze worker via `meteor create --pwa`; use `meteor-blaze`
+for that scaffold and preserve an existing worker when migrating. Neither
+approach supplies offline data synchronization. For Workbox:
 
 1. `exclude: [/./]` to skip precaching the build output. Use
    `runtimeCaching` rules for dynamic bundles.

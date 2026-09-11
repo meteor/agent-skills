@@ -1,4 +1,4 @@
-# Meteor 3.5.2 testing boundaries
+# Meteor 3.5.2 and 3.6 beta testing boundaries
 
 ## Rspack full-app tests
 
@@ -34,11 +34,17 @@ and expected suite count. Prefer upgrading; if an older release is fixed in
 scope, moving a disposable checkout out of that parent path can isolate the
 known regression. Do not remove the actual app `private/` asset exclusion.
 
-## Package tests requiring jQuery
+## Package tests and the browser harness
 
 `test-in-browser@1.6.0`, shipped with Meteor 3.5.2, removes transitive jQuery.
-Inspect the resolved package independently of the Meteor release. If package
-tests use jQuery, declare it in the existing `Package.onTest` callback:
+Its released Blaze test UI can still require jQuery even when the package's
+own tests do not. Meteor 3.6-beta.0 restores the driver's client dependency in
+`test-in-browser@1.6.1-beta360.0`. Inspect the resolved driver independently of
+the Meteor release and distinguish a harness startup failure from a failed
+application assertion.
+
+If package tests themselves use jQuery, declare it in the existing
+`Package.onTest` callback:
 
 ```javascript
 Package.onTest((api) => {
@@ -53,10 +59,19 @@ Or supply it for the test invocation:
 meteor test-packages --extra-packages=jquery ./packages/my-package
 ```
 
-Use the actual local package path. Older test-in-browser versions may supply
-jQuery transitively, but explicit test dependencies are more reproducible.
-Do not add jQuery to a production application or to tests that do not use it.
+Use the actual local package path. On a branch pinned to driver 1.6.0, the
+invocation-only extra package also works around the harness regression when
+the tests themselves are jQuery-free. Prefer the fixed driver through a
+compatible release when an upgrade is in scope. Do not add a production app
+dependency to repair the test harness.
+
+Earlier 1.5.x and the fixed 1.6.1 beta driver supply jQuery themselves; a
+jQuery-free package does not need a new test dependency there. Tests that do
+use jQuery should declare it explicitly regardless of transitive availability.
+Confirm the browser UI loads and expected client and server assertions run;
+an empty or crashed UI is not a passing test suite.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/7.writing-atmosphere-packages.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.6.0.md

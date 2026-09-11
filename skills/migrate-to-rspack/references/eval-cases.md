@@ -60,8 +60,8 @@ align it with my `@rspack/core` major?"
 
 Pass if the agent requires `@meteorjs/rspack` v2 for Meteor 3.4.1, explains
 that Meteor 3.4.1 pairs `rspack@1.1.0` with `@meteorjs/rspack@2.0.1`, keeps its
-version independent from core/CLI, and runs `meteor update --npm` to update and
-commit the dependency files.
+version independent from core/CLI, and uses startup auto-install or explicit
+`meteor update --npm` to update and commit the dependency files.
 
 ## Case 7: generated files break Biome
 
@@ -239,3 +239,121 @@ workflow without letting CI rewrite our lockfile."
 Pass if the agent checks the 1.3.0/2.2.0 integration pairing and reported
 minimums, resolves and reviews the dependency files locally, preserves runtime
 helpers and build-time dev dependencies, and verifies a clean immutable build.
+
+## Case 24: Rspack 2 config migration
+
+Prompt: "Upgrade our Meteor 3.5.2 Rspack app to 3.6-beta.0. Its config uses experiments.css, experiments.cache, output.libraryTarget, webpack-merge, and .swcrc. What must change?"
+
+Pass if the agent: Uses the beta package pairing, removes obsolete CSS experiment, moves cache top-level, reviews library.type while preserving Meteor output, replaces webpack-merge with rspack-merge, and preserves Meteor wrapper .swcrc discovery despite raw Rspack 2 behavior.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 25: npm peer transition warning
+
+Prompt: "On Meteor 3.6-beta.0 autoInstallDeps is false and installed Rspack core/CLI/React Refresh are 1.x. The printed npm update command hits old peer constraints. Should we set legacy-peer-deps globally?"
+
+Pass if the agent: Rejects a global bypass, verifies the coordinated Rspack 2 transition, permits a scoped npm --legacy-peer-deps invocation for confirmed old peers, and notes the beta manual warning may omit the flag. Does not apply the flag to pnpm or Yarn.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 26: preserve an existing Workbox migration
+
+Prompt: "We are moving an existing Meteor app to the 3.6 beta Rspack pairing. It uses a Workbox-generated service worker. Must we discard it for the new Blaze PWA scaffold?"
+
+Pass if the agent: Treats Workbox as optional but valid, inventories generation and cache/update behavior, proves migration parity, and does not overwrite the existing app or promise offline data.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 27: automatic upgrade of an existing Rspack app
+
+Prompt: "Our existing Meteor 3.5.2 app already uses Rspack and automatic npm installation is enabled. Upgrade to 3.6-beta.0. Must we run meteor update --npm separately, re-add rspack, or regenerate our working config?"
+
+Pass if the agent gives the release update then normal `meteor run`, explains
+startup's paired dependency update, and reviews/commits the resulting version
+files and authoritative lockfile. It keeps valid entries/configuration and
+checks custom tooling separately. Fail if it requires the extra npm command,
+re-adds Rspack or promises automatic rewriting of all custom configuration.
+
+## Case 28: beta startup with deliberate auto-install opt-out
+
+Prompt: "We are upgrading our Rspack app to Meteor 3.6-beta.0, but meteor.autoInstallDeps is false and CI must never rewrite dependencies. Will normal startup still upgrade everything? Give the local preparation and CI boundary."
+
+Pass if the agent respects the opt-out, prepares the coordinated dependency
+set locally, reviews and commits changes, then uses the existing manager's
+frozen install with build-time dev dependencies. It explains that explicit
+`meteor update --npm` overrides the opt-out for that invocation. Fail if it
+silently enables auto-install, mutates locks in CI or treats opt-out as success
+despite unresolved required dependencies.
+
+## Case 29: Svelte preprocessing after the beta upgrade
+
+Prompt: "After upgrading to Meteor 3.6-beta.0/Rspack 2, a Skeleton Svelte component fails during TypeScript preprocessing. We use svelte-loader and svelte-preprocess with PostCSS. Our tsconfig has extends and path aliases. What can we learn from Complex Todos without replacing our build setup?"
+
+Pass if the agent checks resolved compiler/loader/preprocessor versions and
+the first error, describes the example's Svelte update and TypeScript dev
+dependency/configuration, and merges relevant `target`/`verbatimModuleSyntax`
+options while preserving existing settings. It retains needed PostCSS and
+verifies an affected component and CSS in development and production. Fail if
+it treats observed versions as universal minimums, overwrites the config or
+migrates the app to Vite/SvelteKit.
+
+## Case 30: Lingui plugin major differs from the application toolchain
+
+Prompt: "On Meteor 3.6-beta.0 with @rspack/core 2.2.0, our builtin:swc-loader fails loading @lingui/swc-plugin 5.11.0. The other Lingui tools are 5.x. Should I update only @swc/core, remove the plugin, or upgrade every Lingui package to 6? Notes Offline changed the plugin to 6.7.0."
+
+Pass if the agent identifies Rspack's embedded SWC as the relevant host,
+checks resolved plugin/runtime compatibility, and treats the example's
+plugin update as a candidate rather than a universal pin. It preserves
+required macro transforms, explains independently versioned tooling, and
+verifies representative transformed and translated output. Fail if any of the
+three proposed shortcuts is presented as sufficient without that evidence.
+
+## Case 31: newer example fix on a pinned older compiler
+
+Prompt: "Our Meteor 3.5.2 app must keep Rspack 1 for now. Lingui builds correctly. Should we copy Notes Offline's @lingui/swc-plugin 6.7.0 upgrade to prepare for Meteor 3.6?"
+
+Pass if the agent preserves the working release/integration pairing, rejects
+a speculative plugin upgrade and requires compatibility with the actual
+resolved compiler before any later change. Fail if it treats the PR's plugin
+version as a Meteor-wide floor or silently moves this app to Rspack 2.
+
+## Case 32: raw Rspack 2 advice versus Meteor configuration
+
+Prompt: "The Rspack 2 guide says its packages are pure ESM, dev-server is explicit, and resolve.roots defaults to empty. After upgrading our Meteor app to 3.6-beta.0, should I replace our working CommonJS rspack.config.js with a standalone ESM config and rebuild all resolution rules? Our host CI image still uses Node 18."
+
+Pass if the agent distinguishes host Node from Meteor's build runtime,
+checks Rspack 2's supported Node floor, preserves valid Meteor CommonJS
+configuration/output and notes that Meteor supplies dev-server and project
+roots. It inspects effective configuration and custom overrides before
+changing resolution. Fail if it assumes raw defaults replace Meteor's values,
+converts the project to ESM unconditionally or ignores the old host runtime.
+Also fail if it calls host Node 18 the proven build blocker without checking
+whether the command uses Meteor's supported bundled Node instead.
+
+## Case 33: beta feedback without overstating validation
+
+Prompt: "All five examples in PR #50 started, so can we say every plugin and offline/production behavior is verified? My beta app still fails in a custom loader. Help me prepare feedback; do not post anything."
+
+Pass if the agent limits the PR claim to reported migration/startup, requires
+the affected feature and applicable production/offline checks, and drafts a
+redacted reproduction checklist with releases, resolved toolchain, runtime,
+config, command/mode, expected/actual result and first error. It distinguishes
+base integration from app tooling without assigning unproven blame. Fail if
+it claims tests were run, dismisses all plugin issues as outside Meteor, or
+posts a report.
+
+## Case 34: new-app setup is not a migration
+
+Prompt: "I'm creating a new Meteor 3.6-beta.0 app, not upgrading an existing one. I need the initial Rspack setup and an explanation of defineConfig versus extendConfig. Which skill owns this?"
+
+Pass if the agent selects `meteor-modern-build-stack` for setup/configuration
+helpers, reserving `migrate-to-rspack` for existing-app migration compatibility.
+Fail if it requires a legacy-plugin removal or Rspack 1-to-2 migration first.
+
+## Case 35: a working older plugin on Rspack 2
+
+Prompt: "We use Rspack 2.2.0 and @lingui/swc-plugin 5.11.0. A simple macro compiles and renders correctly. Must we upgrade to 6.7.0 because Notes Offline did? Does our smoke prove its reported failure was wrong?"
+
+Pass if the agent rejects both inferences: it preserves compatible working
+tooling without a speculative upgrade and limits the smoke to its actual
+input/mode. It requires reproduction through the affected JSX/catalog/loader
+path and applicable development/production checks before a broader claim.
+Fail if it declares all plugin 5.x versions broken on Rspack 2, forces the
+example pin, or dismisses a different project's failure from this one smoke.
