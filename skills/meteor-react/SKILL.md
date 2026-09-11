@@ -8,7 +8,7 @@ description: >
   a boolean, useFind receiving fetch(), stale closure inputs, duplicate tracker
   side effects, unstable Suspense keys, lost reactivity after await, state reset
   after refresh, or React tests leaking computations. Use this skill when the
-  user asks about a React skeleton, React-specific rspack.config rules, reactive
+  user asks about a React skeleton, React Compiler, React-specific rspack.config rules, reactive
   data hooks, or classic versus Suspense integration. Route general bundler
   configuration to meteor-modern-build-stack and Meteor 2 upgrades to
   migrate-to-meteor-3.
@@ -19,16 +19,15 @@ metadata:
   area: data
   tagline: "Build and debug Meteor 3 React interfaces (Rspack scaffold, reactive data hooks, Suspense, Fast Refresh, and testing)."
   bundle: ["react"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
 # React interfaces for Meteor 3
 
-React owns component rendering and local UI state. Meteor owns startup,
-Tracker reactivity, Minimongo, subscriptions, methods, and the build handoff.
-Keep those boundaries visible: components consume authorized client data and
-invoke methods, while publications and methods remain the server authority.
+React owns rendering and local UI state; Meteor owns reactive data and the
+build handoff. Components consume authorized data and invoke methods.
+Publications and methods remain the server authority.
 
 ## Decision flow
 
@@ -157,6 +156,10 @@ an optional SVGR rule; the TypeScript skeleton demonstrates type checking.
 Compose custom rules through `defineConfig` from `@meteorjs/rspack` without
 replacing Meteor's SWC defaults.
 
+For React Compiler, the Meteor 3.6-beta.0 pairing supports SWC; older pairings
+can retain Babel. Read [compiler setup](references/build-refresh-and-testing.md#react-compiler)
+for React-version targets and runtime requirements.
+
 | Request | Owner |
 |---------|-------|
 | React detection, JSX or TSX, React Refresh boundary | This skill |
@@ -206,7 +209,4 @@ render logic more than once.
 - [Meteor Rspack integration](https://docs.meteor.com/about/modern-build-stack/rspack-bundler-integration.html)
 - [React `createRoot`](https://react.dev/reference/react-dom/client/createRoot)
 - [React Suspense](https://react.dev/reference/react/Suspense)
-- `references/react-meteor-data.md`
-- `references/suspense-and-async.md`
-- `references/build-refresh-and-testing.md`
 - `references/eval-cases.md`

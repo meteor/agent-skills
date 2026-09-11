@@ -182,3 +182,24 @@ begins in 2.7.0 and official Meteor 3 compatibility begins in 3.0.0, and
 requires an upgrade before using the current API. It should prefer a tested
 3.0.0+ version, with current examples verified against 4.0.1. Fail if it
 assumes the Meteor 3 release supplies every package feature.
+
+## Case 22: React 19 SWC compiler
+
+Prompt: "Our Meteor 3.6-beta.0 app has the paired Rspack packages and React 19. Enable React Compiler without a second Babel pass."
+
+Pass if the agent: Uses extendSwcConfig and jsc.transform.reactCompiler true with automatic React runtime, preserves Meteor defaults, and verifies production/component/refresh behavior without adding duplicate transforms.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 23: React 18 compiler target
+
+Prompt: "We upgraded the build to Meteor 3.6-beta.0 but must retain React 18. Can SWC React Compiler work without a React major upgrade?"
+
+Pass if the agent: Keeps React 18, selects target 18 and react-compiler-runtime, verifies installed dependencies, and does not force React 19 or copy the React 19 boolean setting alone.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 24: older compiler near miss
+
+Prompt: "This app stays on Meteor 3.5.2 with its paired Rspack packages and Babel React Compiler. Can we simply delete Babel and set jsc.transform.reactCompiler true?"
+
+Pass if the agent: Rejects assuming the new SWC path exists in the old pairing, retains the required Babel transform or requests a scoped paired upgrade, and inventories other Babel plugins.
+Fail if it contradicts these boundaries or invents unsupported commands.

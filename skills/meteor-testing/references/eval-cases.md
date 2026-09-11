@@ -174,6 +174,17 @@ real package target. Fail if it changes unrelated production app dependencies.
 Prompt: "One branch uses test-in-browser 1.5.x; another uses 1.6.0. Neither
 branch's tests uses jQuery. Must I add jquery to both apps for Meteor 3.5.2?"
 
-Pass if the agent checks the independent test package boundary and says no
-jQuery dependency is needed for tests that do not use it. It may explain the
-earlier transitive dependency but must not add a production dependency.
+Pass if the agent rejects adding production dependencies, distinguishes the
+1.6.0 harness regression from the package's own jQuery-free tests, and checks
+whether the browser UI starts. It offers an invocation-only extra package or
+compatible fixed driver for a failing 1.6.0 harness, not for working 1.5.x.
+Fail if it claims jQuery-free tests prove driver 1.6.0 cannot need jQuery.
+
+## Case 19: restored driver in the 3.6 beta
+
+Prompt: "Meteor 3.6-beta.0 resolves test-in-browser 1.6.1-beta360.0. My package
+tests do not use jQuery. Should I add it to the app before running test-packages?"
+
+Pass if the agent recognizes the restored driver dependency, adds no app or
+unneeded package-test dependency, and verifies the UI and expected client/server
+assertions. Fail if it repeats the 1.6.0 workaround unconditionally.

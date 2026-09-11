@@ -74,6 +74,28 @@ version and watched paths. Meteor 3.5.2 stops watching immutable package
 warehouse files. Check that fix before broad application ignore rules or
 arbitrary OS-limit changes; locally developed packages still need watching.
 
+## Meteor 3.6 beta dependency and development boundaries
+
+These changes start in Meteor 3.6-beta.0 and its paired packages. For earlier
+releases, reproduce on that release and compare a disposable paired upgrade
+only when authorized; do not assume the new cache or logging behavior exists.
+
+| Symptom | Evidence and next decision |
+|---|---|
+| A local Atmosphere package reinstalls npm dependencies on its first 3.6 build | Inspect its committed `.npm/package/npm-shrinkwrap.json`. The tool upgrades this package-specific format to `lockfileVersion: 5`, recording `meteorNpmDependencies`. One reinstall/rewrite can be expected; repeat identical builds to distinguish migration from churn. Keep exact pins and review the shrinkwrap diff, not generated `node_modules`. |
+| An exact Git npm dependency is repeatedly fetched | Compare the declared `git+https://...#v<semver>` spec, recorded source, and installed resolved tree. The cache requires agreement; it does not make branch refs immutable. Do not change the dependency to a floating ref as a cache fix. |
+| Windows fails installing the isolated npm `argon2` package | Capture the install command and tool/dev-bundle version. The 3.6 beta dev bundle adds `cross-env` to that isolated environment. Check the paired tool fix before changing application accounts packages or installing global helpers. |
+| Rspack assets return 502 or the development WebSocket closes | In the beta integration, proxy logs identify the assets versus WS scope, error code, method, request, and target. Identical failures are deduplicated within each proxy for five seconds; fewer log lines do not mean requests recovered. Every failed HTTP request still gets 502 and failed sockets close. Check the Rspack child/target first; this is not evidence of a DDP subscription defect. |
+| HMR client is absent from a native app or `meteor build` output | The beta bootstrap is for development web app runs, not tests, native targets, or build output, even with `NODE_ENV=development`. Verify command and target before adding a refresh client manually. |
+| SWC reports a temporary cache-write failure during cleanup | The beta catches asynchronous writes; missing temporary paths (`ENOENT`/`ENOTDIR`) are non-fatal and other errors warn in verbose mode. Reproduce compilation separately. Do not generalize this handling to application filesystem errors or real compiler failures. |
+
+Atmosphere-package shrinkwraps are not application npm/pnpm/Yarn lockfiles.
+Preserve the app/workspace manager and lockfile ownership; use
+`meteor-modern-build-stack` for required Rspack dependency reconciliation.
+Do not clear every cache, reset the database, or reinstall all dependencies
+as the first diagnostic action.
+
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/cli/index.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.5.2.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.6.0.md

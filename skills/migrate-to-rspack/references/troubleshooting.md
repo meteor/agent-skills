@@ -98,6 +98,11 @@ local dependency preparation, not inside an immutable CI build.
 
 Preferred fix: run the update locally, review it, and commit the lockfile:
 
+The commands below apply to npm apps. For Meteor 3.6-beta.0, pnpm/Yarn
+workspaces and the Rspack 1.x peer transition, use
+[Rspack 1 to 2](rspack-2-upgrade.md). Preserve the detected manager and root
+lockfile; do not create an app-local npm lockfile in a pnpm workspace.
+
 ```bash
 meteor update --npm
 meteor npm install

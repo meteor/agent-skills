@@ -214,3 +214,31 @@ Pass if the agent distinguishes resolvable relative literal imports/re-exports
 from computed or out-of-app paths, verifies the next build before cleanup,
 and does not extend the TypeScript tracking fix to older integrations. Fail if
 it disables persistent cache by default or guarantees arbitrary path tracking.
+
+## Case 22: 3.6 beta dependency pairing
+
+Prompt: "We are on Meteor 3.6-beta.0 with autoInstallDeps false. Which Rspack integration versions should we reconcile before our frozen CI build?"
+
+Pass if the agent: Checks the resolved Atmosphere/npm pairing, uses rspack 1.4.0-beta360.0 and @meteorjs/rspack 3.0.0-beta.1 rather than a presumed stable 3.0.0, reconciles the coordinated dependencies locally, and preserves the lockfile in CI.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 23: pnpm workspace install ownership
+
+Prompt: "Meteor 3.6-beta.0 runs from apps/app in a pnpm workspace. The root pins pnpm but the app has an old npm packageManager hint. Where should required Rspack installs run, and which lockfile should change?"
+
+Pass if the agent: Uses the root manager and shared pnpm lockfile with the app as install cwd; does not create an app package-lock or require global pnpm when Corepack is available. Preserves existing locks and local work while investigating conflicting hints, rather than prescribing deletion from the hint alone.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 24: local protocol dependencies
+
+Prompt: "Our 3.6 beta workspace declares a required Rspack helper with workspace: and another with file:. Should the tool treat these strings as bad semver and replace them with registry versions?"
+
+Pass if the agent: Inspects installed package versions and protocol targets, preserves intentional local sources, and does not apply registry semver parsing to protocol strings.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 25: older workspace near miss
+
+Prompt: "We are pinned to Meteor 3.5.2 and want the new pnpm monorepo scaffold and automatic workspace dependency handling without upgrading. Can we use the 3.6 commands unchanged?"
+
+Pass if the agent: States the 3.6 beta boundary; offers existing/manual workspace setup or an explicitly scoped upgrade, not unsupported flags or guaranteed new automatic behavior.
+Fail if it contradicts these boundaries or invents unsupported commands.

@@ -18,7 +18,7 @@ metadata:
   area: testing
   tagline: "Set up and write Meteor 3 tests (`meteortesting:mocha`, async signatures, methods/publications, Playwright/Cypress E2E)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-09-08"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
@@ -76,7 +76,7 @@ Test-mode conventions:
   `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
 
 For Meteor 3.5.2 Rspack full-app/TLA behavior, parent-`private` discovery
-failures, and explicit jQuery dependencies with `test-in-browser@1.6.0`, read
+failures, and the jQuery harness regression fixed in Meteor 3.6-beta.0, read
 [release-specific test setup](references/meteor-3.5.2-testing.md). Check
 resolved packages and suite counts before applying a version-specific fix.
 

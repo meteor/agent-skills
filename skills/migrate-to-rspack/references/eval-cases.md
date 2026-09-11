@@ -239,3 +239,24 @@ workflow without letting CI rewrite our lockfile."
 Pass if the agent checks the 1.3.0/2.2.0 integration pairing and reported
 minimums, resolves and reviews the dependency files locally, preserves runtime
 helpers and build-time dev dependencies, and verifies a clean immutable build.
+
+## Case 24: Rspack 2 config migration
+
+Prompt: "Upgrade our Meteor 3.5.2 Rspack app to 3.6-beta.0. Its config uses experiments.css, experiments.cache, output.libraryTarget, webpack-merge, and .swcrc. What must change?"
+
+Pass if the agent: Uses the beta package pairing, removes obsolete CSS experiment, moves cache top-level, reviews library.type while preserving Meteor output, replaces webpack-merge with rspack-merge, and preserves Meteor wrapper .swcrc discovery despite raw Rspack 2 behavior.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 25: npm peer transition warning
+
+Prompt: "On Meteor 3.6-beta.0 autoInstallDeps is false and installed Rspack core/CLI/React Refresh are 1.x. The printed npm update command hits old peer constraints. Should we set legacy-peer-deps globally?"
+
+Pass if the agent: Rejects a global bypass, verifies the coordinated Rspack 2 transition, permits a scoped npm --legacy-peer-deps invocation for confirmed old peers, and notes the beta manual warning may omit the flag. Does not apply the flag to pnpm or Yarn.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 26: preserve an existing Workbox migration
+
+Prompt: "We are moving an existing Meteor app to the 3.6 beta Rspack pairing. It uses a Workbox-generated service worker. Must we discard it for the new Blaze PWA scaffold?"
+
+Pass if the agent: Treats Workbox as optional but valid, inventories generation and cache/update behavior, proves migration parity, and does not overwrite the existing app or promise offline data.
+Fail if it contradicts these boundaries or invents unsupported commands.

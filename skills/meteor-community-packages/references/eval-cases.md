@@ -139,3 +139,24 @@ default automatic retry behavior. It should keep non-idempotent external side
 effects such as email outside the retried callback or make them independently
 idempotent. Fail if it passes raw sessions manually without need or assumes the
 client simulation performs a real database transaction.
+
+## Case 14: interactive versus scripted adoption
+
+Prompt: "On Meteor 3.6-beta.0 I want to search for an Atmosphere package locally and then install it in CI. Should both environments run meteor add --search?"
+
+Pass if the agent: Uses the TTY picker only interactively and explicit inspected registry names for CI, retaining owner/version/security checks.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 15: Git package adoption provenance
+
+Prompt: "Adopt a reviewed Atmosphere package from a Git monorepo on Meteor 3.6-beta.0. We have its commit SHA and package subdirectory, but the destination already exists and its Package.describe name differs from the repo name."
+
+Pass if the agent: Uses the source/ref/subdirectory/destination options, inspects and preserves the existing target without automatic force, reads the registered name, explains local override and reproducible provenance, and requires integration checks.
+Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 16: older Git adoption and publishing near miss
+
+Prompt: "On Meteor 3.5.2 can meteor add owner/repo publish our fork to Atmosphere and automatically maintain it?"
+
+Pass if the agent: States the 3.6 Git-adoption boundary, separates local clone from publication and maintenance, and offers a verified registry package or scoped manual checkout on the older release.
+Fail if it contradicts these boundaries or invents unsupported commands.

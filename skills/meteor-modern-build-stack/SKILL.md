@@ -10,7 +10,7 @@ description: >
   helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
   Meteor.splitVendorChunk, Meteor.persistDevFiles, Meteor.disablePlugins,
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
-  RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS for OOM, modern/legacy archs.
+  RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS, pnpm workspaces, Rspack 2.
   Use this skill when the user asks about enabling the modern build stack,
   asks about SWC vs Babel in Meteor, asks about Rspack integration setup,
   or asks about customizing rspack.config.js. For converting an existing
@@ -22,7 +22,7 @@ metadata:
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-09-08"
+  docs_synced_at: "2026-09-11"
 license: MIT
 ---
 
@@ -99,12 +99,12 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
-Meteor 3.5.2 pairs `rspack@1.3.0` with `@meteorjs/rspack@2.2.0`.
-Inspect `.meteor/versions`, `package.json`, and the lockfile; integration
-versions do not follow the `@rspack/core` major. See
-[release pairings and dependency management](references/rspack-config.md)
-for earlier releases and the `meteor.autoInstallDeps` opt-out. The actionable
-opt-out warnings require `rspack@1.3.0`; automatic installation existed earlier.
+Inspect `.meteor/versions`, `package.json`, and the lockfile. Meteor
+3.6-beta.0 pairs `rspack@1.4.0-beta360.0`, `@meteorjs/rspack@3.0.0-beta.1`
+and Rspack 2.2.0; 3.5.2 retains the 1.3.0/2.2.0 integration pairing.
+See [release pairings](references/rspack-config.md) and
+[3.6 dependencies and workspaces](references/meteor-3.6-workspaces.md).
+For Rspack 1-to-2 config migration, use `migrate-to-rspack`.
 
 ## SWC config files
 

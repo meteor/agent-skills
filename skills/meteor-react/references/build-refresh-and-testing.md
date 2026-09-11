@@ -60,6 +60,43 @@ Keep this project layer limited to real application needs. Use
 `Meteor.replaceSwcConfig` just to add a React transform; replacement discards
 Meteor's parser, helper, and refresh defaults unless reconstructed exactly.
 
+## React Compiler
+
+Meteor 3.6-beta.0 pairs Atmosphere `rspack@1.4.0-beta360.0` with npm
+`@meteorjs/rspack@3.0.0-beta.1` and Rspack 2.2.0. This pairing supports the
+SWC React Compiler path introduced upstream in Rspack 2.1. Inspect the resolved
+packages and React major before selecting it. Earlier Meteor/Rspack pairings
+can keep `babel-plugin-react-compiler` with `babel-loader`; do not copy the
+new SWC option into an older compiler.
+
+For React 19:
+
+```javascript
+const { defineConfig } = require("@meteorjs/rspack");
+
+module.exports = defineConfig((Meteor) => ({
+  ...Meteor.extendSwcConfig({
+    jsc: {
+      transform: {
+        react: { runtime: "automatic" },
+        reactCompiler: true,
+      },
+    },
+  }),
+}));
+```
+
+For React 17 or 18, install `react-compiler-runtime` with the project's package
+manager and use `reactCompiler: { target: "17" }` or `{ target: "18" }`.
+Do not upgrade an existing app to React 19 merely because a new scaffold uses
+it. Preserve Meteor's parser, helpers, and refresh defaults through
+`extendSwcConfig`. Do not compile the same modules with both compiler paths.
+
+Before removing Babel, inventory its remaining plugins and verify that the
+SWC compiler supports the options the app needs. Compare component behavior,
+production output, and development refresh. Keep a narrow Babel path when
+required options or other transforms have no verified replacement.
+
 ## Two HMR graphs
 
 Rspack compiles application modules. Meteor still compiles Atmosphere packages

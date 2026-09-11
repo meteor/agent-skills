@@ -217,7 +217,9 @@ See `client-graph-preflight.md` for renamed contexts and source-tree scanning.
 Verify from a clean clone, not only from a developer tree with cached files
 or ignored settings:
 
-1. `meteor npm ci` installs the committed lockfile without changing it.
+1. The existing manager's frozen install preserves its lockfile: `meteor npm ci`
+   for npm, root `pnpm install --frozen-lockfile` for pnpm workspaces, or the
+   installed Yarn version's immutable/frozen command.
 2. `"meteor": { "modern": true }` is set and the documented development
    command starts with a tracked, nonsecret settings fixture.
 3. `meteor add rspack` has produced a committed `rspack.config.*` and the
