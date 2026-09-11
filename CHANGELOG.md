@@ -10,6 +10,11 @@ by this preparation.
 
 - Match the exact beta Rspack integration and coordinated Rspack 2 dependencies;
   migrate app-owned CSS, cache, merge, and output configuration.
+- Clarify automatic Rspack dependency updates on normal startup, explicit
+  opt-out preparation, and Node/ESM/dev-server/resolution compatibility checks.
+- Add Svelte/TypeScript and Lingui/SWC migration lessons from examples PR #50,
+  preserving compatible tooling and verifying actual compiler hosts and input
+  paths. Add feature-level validation and reproducible beta feedback guidance.
 - Add pnpm workspace scaffolding, root package-manager and lockfile ownership,
   local dependency protocols, and immutable CI installation guidance.
 - Support SWC React Compiler on the beta pairing, with React 17/18 runtime
@@ -27,6 +32,8 @@ by this preparation.
 ### Maintenance
 
 - Preserve the incremental source audit against the exact Meteor beta commit.
+- Preserve the pinned examples follow-up audit and add nine Rspack migration
+  acceptance cases, including older-version and working-plugin near misses.
 - Add version-boundary acceptance cases and record local verification and
   remaining publication gates in the [review handoff](docs/releases/v1.1.0-beta.0.md).
 - Prepare both plugin manifests as `1.1.0-beta.0`; retain the currently
