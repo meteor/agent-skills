@@ -19,6 +19,8 @@ results. Run the applicable rows after Rspack activation.
 | Non-root `ROOT_URL` | Subpath deployment | Assets and chunks load without duplicated or missing prefixes. |
 | Legacy web architecture | Still supported | A legacy-targeted browser or equivalent bundle smoke starts. |
 | Custom loader | Custom loader exists | Representative input passes parsing, transformation, and code generation through the actual loader entry. |
+| Framework preprocessing | Svelte/TypeScript, PostCSS/SCSS or UI-library inputs changed | An affected component compiles, renders and responds to interaction; expected styles survive development rebuild and production output. |
+| Compiler plugins | Lingui or another SWC plugin is configured | The actual bundler-hosted compiler transforms a representative input; translated output or the equivalent feature works in development and production. Run catalog extraction/generation when used. |
 | Generated input | Client graph reaches generated source or data | A documented producer recreates it from a clean checkout before every consuming path. |
 | Long watch session | Memory grows over time | Memory reaches a stable range across repeated rebuilds. |
 | Shutdown and restart | Queues, migrations, workers | Critical async work follows the documented drain or failure policy. |
@@ -26,6 +28,8 @@ results. Run the applicable rows after Rspack activation.
 For each command record the mode, Meteor release, `rspack` Atmosphere package,
 declared and installed npm integration versions, exit status, artifact path,
 suite count, and first browser or server exception.
+Existing service workers also need their cache/update and offline behavior
+checked; a successful startup alone does not prove those capabilities.
 
 Create a checkpoint before troubleshooting. Reproduce with one command, change
 one variable, measure, and revert a disproven hypothesis before trying another.

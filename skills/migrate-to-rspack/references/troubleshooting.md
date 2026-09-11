@@ -192,6 +192,24 @@ config error. Other frameworks keep HMR.
 
 ## Reporting issues
 
+Prepare a minimal reproduction with:
+
+- Previous/target Meteor release, resolved `rspack`, `@meteorjs/rspack`,
+  core/CLI/dev-server, relevant loaders/plugins/compiler versions, OS and the
+  Node/package manager actually running the build.
+- Exact command and mode, expected result, actual result and first complete
+  error. Distinguish install, compile, startup, browser and production failures.
+- Relevant app-owned configuration, dependency/lockfile diff and the smallest
+  input that still fails. Remove credentials, private settings and unrelated
+  application code before sharing.
+- The default-configuration comparison, when feasible, and each attempted
+  workaround with its result. Do not assign ownership until the failure is
+  isolated; recurring tooling cases may still motivate Meteor improvements.
+
+For successful migrations, report the modes and features actually exercised,
+including any compatibility changes. Do not turn startup into an E2E claim.
+Draft the report for review; posting it requires user authorization.
+
 GitHub: https://github.com/meteor/meteor/issues  
 Forums: https://forums.meteor.com
 
