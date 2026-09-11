@@ -1,10 +1,9 @@
 # Changelog
 
-## 1.1.0-beta.0 - Unreleased
+## 1.1.0-beta.0 - 2026-09-11
 
-Review candidate for Meteor 3.6-beta.0 (`release-3.6`). The catalog keeps its
-16 skills and existing Meteor 3 compatibility branches. No tag is published
-by this preparation.
+Beta for Meteor 3.6-beta.0 (`release-3.6`). The catalog keeps its 16 skills
+and existing Meteor 3 compatibility branches.
 
 ### Updated
 
@@ -41,12 +40,12 @@ by this preparation.
 - Preserve the incremental source audit against the exact Meteor beta commit.
 - Preserve the pinned examples follow-up audit and add nine Rspack migration
   acceptance cases, including older-version and working-plugin near misses.
-- Add version-boundary acceptance cases and record local verification and
-  remaining publication gates in the [review handoff](docs/releases/v1.1.0-beta.0.md).
-- Prepare both plugin manifests as `1.1.0-beta.0`; retain the currently
-  published `v1.0.0-beta.3` installation examples until publication.
+- Add version-boundary acceptance cases and record verification, the final
+  merged-source audit, and the beta review exception in the
+  [release handoff](docs/releases/v1.1.0-beta.0.md).
+- Version both plugin manifests as `1.1.0-beta.0`.
 
-Compare locally with `git diff v1.0.0-beta.3...release/v1.1.0-beta.0`.
+[Compare with beta.3](https://github.com/meteor/agent-skills/compare/v1.0.0-beta.3...v1.1.0-beta.0).
 
 ## 1.0.0-beta.3 - 2026-09-08
 
