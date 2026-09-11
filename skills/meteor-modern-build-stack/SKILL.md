@@ -10,11 +10,11 @@ description: >
   helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
   Meteor.splitVendorChunk, Meteor.persistDevFiles, Meteor.disablePlugins,
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
-  RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS, pnpm workspaces, Rspack 2.
-  Use this skill when the user asks about enabling the modern build stack,
-  asks about SWC vs Babel in Meteor, asks about Rspack integration setup,
-  or asks about customizing rspack.config.js. For converting an existing
-  app's code to be Rspack-compatible, use migrate-to-rspack instead.
+  RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS, pnpm workspaces, Rspack 2,
+  skeleton selection, PWA, Workbox and service-worker build setup.
+  Use this skill when the user asks about SWC vs Babel or Rspack configuration.
+  Route existing-app bundler migration to migrate-to-rspack, Blaze PWA
+  scaffolding to meteor-blaze, and jam:offline data to meteor-community-packages.
 metadata:
   author: meteor
   kind: knowledge
@@ -105,6 +105,15 @@ and Rspack 2.2.0; 3.5.2 retains the 1.3.0/2.2.0 integration pairing.
 See [release pairings](references/rspack-config.md) and
 [3.6 dependencies and workspaces](references/meteor-3.6-workspaces.md).
 For Rspack 1-to-2 config migration, use `migrate-to-rspack`.
+
+## Scaffolds, PWA and offline behavior
+
+For new-app skeleton selection or framework-neutral PWA/Workbox setup, read
+[scaffolds and service workers](references/scaffolds-and-pwa.md).
+Meteor 3.6 (verified on `3.6-beta.0`) adds separate `--pnpm` workspace and
+`--pwa` Blaze starters; neither converts an existing app. A worker caches
+shell/assets, not offline Meteor data. Existing bundler migrations remain
+owned by `migrate-to-rspack`.
 
 ## SWC config files
 

@@ -226,7 +226,7 @@ Fail if it contradicts these boundaries or invents unsupported commands.
 
 Prompt: "Meteor 3.6-beta.0 runs from apps/app in a pnpm workspace. The root pins pnpm but the app has an old npm packageManager hint. Where should required Rspack installs run, and which lockfile should change?"
 
-Pass if the agent: Uses the root manager and shared pnpm lockfile with the app as install cwd; does not create an app package-lock or require global pnpm when Corepack is available. Preserves existing locks and local work while investigating conflicting hints, rather than prescribing deletion from the hint alone.
+Pass if the agent: Uses the root manager and shared pnpm lockfile with the app as install cwd; does not create an app package-lock or require global pnpm when Corepack is available. Preserves existing locks and local work while investigating conflicting hints, rather than prescribing deletion from the hint alone. Does not forbid pnpm-managed links under apps/app/node_modules.
 Fail if it contradicts these boundaries or invents unsupported commands.
 
 ## Case 24: local protocol dependencies
@@ -242,3 +242,69 @@ Prompt: "We are pinned to Meteor 3.5.2 and want the new pnpm monorepo scaffold a
 
 Pass if the agent: States the 3.6 beta boundary; offers existing/manual workspace setup or an explicitly scoped upgrade, not unsupported flags or guaranteed new automatic behavior.
 Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 26: React PWA with Workbox and offline data
+
+Prompt: "Our Meteor 3.6-beta.0 React app already uses Rspack. We want a PWA
+like Notes Offline. Should we convert to the new Blaze skeleton, copy its
+worker, or use Workbox? Will the worker save Minimongo and replay edits?"
+
+Pass if the agent keeps React, uses this skill for the worker/build decision,
+and distinguishes optional Workbox or an app-owned worker from the new Blaze
+starter. It uses Notes Offline as a React/Workbox example with separate
+`jam:offline`/`jam:method` data behavior, routes data adoption to
+`meteor-community-packages`, and requires offline/update/reconnect and
+account-boundary checks. Fail if it treats startup as offline proof, caches
+private traffic indiscriminately, or promises worker-provided method replay.
+
+## Case 27: new pnpm workspace starter
+
+Prompt: "Start a Meteor 3.6-beta.0 pnpm workspace with shared client and server
+packages. Where is the Meteor app, how do I start it, and does the pnpm
+skeleton include PWA offline behavior?"
+
+Pass if the agent uses `meteor create --release 3.6-beta.0 --pnpm <name>`,
+identifies `apps/app` and `packages/`, and explains the root start script
+without switching dependency ownership to npm. It preserves the root pnpm
+pin and lockfile, runs direct Meteor commands from the app, and treats PWA
+as separate work. Fail if it invents offline support or requires global pnpm
+when Corepack supplies the pinned version.
+
+## Case 28: skeleton selection is not flag composition
+
+Prompt: "For a new Meteor 3.6-beta.0 app, should I use --react, --typescript,
+--svelte, --pnpm or --pwa? Can I combine --react --pnpm --pwa to get all three?
+Does meteor create --list show every skeleton?"
+
+Pass if the agent distinguishes framework choice, workspace layout and PWA
+requirements, preserves the requested framework, and explains that `--pwa`
+selects a Blaze starter rather than a generic modifier. It checks the selected
+release's CLI/generated files instead of inventing composable flags, and
+distinguishes the examples list from skeleton discovery. Fail if it promises
+every skeleton enables the same stack or silently chooses another framework.
+
+## Case 29: PWA setup on an earlier stable release
+
+Prompt: "Our React app must remain on Meteor 3.5.2 with @meteorjs/rspack 2.2.0.
+Can we still use Workbox for a PWA, or does all PWA support require the new
+Meteor 3.6 --pwa option?"
+
+Pass if the agent keeps the pinned app, explains that Workbox/app-owned
+workers are independent of the new Blaze starter, and identifies the
+Meteor 3.4.1/v2 floor for documented worker persistence helpers. It preserves
+the paired integration and tests dev/production worker behavior separately
+from offline data. Fail if it requires upgrading to 3.6, running a scaffold
+over the app, or installing a newer integration major on its own.
+
+## Case 30: narrower worker scope is valid
+
+Prompt: "Our Meteor 3.6 React PWA is under /portal/ but serves its worker at
+/sw.js. Can we register that worker with scope /portal/, or must we move it?
+What if /portal/sw.js instead requests scope /?"
+
+Pass if the agent allows the root script's narrower `/portal/` scope, explains
+that the default is the script directory, and distinguishes a broader scope
+requiring the worker response's `Service-Worker-Allowed` header. It checks
+actual registration and avoids unnecessarily broad control or an automatic
+prefix rewrite. Fail if it requires moving a root worker to narrow its scope
+or treats broader-than-directory scope as always impossible or unrestricted.

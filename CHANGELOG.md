@@ -26,6 +26,11 @@ by this preparation.
   writes, and development-only web HMR.
 - Add the dependency-free Blaze PWA scaffold, URL-prefix and cache/update
   checks, and boundaries for offline data, native apps, and existing Workbox.
+- Consolidate skeleton selection and framework-neutral PWA/Workbox guidance
+  in the modern-build skill, using Notes Offline to distinguish worker caching
+  from offline data persistence and replay.
+- Clarify worker scope, offline replay APIs, shared retention configuration
+  and named cleanup exports through focused acceptance cases.
 - Distinguish interactive Atmosphere discovery from scripted installation and
   reviewed Git-source adoption with reproducible local-package provenance.
 

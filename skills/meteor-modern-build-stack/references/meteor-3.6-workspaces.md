@@ -76,6 +76,8 @@ prepare dependencies explicitly, and verify linked imports and builds.
    If conflicting hints or lockfiles already exist, inspect their history and
    preserve local changes before selecting an authority. Do not delete an
    existing lockfile or `node_modules` merely because npm was mentioned.
+   pnpm can legitimately create `apps/app/node_modules` links; a shared root
+   lockfile does not require a root-only `node_modules` tree.
 3. Keep `file:`, `link:`, `portal:` and `workspace:` declarations when they
    are intentional. Check the actual installed package version and linkage;
    the protocol text is not a semver range. Repair missing links or an
