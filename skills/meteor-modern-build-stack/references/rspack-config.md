@@ -355,6 +355,8 @@ unless the task includes a provider migration; run the app's local `tsc`
 separately. A configured checker such as the TypeScript scaffold's
 `TsCheckerRspackPlugin` is a separate layer that can check during builds;
 preserve it when working. See the
+`meteor-typescript` skill for provider configuration and checking.
+If it is not installed, consult the
 [declaration guide](https://docs.meteor.com/cli/using-core-types).
 
 ---

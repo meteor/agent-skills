@@ -407,32 +407,21 @@ Pass if the agent routes the fresh workstation and PATH workflow to
 `meteor-cli-installation`. Fail if it starts an application code migration or
 offers the Linux and macOS shell installer on Windows.
 
-## Case 29: native provider adoption during upgrade
+## Case 29: native provider handoff during runtime migration
 
-Prompt: "We are upgrading an existing TypeScript app to Meteor 3.6-beta.1 and explicitly want native declarations. We have direct zodern:types and @types/meteor, tsconfig extends, a files array and meteor in compilerOptions.types. Give the migration and CI sequence."
+Prompt: "Migrate our Meteor 2 TypeScript app to 3.6-beta.1, including async APIs and an explicit native declaration switch. Which workflow owns each part?"
 
-Pass if the agent: Preserves the compiler and app config, checkpoints state, removes direct zodern:types, generates before switching paths/removing @types/meteor, appends the native barrel and per-package adapters, removes only inherited meteor ambient loading, runs local tsc through a script and keeps generated files untracked. Provides rollback without treating compilation as checking.
-Fail if it contradicts these boundaries or invents unsupported APIs.
+Pass if the agent keeps runtime/async migration in this skill, preserves the
+provider through that upgrade, then hands explicit native adoption to
+meteor-typescript. It checkpoints dependencies and config and stops the
+provider switch if generation fails. It must not replace async migration with
+only a type configuration edit or select native declarations before beta.1.
 
 ## Case 30: preserve providers during runtime upgrade
 
 Prompt: "Upgrade our existing Meteor app to 3.6-beta.1 but keep the working TypeScript provider. meteor types exits zero saying zodern:types is installed. Did it generate native types, and should we remove the provider?"
 
 Pass if the agent: Keeps the explicit existing-provider preference, explains successful skip and direct dependency precedence, and distinguishes runtime upgrade, native generation and type-checking. Does not remove working providers.
-Fail if it contradicts these boundaries or invents unsupported APIs.
-
-## Case 31: native generation failure
-
-Prompt: "After removing direct zodern:types on 3.6-beta.1, meteor types fails. Should we replace paths, uninstall @types/meteor and delete .meteor/local/types to finish?"
-
-Pass if the agent: Stops provider switching until generation succeeds, preserves old output and config, restores the removed package for rollback and reports nonzero generation failure. Does not delete fallback output or invoke a destructive reset.
-Fail if it contradicts these boundaries or invents unsupported APIs.
-
-## Case 32: native scoped imports and mixed providers
-
-Prompt: "After beta.1 native opt-in, meteor/random resolves but meteor/react-meteor-data/suspense fails. Our tsconfig excludes .meteor and extends a config with types [meteor,node]. Why do we also see duplicate declarations?"
-
-Pass if the agent: Checks explicit native barrel in files despite exclude, keeps paths mapped to packages/* rather than the barrel, checks installed package declaration coverage and removes overlapping ambient meteor provider while preserving node and unrelated config. Does not blame all failures on preserveSymlinks.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 33: native Node boundary during upgrade
@@ -442,22 +431,10 @@ Prompt: "For our deliberate Meteor 2 to 3.6-beta.1 migration, can the existing N
 Pass if the agent: Uses Node 26.8.2/npm 11.19.0 for beta.1 after checking target runtime, rebuilds native modules and hands deployment details to meteor-deployment. Retains older-release mappings rather than generalizing Node 26 to all Meteor 3.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
-## Case 34: TypeScript 7 configuration during native adoption
 
-Prompt: "After selecting Meteor 3.6-beta.1 native declarations, our existing TypeScript 7 app reports TS5102 for baseUrl copied from the guide. Should we downgrade TypeScript or copy moduleResolution: node as well? The Rspack config already has TsCheckerRspackPlugin."
+## Case 36: standalone declarations near miss
 
-Pass if the agent preserves the compiler and checker, removes the unsupported
-baseUrl while preserving alias semantics through relative paths, keeps a
-compatible bundler/nodenext resolution mode, and separates checker behavior
-from SWC transpilation and native generation. It must not downgrade TypeScript
-or claim the configured checker does not run just because SWC itself strips types.
+Prompt: "The app already runs on Meteor 3.6-beta.1. Only meteor/* editor types and our tsc check are broken; no framework or bundler upgrade is requested."
 
-## Case 35: generated barrel hides application source
-
-Prompt: "After beta.1 native opt-in we added files: [.meteor/types/packages.d.ts] to a tsconfig that previously had neither files nor include. tsc now passes even with a wrong assignment in imports/probe.ts. Are native types working?"
-
-Pass if the agent checks the effective source set with local tsc --listFiles,
-explains that adding files removed implicit inclusion, and preserves the
-previous source set with explicit include patterns while retaining exclusions.
-It verifies a temporary deliberate type error fails, then removes it and
-reruns. It must not disable checks or claim a green exit proved app coverage.
+Pass if the agent chooses meteor-typescript for provider/resolution/checking
+and does not start a Meteor 2-to-3 conversion or bundler migration.

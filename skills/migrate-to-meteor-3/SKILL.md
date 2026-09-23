@@ -7,10 +7,10 @@ description: >
   dropping a Promise, a read API receiving update modifiers, async allow/deny,
   an Iron Router controller not running, "Method stub took too long",
   Atmosphere resolution, Express 5 WebApp handlers, lost async context,
-  rawCollection callbacks, meteor/* TypeScript types, meteor types during an upgrade, useTracker, and
+  rawCollection callbacks, TypeScript declaration failures during upgrades, useTracker, and
   useSubscribe. Use this skill when the user asks about upgrading Meteor,
-  async caller propagation, iterators with await, zodern:types, or replacing
-  and forking packages.
+  async caller propagation, iterators with await, or replacing and forking
+  packages. Standalone declarations and type-checking belong to meteor-typescript.
 metadata:
   author: meteor
   kind: knowledge
@@ -68,7 +68,8 @@ in phases. Do not flip the framework version flag first.
     provider. Keep working `@types/meteor` or `zodern:types` setups. Meteor
     3.6-beta.1 adds explicit native opt-in through `meteor types`; earlier
     releases retain the legacy workflow. See
-    `references/typescript-migration.md` before changing packages or paths.
+    `references/typescript-migration.md`, then use `meteor-typescript` for
+    provider changes and checking.
 11. For React projects, decide whether to adopt the Suspense-aware
     `react-meteor-data` import. See `references/react-migration.md`, then use
     `meteor-react` for current hook, scaffold, and build guidance.

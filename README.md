@@ -114,6 +114,12 @@ Already installed? See [Manage an installation](#manage-an-installation).
   npx skills add meteor/agent-skills --skill meteor-native
   ```
 
+- **`meteor-typescript`**: Configure Meteor app declarations, TypeScript and JavaScript IntelliSense, and reliable local/CI type-checking.
+
+  ```bash
+  npx skills add meteor/agent-skills --skill meteor-typescript
+  ```
+
 ### Data
 
 - **`meteor-blaze`**: Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components).

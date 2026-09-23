@@ -79,8 +79,8 @@ integration or requirements unsupported by the SWC compiler path.
 
 Native TypeScript declarations are a separate beta.1 opt-in. Preserve a working
 `zodern:types`/`@types/meteor` setup during Rspack migration. Neither SWC nor
-normal startup runs `meteor types` or `tsc`. Use the existing-app TypeScript
-migration guidance only when the task also includes changing providers.
+normal startup generates native declarations. Preserve a configured checker.
+Use `meteor-typescript` when the task also includes changing providers.
 
 ## Prove the result
 

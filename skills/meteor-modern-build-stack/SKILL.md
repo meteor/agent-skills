@@ -3,8 +3,8 @@ name: meteor-modern-build-stack
 description: >
   Use when configuring or tuning the Meteor 3 modern build stack: SWC
   transpiler, SWC-based minifier, modern @parcel/watcher, web-arch skipping
-  in development, .meteorignore, and the Rspack bundler integration via the
-  rspack Atmosphere package. Triggers on package.json "meteor": { "modern":
+  in development, .meteorignore, and Rspack integration.
+  Triggers on package.json "meteor": { "modern":
   true }, .swcrc, swc.config.js, [Transpiler] Used Babel Fallback logs,
   rspack.config.js, rspack.config.ts, defineConfig from @meteorjs/rspack, Meteor.compileWith*
   helpers, Meteor.extendConfig, Meteor.extendSwcConfig vs Meteor.replaceSwcConfig,
@@ -12,9 +12,10 @@ description: >
   Meteor.enablePortableBuild, HtmlRspackPlugin customization,
   RSPACK_DEVSERVER_PORT, TOOL_NODE_FLAGS, pnpm workspaces, Rspack 2,
   skeleton selection, PWA, Workbox and service-worker build setup.
-  Use this skill when the user asks about SWC vs Babel or Rspack configuration.
+  Use this skill when asked about SWC vs Babel or Rspack configuration.
   Route existing-app bundler migration to migrate-to-rspack, Blaze PWA
-  scaffolding to meteor-blaze, and jam:offline data to meteor-community-packages.
+  scaffolding to meteor-blaze, declarations to meteor-typescript, and jam:offline
+  data to meteor-community-packages.
 metadata:
   author: meteor
   kind: knowledge
@@ -107,9 +108,9 @@ See [pairings](references/rspack-config.md) and
 [dependencies/workspaces](references/meteor-3.6-workspaces.md).
 For migration, use `migrate-to-rspack`.
 
-Rspack transpiles TypeScript without type-checking or choosing declarations.
-For beta.1's separate native opt-in, see
-[declaration boundaries](references/rspack-config.md#typescript-declarations).
+Rspack transpiles TypeScript. Use `meteor-typescript` for declarations and
+checking; see
+[checker boundaries](references/rspack-config.md#typescript-declarations).
 
 ## Scaffolds, PWA and offline behavior
 
