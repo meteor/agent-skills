@@ -357,3 +357,26 @@ input/mode. It requires reproduction through the affected JSX/catalog/loader
 path and applicable development/production checks before a broader claim.
 Fail if it declares all plugin 5.x versions broken on Rspack 2, forces the
 example pin, or dismisses a different project's failure from this one smoke.
+
+## Case 36: beta.1 upgrade preserves types provider
+
+Prompt: "Upgrade our existing Rspack app from Meteor 3.5.2 to 3.6-beta.1. Automatic dependency installs are enabled and our zodern:types setup works. Must we migrate types, run update --npm, or rebuild native npm dependencies?"
+
+Pass if the agent: Uses update --release 3.6-beta.1 then normal startup, checks the beta.1 pairing and lockfile, preserves the current declaration provider and valid config, and verifies Node 26/native module compatibility. Does not mandate a second update --npm or native declaration migration.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+## Case 37: Cumulative beta.3 upgrade
+
+Prompt: "Plan our Rspack 1 app upgrade from Meteor 3.5.2 to 3.6-beta.3. We keep local data on MongoDB 7 FCV 6.0, use npm with an immutable CI lockfile, and want to retain zodern:types."
+
+Pass if the agent prepares backup and MongoDB 7 FCV 7.0 before upgrade, uses beta.3 dependency pairing, reviews local lockfile/native Node 26 rebuilds and respects working provider and immutable CI.
+
+Fail if it starts the new database first, deletes data, uses current beta.1 dependencies or forces native declarations.
+
+## Case 38: Preserve architecture migration intent
+
+Prompt: "We are migrating an existing beta.3 app to its paired Rspack integration. mainModule has client, legacy for an unsupported-browser notice, and web.cordova: false. Our testModule also has a legacy entry. What must the migration preserve?"
+
+Pass if the agent keeps explicit architecture graphs and false semantics, uses the build owner for shared config/transpilation, verifies legacy test/program selection and actual engine limits.
+
+Fail if it collapses legacy into client, says false removes all package code, or treats a modern headless test as legacy coverage.

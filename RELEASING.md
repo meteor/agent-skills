@@ -27,6 +27,20 @@ follow the normal preparation, verification, and publishing steps without waitin
 a Meteor release or recording a Meteor compatibility mapping. The coordinated process
 below applies only when a catalog release is intentionally paired with Meteor.
 
+### Release branch and PR
+
+Publish betas, including catalogs paired with a Meteor beta or RC, from the existing
+release PR branch. Keep that PR open and its branch unmerged after publication.
+Record the repository, branch, PR and exact head SHA; keep preparation and later
+publication records in the same PR. Do not create follow-up branches just to publish
+or update installation links. Do not merge, close or delete the Meteor release
+branch/PR either. Publishing does not authorize those actions.
+
+Stable publication retains the reviewed, merged default-branch candidate gate;
+merging still requires a separate explicit user request. For beta/RC, if the PR is
+already merged/closed or its branch is missing, ask for a target instead of
+automatically recreating a branch or PR.
+
 ### Coordinated Meteor releases
 
 When this catalog is paired with a Meteor release, record the exact mapping in the
@@ -36,7 +50,7 @@ release PR and handoff:
 Meteor version: <version>
 Meteor release commit: <commit SHA>
 Agent Skills audit: <committed audit path and revision>
-Agent Skills audit base: <default-branch ref and commit SHA>
+Agent Skills audit base: <release-PR ref and head SHA for beta/RC; default-branch ref and SHA for stable>
 Agent Skills version: <X.Y.Z-beta.N or X.Y.Z>
 Agent Skills publish commit: <tag target commit SHA>
 Agent Skills tag: <vX.Y.Z-beta.N or vX.Y.Z>
@@ -51,9 +65,10 @@ The first release audit may include approved but uncommitted Meteor documentatio
 Before tagging, require an audit against the final Meteor release commit. Preserve a
 committed earlier report and add an incremental follow-up when needed.
 
-Resolve the initial audit from a clean worktree pinned to the freshly fetched Agent
-Skills default-branch SHA. Before version preparation, compare that audited SHA with
-the merged release candidate. If the default branch or distributable catalog changed,
+Resolve the audit from a clean worktree pinned to the freshly fetched release PR head
+for beta/RC, or default-branch SHA for stable. Do not substitute a synthetic PR merge
+commit for the reviewed branch head. Before version preparation, compare that audited
+SHA with the selected release candidate. If that branch or distributable catalog changed,
 record the drift and rerun the affected audit and verification instead of silently
 publishing a different snapshot.
 
@@ -90,7 +105,8 @@ claude plugin validate .claude-plugin/plugin.json --strict
 - Install one representative skill with `npx skills add` in a clean project.
 - Install one ZIP manually and confirm its references load.
 - Test the complete plugin from the local repository in Codex and Claude Code.
-- Confirm CI is green on `main`.
+- Confirm CI is green for the exact release PR head for beta/RC, or the merged
+  default-branch candidate for stable. Green `main` CI does not verify a beta branch.
 - For a coordinated Meteor beta or RC, run every affected manual case and at least one
   realistic updated-skill workflow against the exact Meteor candidate.
 - For a coordinated official release, repeat the exact-tag installation smoke tests
@@ -147,3 +163,5 @@ git push origin vX.Y.Z
 - Install one skill from the tagged release.
 - Install the complete Codex and Claude Code plugin from the same tag.
 - Check that the release notes state the tested scope and known limitations.
+- Keep beta/RC PRs open and release branches unmerged. Record post-publication
+  installation results on the same PR branch without moving the published tag.

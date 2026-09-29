@@ -1,5 +1,65 @@
 # Changelog
 
+## 1.1.0-beta.3 - 2026-09-29
+
+Cumulative Meteor 3.6 guidance verified through `3.6-beta.3`. The catalog
+retains 17 skills and its earlier Meteor 3 compatibility branches.
+
+### Updated
+
+- Prepare retained local data and supported hosts before MongoDB 8 startup;
+  distinguish external databases, cache resets and database recovery.
+- Update Rspack dependency pairings, architecture-specific app/test entries,
+  ignore rules and relocated workspace command checks.
+- Correct native TypeScript declaration recovery and subscription handle types.
+- Add focused Mongo/DDP, OAuth, Cordova, cache and instrumentation diagnostics.
+- Keep the beta guidance within the existing skills, with stable 3.6
+  consolidation recorded in the maintenance handoff.
+
+### Maintenance
+
+- Fix CI's dependency audit by updating the `fast-uri@3` override to 3.1.7 for
+  [GHSA-qw65-cvwx-89v3](https://github.com/advisories/GHSA-qw65-cvwx-89v3) and
+  [GHSA-58mr-gqgx-xq4g](https://github.com/advisories/GHSA-58mr-gqgx-xq4g).
+- Version both plugin manifests as `1.1.0-beta.3`.
+- Record source evidence, acceptance outcomes and publication gates in the
+  [release handoff](docs/releases/v1.1.0-beta.3.md).
+
+## 1.1.0-beta.1 - 2026-09-23
+
+Catalog maintenance for Meteor 3.6-beta.1. The catalog grows to 17 skills;
+existing classifications and earlier Meteor 3 compatibility branches remain.
+
+### Added
+
+- `meteor-typescript`: app declaration providers, native generation,
+  TypeScript/JavaScript configuration, editor resolution and local/CI checks.
+  Migration and build skills retain their owners and hand off declaration work.
+
+### Updated
+
+- Add explicit native TypeScript declaration migration, provider preservation,
+  failure recovery, TypeScript 7 configuration and verified app-source checking.
+- Cover package-gated Accounts cookie protections, same-origin refresh,
+  passwordless payload validation and distinct HTTP/DDP rate-limit counters.
+- Match deployment, migration and CI to beta.1's Node 26.8.2/npm 11.19.0,
+  including native dependency rebuilds and earlier Node 24 targets.
+- Add server instrumentation lifecycle observation, correlation, privacy
+  controls, cleanup and authorization boundaries.
+- Update the exact Rspack beta pairing and diagnose TypeScript rebuild loops,
+  host-prefixed ports and inspector output without broad resets.
+- Explain pending optimistic-write snapshot merging, scoped client cleanup
+  and the uWebSockets DDP negotiation fix.
+
+### Maintenance
+
+- Preserve the pinned Meteor source audit and implementation evidence outside
+  distributable skills; record 30 passing affected cases and three routing checks.
+- Version both plugin manifests as `1.1.0-beta.1`.
+- Publish betas from the existing open release PR without merging its branch.
+
+[Compare with beta.0](https://github.com/meteor/agent-skills/compare/v1.1.0-beta.0...v1.1.0-beta.1).
+
 ## 1.1.0-beta.0 - 2026-09-11
 
 Beta for Meteor 3.6-beta.0 (`release-3.6`). The catalog keeps its 16 skills

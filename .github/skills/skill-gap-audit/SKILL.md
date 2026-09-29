@@ -17,7 +17,7 @@ Determine these inputs before analysis:
 
 - Agent-skills repository root.
 - Agent-skills target ref and commit SHA. A coordinated release supplies the freshly
-  fetched default-branch ref and a clean worktree pinned to that SHA.
+  fetched release PR head for beta/RC or default branch for stable, with a clean worktree.
 - Meteor source checkout.
 - Audit mode: full catalog or incremental changes.
 - Meteor base and target Git revisions for an incremental audit.
@@ -46,7 +46,9 @@ rewriting it.
 ## Pin the Agent Skills snapshot
 
 For a coordinated release, require the caller to supply an Agent Skills target ref and
-commit SHA resolved after fetching the repository's default branch. Verify that the
+commit SHA resolved after fetching the selected release branch: existing PR head for
+beta/RC, default branch for stable. Beta/RC audits do not require a merge; preserve
+the open PR and do not substitute its synthetic merge commit. Verify that the
 audit worktree is clean and that its `HEAD` equals the supplied SHA. Load this skill and
 inspect distributable content from that same worktree; do not load audit instructions
 from one revision while analyzing another.

@@ -22,8 +22,10 @@ Never overwrite a committed audit report. A later report points to its predecess
 
 Resolve the Agent Skills worktree's `HEAD` and dirty state before inventorying the
 catalog. For a coordinated Meteor release, require a clean worktree whose `HEAD`
-matches the supplied target SHA from the freshly fetched default branch. Record both
-the target ref and resolved SHA.
+matches the supplied target SHA from the freshly fetched release PR head for beta/RC
+or default branch for stable. Record the ref, SHA and release PR when applicable.
+Keep beta/RC PRs open and branches unmerged; a synthetic PR merge commit is not
+the release branch head. Do not require a merge to establish audit freshness.
 
 Use that pinned revision for the skill inventory, previous-audit comparison, claim
 matrix, and evidence paths. If the caller supplies a different revision, or the
