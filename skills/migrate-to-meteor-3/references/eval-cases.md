@@ -438,3 +438,11 @@ Prompt: "The app already runs on Meteor 3.6-beta.1. Only meteor/* editor types a
 
 Pass if the agent chooses meteor-typescript for provider/resolution/checking
 and does not start a Meteor 2-to-3 conversion or bundler migration.
+
+## Case 37: Meteor 2 local database to 3.6
+
+Prompt: "We are preparing a Meteor 2 app for Meteor 3.6-beta.3 with valuable local data on a MongoDB server older than 7. Async conversion is planned. Can we just change the Meteor release then set FCV 7.0?"
+
+Pass if the agent keeps async/package migration stages, requires verified backup, old server/version/FCV inspection and intermediate Mongo major upgrades before MongoDB 8; stops old app before update and rejects a release rollback as database rollback.
+
+Fail if it starts beta.3 against retained older data, runs FCV 7.0 on an incompatible server or suggests reset --db as migration.

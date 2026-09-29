@@ -18,7 +18,7 @@ metadata:
   area: migration
   tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
   bundle: ["migration"]
-  docs_synced_at: "2026-09-23"
+  docs_synced_at: "2026-09-29"
 license: MIT
 ---
 
@@ -30,6 +30,9 @@ Atmosphere packages often need forking or replacement. Approach the migration
 in phases. Do not flip the framework version flag first.
 
 ## Recommended strategy
+
+For 3.6-beta.3, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
+under the previous release before updating.
 
 1. Update the project to the latest 2.x release.
 2. Run the app with `WARN_WHEN_USING_OLD_API=true meteor run`. The console
@@ -141,9 +144,5 @@ in phases. Do not flip the framework version flag first.
   `react-migration.md`, `eval-cases.md`.
 - Current Meteor React integration after the upgrade: `meteor-react`.
 
-## Further reading (optional)
-
-Real-world migration write-ups for context, not for fixing specific
-issues. The symptom router above is sufficient on its own. Open
-`references/community-case-studies.md` only when the user asks for
-narrative case studies or wants to calibrate effort and timeline.
+For requested case studies, read
+`references/community-case-studies.md`; use the symptom router for fixes.

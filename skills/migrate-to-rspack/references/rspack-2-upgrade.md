@@ -1,21 +1,27 @@
 # Rspack 1 to 2 in Meteor
 
-Use this branch for Meteor 3.6 beta. The current audited target is
-`3.6-beta.1`, with `rspack@1.4.0-beta360.1` and
-`@meteorjs/rspack@3.0.0-beta.2`. A deliberately pinned `3.6-beta.0` keeps
-`rspack@1.4.0-beta360.0` and `@meteorjs/rspack@3.0.0-beta.1`; use the
-requested release instead of silently changing the target.
-Meteor 3.5.2 keeps `rspack@1.3.0`, `@meteorjs/rspack@2.2.0` and Rspack 1.x.
-Do not force Rspack 2 into a constrained older release.
+Use this workflow for Meteor 3.6 beta. Commands below target beta.3; preserve
+an explicitly requested earlier release and its pairing from
+[the skill's version table](../SKILL.md). Meteor 3.5.2 retains Rspack 1.x.
 
 ## Upgrade the coordinated dependency set
 
 1. Checkpoint `.meteor/release`, `.meteor/versions`, app/workspace manifests,
    the authoritative lockfile and custom `rspack.config.*`.
+   Before beta.3's MongoDB 8 opens retained data, back up and verify recovery.
+   Under the previous release, check `db.version()` and FCV: MongoDB 7 needs
+   FCV `7.0`; older servers need intermediate major upgrades first.
+   If needed, set FCV on the MongoDB 7 primary using
+   `db.adminCommand({ setFeatureCompatibilityVersion: "7.0", confirm: true })`,
+   recheck, then stop the app. Check hosts against the
+   [database preparation guide](https://docs.meteor.com/about/install#updating-local-database).
+   External `MONGO_URL` upgrades are separate. `meteor reset --db` deletes data.
+   Neither reverting Meteor nor retaining FCV `7.0` guarantees a database
+   downgrade; use the verified recovery plan.
 2. With default `meteor.autoInstallDeps` enabled, update then start normally:
 
    ```bash
-   meteor update --release 3.6-beta.1
+   meteor update --release 3.6-beta.3
    meteor run
    ```
 
@@ -26,11 +32,13 @@ Do not force Rspack 2 into a constrained older release.
    dependencies explicitly in an authorized local workflow, then commit and
    test a frozen install. `meteor update --npm` overrides the opt-out for that
    invocation; do not put a lockfile-rewriting step in immutable CI.
-3. The beta's required npm minimums are core/CLI/dev-server 2.2.0, Meteor integration
-   3.0.0-beta.2 on beta.1 (3.0.0-beta.1 on beta.0), SWC core 1.15.32,
-   helpers 0.5.23 and Rsdoctor 1.5.9.
+3. Beta.3's required npm minimums are core/CLI 2.2.7, dev-server 2.2.1,
+   Meteor integration 3.0.0-beta.3, SWC core 1.16.2,
+   helpers 0.5.23 and Rsdoctor 1.6.4. The selected `swc-loader` is 0.2.7.
    Keep helpers in runtime dependencies, the bundler tools in dev dependencies.
-   Detected React adds refresh plugin 2.0.0 and refresh runtime 0.17.0.
+   Detected React adds refresh plugin 2.0.2 and refresh runtime 0.19.0.
+   Beta.0/beta.1 retain their earlier 2.2.0 core/CLI/dev-server minimums,
+   SWC 1.15.32, Rsdoctor 1.5.9 and refresh 2.0.0/0.17.0.
    Record the resolved versions: compatible newer patches can satisfy these
    minimums without matching the original examples' lockfiles exactly.
 4. With npm and installed Rspack 1.x peers, the automatic upgrade uses
@@ -93,7 +101,7 @@ requirement and retest after peer cleanup. Do not convert managers to fix CI.
 Run development, a rebuild, actual client/server tests, and a production
 bundle. Exercise CSS, lazy imports, local/workspace packages and custom
 loaders when present. Boot the extracted bundle and load the browser page.
-For beta.1, rebuild and exercise native npm dependencies against Node 26.8.2
+For beta.1 through beta.3, rebuild and exercise native npm dependencies against Node 26.8.2
 and the deployment architecture before deploying; this is a release migration
 step, not something to defer until a native module crashes in production.
 Follow the [validation matrix](validation-matrix.md); reported example startup
