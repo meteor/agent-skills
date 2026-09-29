@@ -2,14 +2,14 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: beta. Sixteen Meteor 3 skills are available in the current catalog.
+> Status: beta. Seventeen Meteor 3 skills are available in the current catalog.
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-[Version 1.1.0-beta.0](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.0)
-is published for Meteor `3.6-beta.0`, building on `v1.0.0-beta.3` while keeping
-earlier Meteor 3 compatibility branches. See the
-[comparison and verification handoff](./docs/releases/v1.1.0-beta.0.md).
+[Version 1.1.0-beta.3](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.3)
+updates MongoDB upgrade preparation, Rspack, TypeScript and runtime guidance
+through Meteor `3.6-beta.3`, preserving earlier Meteor 3 compatibility branches.
+See the [verification handoff](./docs/releases/v1.1.0-beta.3.md).
 
 ## Install
 
@@ -30,7 +30,7 @@ To test a specific prerelease, pin the marketplace checkout to its repository
 tag before installing:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.0
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.3
 codex plugin add meteor@meteor
 ```
 
@@ -47,7 +47,7 @@ To test a specific prerelease, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills@v1.1.0-beta.0
+claude plugin marketplace add meteor/agent-skills@v1.1.0-beta.3
 claude plugin install meteor@meteor
 ```
 
@@ -61,7 +61,7 @@ Meteor plugin.
 To install this exact beta from your project directory:
 
 ```bash
-npx skills@latest add 'meteor/agent-skills#v1.1.0-beta.0'
+npx skills@latest add 'meteor/agent-skills#v1.1.0-beta.3'
 ```
 
 The tag pins the skill contents; `@latest` selects the installer. Reinstalling
