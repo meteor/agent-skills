@@ -1,5 +1,30 @@
 # Changelog
 
+## 1.1.0-beta.3 - 2026-09-29
+
+Cumulative Meteor 3.6 guidance verified through `3.6-beta.3`. The catalog
+retains 17 skills and its earlier Meteor 3 compatibility branches.
+
+### Updated
+
+- Prepare retained local data and supported hosts before MongoDB 8 startup;
+  distinguish external databases, cache resets and database recovery.
+- Update Rspack dependency pairings, architecture-specific app/test entries,
+  ignore rules and relocated workspace command checks.
+- Correct native TypeScript declaration recovery and subscription handle types.
+- Add focused Mongo/DDP, OAuth, Cordova, cache and instrumentation diagnostics.
+- Keep the beta guidance within the existing skills, with stable 3.6
+  consolidation recorded in the maintenance handoff.
+
+### Maintenance
+
+- Fix CI's dependency audit by updating the `fast-uri@3` override to 3.1.7 for
+  [GHSA-qw65-cvwx-89v3](https://github.com/advisories/GHSA-qw65-cvwx-89v3) and
+  [GHSA-58mr-gqgx-xq4g](https://github.com/advisories/GHSA-58mr-gqgx-xq4g).
+- Version both plugin manifests as `1.1.0-beta.3`.
+- Record source evidence, acceptance outcomes and publication gates in the
+  [release handoff](docs/releases/v1.1.0-beta.3.md).
+
 ## 1.1.0-beta.1 - 2026-09-23
 
 Catalog maintenance for Meteor 3.6-beta.1. The catalog grows to 17 skills;
