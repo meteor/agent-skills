@@ -38,6 +38,32 @@ describe("validateSkills", () => {
     expect(findings).toEqual([]);
   });
 
+  it("accepts folded YAML descriptions and nested catalog metadata", async () => {
+    await withTempRoot(async (root) => {
+      const skillDir = join(root, "meteor-example");
+      mkdirSync(join(skillDir, "references"), { recursive: true });
+      writeFileSync(join(skillDir, "SKILL.md"), `---
+name: meteor-example
+description: >
+  Use when checking Meteor metadata with folded YAML.
+  Triggers on a catalog parser upgrade.
+metadata:
+  author: meteor
+  kind: knowledge
+  meteor: ">=3.0"
+  area: testing
+  tagline: "Validate YAML: folded text and nested metadata."
+  bundle: [essentials]
+  docs_synced_at: "2026-10-07"
+---
+
+# Example
+`);
+      writeFileSync(join(skillDir, "references", "eval-cases.md"), "# Cases\n");
+      expect(await validateSkills({ root: skillDir, singleSkill: true })).toEqual([]);
+    });
+  });
+
   it("accepts bundle metadata that matches bundles.json", async () => {
     const findings = await validateSkills({
       root: join(fixturesDir, "valid"),

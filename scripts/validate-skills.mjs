@@ -6,7 +6,7 @@ import { existsSync, readFileSync, readdirSync } from "node:fs";
 import { execFileSync } from "node:child_process";
 import { dirname, join, basename, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.mjs";
 import Ajv from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 
@@ -134,7 +134,7 @@ export async function validateMaintainerSkills({
 
     let parsed;
     try {
-      parsed = matter(raw);
+      parsed = parseFrontmatter(raw);
     } catch (err) {
       findings.push({
         code: "E_MAINTAINER_FRONTMATTER",
@@ -345,7 +345,7 @@ export async function validateSkills({
       }
     }
 
-    const parsed = matter(raw);
+    const parsed = parseFrontmatter(raw);
     const data = parsed.data;
     const body = parsed.content;
 

@@ -74,6 +74,29 @@ version and watched paths. Meteor 3.5.2 stops watching immutable package
 warehouse files. Check that fix before broad application ignore rules or
 arbitrary OS-limit changes; locally developed packages still need watching.
 
+## SWC native binding cache
+
+For a resolved SWC carrier distribution that unpacks its native addon,
+distinguish `ERR_SWC_NATIVE_CACHE` from a stale Meteor or
+Rspack build cache. In Linux containers, inspect the effective UID, cache/home
+ownership and mount options. Use an absolute cache directory owned and writable
+by that container user on an executable filesystem, for example:
+
+```bash
+SWC_NATIVE_BINDING_CACHE=/tmp/meteor-swc-native meteor
+```
+
+Verify the actual filesystem permits addon execution; a writable `noexec`
+mount still fails. Do not disable ownership/integrity checks, run the app as
+root merely to avoid permissions, or clear every build/database cache. A
+relative override is invalid. The RC dependency minimum `@swc/core@1.16.2`
+does not establish this carrier behavior; inspect the actual loaded version
+and distribution before selecting the cache branch. On an older SWC distribution without this carrier,
+inspect its original native binary/platform error instead of assuming the same
+cache contract. See the modern build skill's SWC cache guidance.
+After correcting the cache, rerun the same binding load/build path as the
+effective container user to confirm the failure is resolved.
+
 ## Meteor 3.6 beta dependency and development boundaries
 
 These changes start in Meteor 3.6-beta.0 and its paired packages. For earlier
@@ -89,6 +112,35 @@ only when authorized; do not assume the new cache or logging behavior exists.
 | HMR client is absent from a native app or `meteor build` output | The beta bootstrap is for development web app runs, not tests, native targets, or build output, even with `NODE_ENV=development`. Verify command and target before adding a refresh client manually. |
 | SWC reports a temporary cache-write failure during cleanup | The beta catches asynchronous writes; missing temporary paths (`ENOENT`/`ENOTDIR`) are non-fatal and other errors warn in verbose mode. Reproduce compilation separately. Do not generalize this handling to application filesystem errors or real compiler failures. |
 
+Meteor 3.6-beta.1 adds these separate fixes; beta.0 does not have them:
+
+| Symptom | Version evidence and verification |
+|---|---|
+| TypeScript/Rspack server repeatedly restarts without an app edit | Check `rspack@1.4.0-beta360.1` and `@meteorjs/rspack@3.0.0-beta.2` together. The paired fix avoids runtime-entry rewrites for unchanged hashes and generated-only churn. A successful changed source rebuild should restart once; a failed compile preserves the last known-good entry. Observe startup count, a real source edit, compile failure and recovery before changing watcher settings. Do not edit `_build` markers or ignore the handoff directory. |
+| `--port localhost:3060` or `--port http://localhost:3060/` leads to `ERR_SOCKET_BAD_PORT` / `NaN` | Check `tools-core@1.4.0-beta360.1`, which extracts the numeric port before deriving the Rspack port. Preserve valid host/URL syntax on the fixed version. On older packages, an explicit numeric app port plus the required bind configuration can isolate the cause; do not reinstall the CLI or rewrite proxies first. |
+| `--inspect` dumps full Rspack configuration repeatedly | The beta.1 npm integration prints full configuration only in verbose mode. Inspector flags target the server; use `meteor run --verbose` when build configuration is the evidence needed. |
+
+Native declaration generation is separate from transpilation. On beta.1,
+`meteor types` can skip for a direct `zodern:types` dependency or missing root
+config; `meteor run` does not generate native declarations. Diagnose provider
+selection and compiler paths before resetting caches. For an upgrade, use
+`migrate-to-meteor-3`'s TypeScript reference.
+
+The following additional 3.6 fixes are verified on beta.3; beta.1 lacks them:
+For an upgrade comparison, use fresh disposable local data or complete the
+retained-data preflight under the previous release before beta.3 starts.
+
+| Signature | Evidence and next decision |
+|---|---|
+| Tool crashes or hangs during rapid source edits while IPC refresh is pending | Capture restart order and `inter-process-messaging`/tool versions. Beta.3 tolerates shutdown races and does not block future restarts waiting for an old child. Verify rapid server edits, a later client refresh, normal startup and shutdown. Do not suppress every IPC exception or disable hot code push. |
+| Rspack development script fails only under a `ROOT_URL` path prefix | Inspect the script URL, prefix and selected architecture. Beta.3's `boilerplate-generator@2.2.0-beta360.3` includes the prefix in the dev script URL. Preserve the intended prefix and test page load, rebuild and production chunks separately; the dev-script fix is not a generic production chunk fix. |
+| Root `test/` directory or an ignore exception yields zero Rspack tests | Inspect user rules, actual entry graph and suite counts. Beta.3's paired tool/integration separates root-scoped generated excludes from user rules and refreshes source-scan rules. Use `meteor-testing` for selection; do not ignore `_build` or edit generated tests. |
+
+For local MongoDB startup immediately after a beta.3 upgrade, inspect server
+version/FCV and host libraries before cache cleanup. Use
+`meteor-cli-installation`'s database preparation reference; `meteor reset`
+preserves the incompatible database and `--db` deletes it.
+
 Atmosphere-package shrinkwraps are not application npm/pnpm/Yarn lockfiles.
 Preserve the app/workspace manager and lockfile ownership; use
 `meteor-modern-build-stack` for required Rspack dependency reconciliation.
@@ -96,6 +148,7 @@ Do not clear every cache, reset the database, or reinstall all dependencies
 as the first diagnostic action.
 
 ---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/cli/index.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.5.2.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.6.0.md

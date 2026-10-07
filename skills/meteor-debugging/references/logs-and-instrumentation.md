@@ -43,6 +43,96 @@ wrappers, binary values, and large documents need different handling.
 - Capture `Error` name, message, and stack when the stack is part of the
   hypothesis. Do not swallow or downgrade the original failure.
 
+## Server lifecycle events on Meteor 3.6-beta.1
+
+See the tagged [package guide](https://github.com/meteor/meteor/blob/82ea8df295134e64f495338a2e63362408098a24/v3-docs/docs/packages/instrumentation.md)
+and [API reference](https://github.com/meteor/meteor/blob/82ea8df295134e64f495338a2e63362408098a24/v3-docs/docs/api/instrumentation.md).
+
+With the beta's `instrumentation@0.0.1-beta360.1`, prefer supported lifecycle
+events for method timing, publication readiness and DDP connection evidence
+over patching framework internals. Inspect `.meteor/versions` first. Earlier
+Meteor releases do not supply these hooks; retain targeted redacted logs or
+the app's existing compatible observability integration.
+
+```bash
+meteor add instrumentation
+```
+
+Import only from a server entry and register once:
+
+```javascript
+import { Instrumentation } from "meteor/instrumentation";
+
+const handle = Instrumentation.on("method.end", (event) => {
+  if (event.durationMs > 200) {
+    console.warn("[server slow method]", {
+      name: event.name,
+      traceId: event.traceId,
+      durationMs: event.durationMs,
+    });
+  }
+});
+
+// Call when this observation is no longer needed, not after every event.
+export function stopTiming() {
+  handle.stop();
+}
+```
+
+| Question | Events / correlation |
+|---|---|
+| Which invocation is slow or fails? | `method.start`, `method.end`, `method.error`; match `traceId`, not method name alone. Completion events carry `durationMs`. |
+| Is a subscription ready, stopped or errored? | `publication.start`, `.ready`, `.stop`, `.error`; preserve `subscriptionId`, `traceId` and phase. This measures lifecycle, not every observer update. |
+| Is this a connection lifetime problem? | `ddp.connection.open`, `.close`; correlate `connectionId`, with `durationMs` on close. Do not expect invocation trace fields on connection events. |
+| How does a handler's log join the lifecycle? | `Instrumentation.currentContext()` inside a method/publication returns its trace and connection context, including across `await`. Outside an invocation all fields are null. Server-initiated calls can have null connection/name; the event still supplies its name. |
+
+Listeners are best-effort and never awaited. Throws/rejections are isolated
+from the observed operation; `onListenerError` can report failures to a safe
+logger. Keep listeners cheap: synchronous work still runs on the server.
+Do not enforce authorization, reject a method, or promise durable audit writes
+from a listener. Keep validation and access checks in the actual handler.
+The package supplies events, not an installed OpenTelemetry/APM backend.
+
+For Meteor 3.6-beta.3's `instrumentation@0.0.1-beta360.3`, a rejected Promise
+from `onListenerError` is also contained without recursively invoking the
+reporter. Beta.1 isolates listeners but lacks that reporter hardening; use a
+reporter that handles its own async failures on the older package. Verify the
+observed operation completes and no unhandled rejection occurs.
+
+Arguments, results and IP addresses are off by default. Prefer selected
+metadata. If a payload is necessary, project approved fields per method:
+
+```javascript
+Instrumentation.configureMethod("orders.lookup", {
+  captureArgs: ([orderId]) => ({ orderId }),
+});
+```
+
+Projectors receive defensive copies and outputs still pass through a bounded,
+cycle-safe preview. Bounded size is not generic secret redaction. Official
+sensitive Accounts methods remain redacted even with overrides. Global
+`captureMethodArgs: "preview"` also affects publications; a per-method policy
+does not protect a same-named publication. `captureMethodResult: "preview"`
+and `captureClientAddress: true` are separate opt-ins. Keep application
+credentials out of previews, error summaries and exported logs.
+
+Beta.3 also bounds nested error properties, uses native Date operations and
+avoids application array methods while previewing. Beta.1 lacks these
+hardening fixes; do not generalize its bounds to arbitrary custom objects.
+Even on beta.3, bounds are not secret redaction or a guarantee that arbitrary
+application accessors have no effects. Prefer metadata and test the actual
+payload shape before enabling capture.
+
+Stop temporary handles during cleanup. `METEOR_INSTRUMENTATION_DISABLED=1`
+disables emission initially; `Instrumentation.configure({ enabled: false })`
+can disable it at runtime. Runtime configuration can override the environment
+default. Bound and clean up any application-maintained correlation maps.
+
+The RC uses `instrumentation@0.0.1-rc360.0` and retains these lifecycle,
+context and reporter boundaries. Verify the resolved package before
+selecting a release-specific fix; metadata-only observation remains the
+default.
+
 ## Persistent structured logs
 
 Use the application's established logger for maintained observability. Meteor's
@@ -82,3 +172,4 @@ appropriate level, and a reason to exist after the fix.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/logging.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/instrumentation.md

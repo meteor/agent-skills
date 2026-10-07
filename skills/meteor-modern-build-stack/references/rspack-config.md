@@ -14,6 +14,9 @@ Match both integration packages to the Meteor release:
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and app-extension discovery; retains the v2 helper API. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Required-dependency diagnostics, mode isolation, TypeScript config dependency tracking, and full-app/TLA fixes. |
 | 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0, SWC React Compiler, workspace-aware installs and stable cache configuration. |
+| 3.6-beta.1 | `1.4.0-beta360.1` | `3.0.0-beta.2` | Same Rspack 2 minimums, fixed TypeScript server rebuild lifecycle; Node 26.8.2. |
+| 3.6-beta.3 | `1.4.0-beta360.3` | `3.0.0-beta.3` | Core/CLI 2.2.7, dev server 2.2.1, separate architecture graphs and corrected test ignores; Node 26.8.2. |
+| 3.6-rc.0 | `1.4.0-rc360.0` | `3.0.0-rc.0` | Rspack core/CLI 2.2.7, dev-server 2.2.1 and per-architecture compilations. |
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
 arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
@@ -60,7 +63,7 @@ with dev dependencies available. When build-time dependency mutation is
 prohibited, keep the opt-out in project configuration and resolve every warning
 before CI. Do not rely on a container silently repairing an incomplete lockfile.
 
-For Meteor 3.6-beta.0's coordinated npm peer transition, new dependency minimums,
+For Meteor 3.6's RC pairing, historical beta minimums and coordinated npm peer transition,
 pnpm scaffold and workspace-owned installs, read
 [3.6 dependencies and workspaces](meteor-3.6-workspaces.md).
 Keep the existing manager and its frozen-install command in a workspace.
@@ -80,6 +83,12 @@ Meteor SWC file based only on the generic Rspack migration guide. Inspect the
 effective configuration; extend it with `Meteor.extendSwcConfig`.
 
 ## Configuration example
+
+On Meteor 3.6-beta.3's pairing, use `Meteor.arch` and `Meteor.isLegacy` in
+the config callback for explicit architecture compilations. These are not
+runtime APIs. Read [architecture entry points](architecture-entrypoints.md)
+before selecting a legacy graph or npm transpilation rules; beta.0/beta.1
+do not supply the complete flow.
 
 ```javascript
 const { defineConfig } = require('@meteorjs/rspack');
@@ -105,9 +114,17 @@ module.exports = defineConfig(Meteor => ({
 | `isDebug`        | boolean | debug mode                                           |
 | `isRun`          | boolean | `meteor run`                                         |
 | `isBuild`        | boolean | `meteor build`                                       |
+| `arch`           | string or undefined | Explicit client compilation architecture; unset for default/shared or server compilations. Meteor 3.6 pairing. |
+| `isLegacy`       | boolean | Explicit legacy compilation; Meteor 3.6 pairing. |
 | `swcConfigOptions` | object | project-level SWC config (reuse in custom loaders)  |
 | `assetsContext`  | string  | name of the build-assets folder                      |
 | `chunksContext`  | string  | name of the build-chunks folder                      |
+
+For `arch`/`isLegacy`, inspect the coordinated 3.6 integration first. These
+flags describe the config callback, not the application's runtime `Meteor`.
+Use [architecture entries](architecture-entrypoints.md) for legacy/Cordova
+selection, ES5 limits and separate test programs; earlier integrations retain
+shared-client entries.
 
 ## Helpers
 
@@ -343,6 +360,36 @@ Auto-added to `.gitignore`. To rename, set in `package.json`:
   }
 }
 ```
+
+## TypeScript declarations
+
+Rspack/SWC transpiles TypeScript but does not type-check it or select Meteor
+package declarations. Meteor 3.6-beta.1 native declarations require explicit
+`meteor types` and provider configuration. Ordinary builds and new templates
+retain legacy providers. Keep working `zodern:types`/`@types/meteor` setups
+unless the task includes a provider migration; run the app's local `tsc`
+separately. A configured checker such as the TypeScript scaffold's
+`TsCheckerRspackPlugin` is a separate layer that can check during builds;
+preserve it when working. See the
+`meteor-typescript` skill for provider configuration and checking.
+If it is not installed, consult the
+[declaration guide](https://docs.meteor.com/cli/using-core-types).
+
+## Memory limits
+
+Rspack runs as a child process and may OOM on large apps. Raise the heap
+for tool processes temporarily when capturing evidence (Meteor 3.4.1+):
+
+```bash
+TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
+```
+
+On Meteor 3.4.0, use `NODE_OPTIONS="--max-old-space-size=16384"`.
+
+First distinguish a one-shot build failure from growth during a long watch
+session. Audit large directories visible to Meteor and check the exact release
+for fixes. Test heap size and persistent cache as separate variables; revert a
+change that does not improve the failure or a measured memory trend.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md
