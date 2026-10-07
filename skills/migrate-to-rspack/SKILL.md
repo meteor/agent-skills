@@ -21,7 +21,7 @@ metadata:
   area: migration
   tagline: "Migrate an existing Meteor 3 app to the Rspack bundler integration (`mainModule`, replacing legacy build plugins with loaders)."
   bundle: ["migration"]
-  docs_synced_at: "2026-09-11"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -30,9 +30,8 @@ license: MIT
 Rspack compiles app code; Meteor builds Atmosphere packages and assembles the
 bundle. Keep packages, but audit their architecture and browser dependencies.
 
-Prerequisite: Meteor 3.4+. Recommended before activation: enable
-`"meteor": { "modern": true }` and fix Babel fallbacks. For setup and helpers,
-use `meteor-modern-build-stack`.
+Meteor 3.4+ required. Prefer enabling `"meteor": { "modern": true }` and
+fixing Babel fallbacks first. For setup/helpers, use `meteor-modern-build-stack`.
 
 Match `@meteorjs/rspack` to the Meteor release, not to
 `@rspack/core` or `@rspack/cli`:
@@ -44,6 +43,7 @@ Match `@meteorjs/rspack` to the Meteor release, not to
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and extension discovery. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Dependency diagnostics, mode isolation, full-app/TLA and cache fixes. |
 | 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0 and workspace-aware installs. |
+| 3.6-rc.0 | `1.4.0-rc360.0` | `3.0.0-rc.0` | Rspack 2 and separate architecture entries. |
 
 The Atmosphere, Meteor npm integration, and Rspack core package versions are
 independent. Inspect `.meteor/versions`, `package.json`, and the lockfile.
@@ -52,7 +52,7 @@ enabled. Review and commit those changes. Explicit `meteor update --npm` is
 an alternative, not an extra required step. Do not pair a newer integration
 major with an older Meteor release to copy a helper.
 
-Already using Rspack? For the Meteor 3.6 beta upgrade, follow
+Already using Rspack? For the Meteor 3.6 beta or RC upgrade, follow
 [Rspack 1 to 2](references/rspack-2-upgrade.md) and its toolchain checks.
 Keep valid entries/configuration; skip the first-activation steps below.
 
@@ -102,6 +102,11 @@ Keep valid entries/configuration; skip the first-activation steps below.
 Without `mainModule`, Rspack has no entry. Meteor's eager-loading model
 does not apply: Rspack does not auto-discover modules. See
 `references/framework-and-css.md` for CSS and HTML routing.
+
+For the Meteor 3.6 RC pairing, keep the existing shared client entry unless
+separate legacy/Cordova app or test code is needed. Use
+[architecture-specific entries](../meteor-modern-build-stack/references/architecture-entries.md)
+and prove delivery of both programs; earlier pairings lack these new flags.
 
 ## Required: no nested imports in app code
 
@@ -182,28 +187,8 @@ app-folder files (entry folder excluded) must move to Rspack.
 
 ## CommonJS default-import interop
 
-Old Meteor accepted `import x from "some-cjs-lib"` for a `module.exports = ...`
-package. Rspack + SWC do not by default. Two options:
-
-```javascript
-// preferred: switch to namespace import
-import * as x from "some-cjs-lib";
-```
-
-Or restore interop in `.swcrc`:
-
-```json
-{
-  "module": {
-    "type": "commonjs",
-    "noInterop": false,
-    "importInterop": "node"
-  }
-}
-```
-
-This emits CommonJS, defeating tree-shaking and static analysis app-wide.
-Migrate imports instead unless you cannot.
+Prefer namespace imports. For the interop override and its app-wide
+CommonJS/tree-shaking cost, read `references/code-migrations.md`.
 
 ## CI and Docker
 

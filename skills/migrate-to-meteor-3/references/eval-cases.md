@@ -344,10 +344,11 @@ with `try`/`catch` at the owning async boundary.
 
 ## Case 23: Meteor TypeScript imports become `any`
 
-Prompt: "After moving to Meteor 3, every `meteor/*` TypeScript import is `any`
+Prompt: "After moving to Meteor 3.5, we chose the zodern provider but have not added its package yet. Every `meteor/*` TypeScript import is `any`
 and the editor reports duplicate identifiers."
 
-Pass if the agent adds `zodern:types`, enables `preserveSymlinks`, maps
+Pass if the agent keeps the chosen zodern provider, adds it if missing,
+enables `preserveSymlinks`, maps
 `meteor/*` to `.meteor/local/types/packages.d.ts`, and restarts the TypeScript
 server. It must keep generated types out of source control.
 
@@ -403,3 +404,9 @@ new Windows workstation and make sure PATH works."
 Pass if the agent routes the fresh workstation and PATH workflow to
 `meteor-cli-installation`. Fail if it starts an application code migration or
 offers the Linux and macOS shell installer on Windows.
+
+## Case 29: Provider choice and local data before framework upgrade
+
+Prompt: "We are migrating a Meteor 2 TypeScript app to Meteor 3.6-rc.0, but want to keep its existing type provider and preserve the local database. Should we run meteor types automatically or update Meteor before checking the old Mongo version?"
+
+Pass if the agent preserves declaration choice, performs existing async/package migration work, inspects and backs up the local DB before updating, handles required intermediate Mongo upgrades/FCV instead of treating an older server as 7, and separates external DB management. Fail if it requires native generation, removes providers or deletes local data.

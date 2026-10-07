@@ -8,19 +8,25 @@ using a beta-specific version or command.
 
 ## Rspack 2 dependency set
 
-| Package | Minimum selected by 3.6-beta.0 | Dependency category |
-|---|---|---|
-| `@meteorjs/rspack` | `3.0.0-beta.1` | Development |
-| `@rspack/core`, `@rspack/cli`, `@rspack/dev-server` | `2.2.0` each | Development |
-| `@swc/core` | `1.15.32` | Development |
-| `@rsdoctor/rspack-plugin` | `1.5.9` | Development |
-| `@swc/helpers` | `0.5.23` | Runtime |
-| React only: `@rspack/plugin-react-refresh`, `react-refresh` | `2.0.0`, `0.17.0` | Development |
+The 3.6-rc.0 target pairs Atmosphere `rspack@1.4.0-rc360.0` and
+`tools-core@1.4.0-rc360.0` with npm `@meteorjs/rspack@3.0.0-rc.0`.
+Inspect the app's actual release and resolved packages; historical beta
+minimums remain valid for that beta, not a complete RC dependency set.
 
-`swc-loader@0.2.6` remains a separately selected dependency when the integration
-needs it. Do not confuse the Meteor npm integration's major 3 with Rspack's
-major 2. Do not substitute unreleased stable `@meteorjs/rspack@3.0.0` for this
-beta's pin. Later releases require checking their own resolved pairing.
+| Package | 3.6-rc.0 minimum | Historical 3.6-beta.0 minimum | Category |
+|---|---|---|---|
+| `@meteorjs/rspack` | `3.0.0-rc.0` | `3.0.0-beta.1` | Development |
+| `@rspack/core`, `@rspack/cli` | `2.2.7` each | `2.2.0` each | Development |
+| `@rspack/dev-server` | `2.2.1` | `2.2.0` | Development |
+| `@swc/core` | `1.16.2` | `1.15.32` | Development |
+| `@rsdoctor/rspack-plugin` | `1.6.4` | `1.5.9` | Development |
+| `@swc/helpers` | `0.5.23` | `0.5.23` | Runtime |
+| React only: `@rspack/plugin-react-refresh`, `react-refresh` | `2.0.2`, `0.19.0` | `2.0.0`, `0.17.0` | Development |
+
+Do not confuse the Meteor npm integration's major 3 with Rspack's major 2,
+or substitute unreleased stable `@meteorjs/rspack@3.0.0` for an RC pin.
+`swc-loader` is not selected by the RC dependency manager; add it only for
+an actual app-owned loader path. Later releases require their resolved pairing.
 
 Automatic installation updates the coordinated set. With
 `meteor.autoInstallDeps: false`, inspect the warnings and prepare the changes
@@ -28,8 +34,8 @@ locally with the detected manager. `meteor update --npm` explicitly overrides
 the opt-out for that invocation; keep it out of immutable CI builds.
 
 On npm apps with installed Rspack 1.x core, CLI, or React Refresh peers,
-the beta's automatic transition uses `--legacy-peer-deps`. Its manual warning
-can omit that flag. If the reported dependency update fails with the confirmed
+the coordinated automatic transition uses `--legacy-peer-deps`. The RC's
+manual npm command includes it; the historical beta.0 warning can omit it. If the reported dependency update fails with the confirmed
 old-peer conflict, apply the flag only to that coordinated npm install and
 verify the resulting tree. Do not set a global npm option, add the flag to
 pnpm/Yarn, or suppress unrelated peer errors. Prove the locked CI install
@@ -39,7 +45,7 @@ CI command and revisit it after the transition.
 ## Create a pnpm workspace
 
 ```bash
-meteor create --release 3.6-beta.0 --pnpm my-workspace
+meteor create --release 3.6-rc.0 --pnpm my-workspace
 cd my-workspace
 meteor npm start
 ```

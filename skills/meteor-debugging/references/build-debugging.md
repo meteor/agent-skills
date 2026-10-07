@@ -74,6 +74,27 @@ version and watched paths. Meteor 3.5.2 stops watching immutable package
 warehouse files. Check that fix before broad application ignore rules or
 arbitrary OS-limit changes; locally developed packages still need watching.
 
+## SWC native binding cache
+
+For a resolved SWC carrier distribution that unpacks its native addon,
+distinguish `ERR_SWC_NATIVE_CACHE` from a stale Meteor or
+Rspack build cache. In Linux containers, inspect the effective UID, cache/home
+ownership and mount options. Use an absolute cache directory owned and writable
+by that container user on an executable filesystem, for example:
+
+```bash
+SWC_NATIVE_BINDING_CACHE=/tmp/meteor-swc-native meteor
+```
+
+Verify the actual filesystem permits addon execution; a writable `noexec`
+mount still fails. Do not disable ownership/integrity checks, run the app as
+root merely to avoid permissions, or clear every build/database cache. A
+relative override is invalid. The RC dependency minimum `@swc/core@1.16.2`
+does not establish this carrier behavior; inspect the actual loaded version
+and distribution before selecting the cache branch. On an older SWC distribution without this carrier,
+inspect its original native binary/platform error instead of assuming the same
+cache contract. See the modern build skill's SWC cache guidance.
+
 ## Meteor 3.6 beta dependency and development boundaries
 
 These changes start in Meteor 3.6-beta.0 and its paired packages. For earlier
@@ -96,6 +117,7 @@ Do not clear every cache, reset the database, or reinstall all dependencies
 as the first diagnostic action.
 
 ---
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/about/modern-build-stack/rspack-bundler-integration.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/cli/index.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.5.2.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.6.0.md

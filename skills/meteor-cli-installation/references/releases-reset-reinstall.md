@@ -28,6 +28,37 @@ Do not edit `.meteor/release` alone as an upgrade workflow. `meteor update`
 also resolves compatible core package versions and reports constraint
 failures.
 
+## Preserve local data before MongoDB 8 (Meteor 3.6+)
+
+For an existing local MongoDB 7 database, back up its data before switching
+Meteor to a release bundling MongoDB 8. Fresh databases need no FCV migration;
+an external `MONGO_URL` has its own administrator/provider upgrade plan.
+
+1. Keep the app running with its previous release and MongoDB 7. Connect with
+   `meteor mongo` (with `mongosh` available), then inspect:
+
+   ```javascript
+   db.version()
+   db.adminCommand({ getParameter: 1, featureCompatibilityVersion: 1 })
+   ```
+
+2. MongoDB 7 must report FCV `7.0`. If it is lower, prepare the backed-up local
+   replica set's primary, then repeat the check:
+
+   ```javascript
+   db.adminCommand({ setFeatureCompatibilityVersion: "7.0", confirm: true })
+   ```
+
+   This changes database state; run it only within an authorized upgrade.
+   If the server is older than MongoDB 7, follow the supported intermediate
+   major upgrades first, rather than applying this command to the old server.
+3. Exit the shell, stop the app, then update to the selected 3.6 release, for
+   example `meteor update --release 3.6-rc.0`, and start it again.
+
+Changing `.meteor/release` back does not roll the database back. Do not use
+`meteor reset --db` to migrate data you intend to keep. For an earlier Meteor
+release, inspect its actual bundled MongoDB instead of assuming this boundary.
+
 ## Reset project state
 
 For a build, bundler, generated-type, or resolver-cache failure confined to one

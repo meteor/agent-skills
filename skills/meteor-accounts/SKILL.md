@@ -17,7 +17,7 @@ metadata:
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-09-08"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -36,6 +36,11 @@ the client a resume token mapped to that document.
 4. 2FA? Layer `accounts-2fa` on top of `accounts-password`.
 5. Token storage on the client? Default is Web Storage. Meteor 3.3+
    supports an HttpOnly cookie flow; see the section below.
+
+For a custom users collection, configure both runtimes before app reads or
+validators. The 3.6 RC fixes collection setup and publication lookup; review
+[collection identity and client-write policy](references/users-collection.md)
+before removing protective profile rules.
 
 ## Username + password
 
@@ -123,7 +128,9 @@ only when it is opted in too. A client-only setting can therefore produce an
 HTML response or 404 from later handlers. The `/set` body limit is 4096 bytes;
 larger requests return HTTP 413. See
 [cookie endpoint troubleshooting](references/http-only-cookies.md) for the
-routes, version boundary, and diagnostic checks.
+routes, version boundary, and diagnostic checks. The 3.6 RC pairing additionally
+uses `SameSite=Strict`, validates origins/tokens and limits endpoint traffic;
+treat an invalid session differently from a transient or rate-limit response.
 
 ## OAuth (Google example)
 
@@ -220,8 +227,10 @@ Meteor.passwordlessLoginWithToken(
 Set `userCreationDisabled: true` for sign-in-only flows. Configure
 `tokenSequenceLength`, `loginTokenExpirationHours`, and the
 `Accounts.emailTemplates.sendLoginToken` template on the server. Treat the
-token-request method as an abuse-sensitive endpoint and rate-limit repeated
-requests.
+token-request method as an abuse-sensitive endpoint. On the hardened 3.6
+pairing, retain the default token-request limiter, validate selector/options,
+and handle callback errors; see [request policy](references/passwordless-requests.md).
+Earlier packages need their existing explicit abuse controls.
 
 ## 2FA
 

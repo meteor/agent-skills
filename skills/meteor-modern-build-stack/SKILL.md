@@ -22,7 +22,7 @@ metadata:
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-09-11"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -101,7 +101,8 @@ in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile. Meteor
 3.6-beta.0 pairs `rspack@1.4.0-beta360.0`, `@meteorjs/rspack@3.0.0-beta.1`
-and Rspack 2.2.0; 3.5.2 retains the 1.3.0/2.2.0 integration pairing.
+and Rspack 2.2.0. The 3.6-rc.0 target pairs `rspack@1.4.0-rc360.0`,
+`@meteorjs/rspack@3.0.0-rc.0` and core/CLI 2.2.7; 3.5.2 retains its older pairing.
 See [release pairings](references/rspack-config.md) and
 [3.6 dependencies and workspaces](references/meteor-3.6-workspaces.md).
 For Rspack 1-to-2 config migration, use `migrate-to-rspack`.
@@ -135,6 +136,17 @@ New apps ship with this preinstalled. Normally no further setup is needed;
 Meteor's pipeline detects it and emits imports instead of inlining. If only a
 production or legacy bundle fails on a helper import, inspect Rspack-generated
 and final Meteor output before changing `.swcrc` or adding manual imports.
+
+For `ERR_SWC_NATIVE_CACHE` in a resolved SWC carrier, inspect ownership/mounts
+and select an absolute owned `SWC_NATIVE_BINDING_CACHE` on an executable
+filesystem. Build-cache cleanup does not repair it; see `meteor-debugging`.
+
+## Meteor package declarations
+
+Keep the existing type provider by default. Meteor 3.6+ offers explicit
+`meteor types` generation; SWC/Rspack do not select it. For a chosen native
+switch, read [native package types](references/native-package-types.md).
+Earlier releases retain their established provider.
 
 ## Rspack config files
 
@@ -196,35 +208,18 @@ browser
 modern
 ```
 
-## Memory limits
+For Meteor 3.6's paired integration, use
+[architecture entries](references/architecture-entries.md) when legacy or
+Cordova needs separate app/test code. Earlier pairings retain shared-client
+entries. `Meteor.arch`/`isLegacy` are configuration callback values, not runtime
+app properties.
 
-Rspack runs as a child process and may OOM on large apps. Raise the heap
-for tool processes temporarily when capturing evidence (Meteor 3.4.1+):
+## Tool memory and instance isolation
 
-```bash
-TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
-```
-
-On Meteor 3.4.0, use `NODE_OPTIONS="--max-old-space-size=16384"`.
-
-First distinguish a one-shot build failure from growth during a long watch
-session. Audit large directories visible to Meteor and check the exact release
-for fixes. Test heap size and persistent cache as separate variables; revert a
-change that does not improve the failure or a measured memory trend.
-
-## Multiple instances
-
-Meteor 3.5.2 separates development, normal test, and full-app test output
-within one context (`_build/main-dev`, `_build/test`, `_build/app-test`, plus
-mode-suffixed assets/chunks). This does not isolate Meteor caches, local Mongo,
-or ports. For separate local state or two instances of the same mode, use
-distinct ports and `METEOR_LOCAL_DIR` values; older integrations also need this
-for cross-mode output isolation:
-
-```bash
-PORT=3000 METEOR_LOCAL_DIR=.meteor/local-1 meteor run
-PORT=3001 METEOR_LOCAL_DIR=.meteor/local-2 meteor run
-```
+For measured heap diagnostics and separate local modes/instances, see
+[tool memory and instance isolation](references/rspack-config.md#memory-limits).
+Do not combine heap/cache changes; mode-suffixed output does not isolate ports
+or local Mongo state.
 
 ## Anti-patterns
 

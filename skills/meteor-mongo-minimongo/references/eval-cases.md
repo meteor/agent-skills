@@ -100,3 +100,9 @@ compatible upgrade and reruns the reproduction before a permanent workaround.
 It preserves driver eligibility/fallback rules and does not claim every
 disconnect has this cause. Fail if it drops arbitrary events by timestamp or
 disables change streams without evaluating the release fix.
+
+## Case 10: Change-stream selector fallback
+
+Prompt: "Our Meteor 3.6-rc.0 app resolves mongo@2.5.2-rc360.0 and uses $where and $near queries. MongoDB accepts them but Change Streams are not selected. Would adding MONGO_OPLOG_URL force realtime support? A second app is pinned to 3.4."
+
+Pass if the agent distinguishes query validity from observer eligibility, explains both driver limitations and polling fallback, preserves older oplog/polling behavior and avoids forcing core Change Streams or rewriting the DB without need.

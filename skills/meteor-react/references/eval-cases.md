@@ -203,3 +203,9 @@ Prompt: "This app stays on Meteor 3.5.2 with its paired Rspack packages and Babe
 
 Pass if the agent: Rejects assuming the new SWC path exists in the old pairing, retains the required Babel transform or requests a scoped paired upgrade, and inventories other Babel plugins.
 Fail if it contradicts these boundaries or invents unsupported commands.
+
+## Case 25: RC React Compiler with an older React major
+
+Prompt: "On Meteor 3.6-rc.0 with the paired Rspack integration, our app stays on React 18 and has a custom React Refresh plugin. What dependency pairing and React Compiler path should we review? The other app stays on Meteor 3.5.2."
+
+Pass if the agent selects the current coordinated RC integration/refresh versions, preserves automatic refresh injection without duplication, uses extendSwcConfig and target 18/runtime when choosing the supported SWC compiler, and retains the older app's compatible Babel/compiler path without forcing React 19 or Rspack 2.

@@ -16,7 +16,7 @@ metadata:
   area: security
   tagline: "Audit and harden Meteor 3 apps (`check()` coverage, `this.userId` guards, browser-policy CSP, rate limits, oauth-encryption)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -38,8 +38,23 @@ reaches users are methods (write paths) and publications (read paths).
    reset, resource creation).
 6. If the app uses OAuth, set `oauthSecretKey` to encrypt provider
    secrets at rest.
-7. Remove `allow` / `deny` rules. They are legacy and easy to misuse;
-   use methods instead.
+7. Replace permissive client-write rules with authenticated methods. Keep
+   protective `deny` rules until an equivalent method-only policy is active;
+   Accounts can add an owner-only `profile` allowance even without an app
+   `allow` rule. See the profile policy below.
+
+## Accounts collection and profile policy
+
+In Meteor 3.6's fixed Accounts pairing, custom users collections receive account
+indexes and, when client mutation methods exist, the default owner-only profile
+allowance. Configure the collection on both runtimes before installing guards.
+Keep `Meteor.users.deny({ update: () => true })` on the selected collection when
+all client profile writes must be blocked, until an equivalent policy is proven.
+`defineMutationMethods: false` supplies a method-only collection without those
+validators; the RC still creates account indexes. Earlier packages require
+checking their setup behavior. See `meteor-accounts` for collection identity,
+secondary Accounts instances and package boundaries. Never trust roles stored
+in a client-editable profile.
 
 ## Method guard checklist
 
@@ -134,7 +149,12 @@ precomputed synchronous state, or upgrade rather than awaiting Mongo there.
 
 The default rule (5 in 10s for login / signup / password reset) ships
 with `accounts-base`. Remove with `Accounts.removeDefaultRateLimit()`
-only if you replace it.
+only if you replace it. On the hardened Meteor 3.6 pairing
+(`accounts-base@3.4.0-rc360.0` for the RC), this includes
+`requestLoginTokenForUser`, bucketed by method and connection. Handle
+`too-many-requests` without an immediate retry loop. Earlier packages need
+verified explicit token-request protection; do not assume the RC rule exists
+or disable an existing rule to resolve a validation error.
 
 ## OAuth secret encryption
 
@@ -181,8 +201,8 @@ Meteor.methods({
 
 ## Anti-patterns
 
-- `Collection.allow` / `Collection.deny` rules. Legacy; easy to combine
-  into a soft-fail. Replace with methods.
+- Permissive client-write rules for sensitive data. Replace with guarded
+  methods; do not remove protective denial before proving equivalent policy.
 - `Meteor.settings.public.<secret>`. The client sees `public`. Move
   secrets to the top level of `settings.json`.
 - Publish the entire `Meteor.users` collection. Always project (e.g.

@@ -1,18 +1,28 @@
 # TypeScript migration
 
-Tight scope: what an existing TypeScript-on-Meteor-2 project must update
-during the upgrade to Meteor 3. The full TypeScript-on-Meteor setup
-(fresh projects, advanced patterns, type-helper packages) is out of scope
-here; a dedicated `meteor-typescript` skill will cover it.
+Choose Meteor import declarations separately from the compiler or bundler
+while migrating an existing application. Preserve a working `@types/meteor`
+or `zodern:types` setup by default. Meteor 3.6+ also offers explicit native
+declarations; changing to SWC/Rspack does not select that provider.
 
 ## What breaks
 
-After the upgrade, imports from `meteor/*` resolve to `any` or fail
-outright. The Meteor 2 type-shipping mechanism is no longer compatible
-with the 3.x build, so any `import { Meteor } from 'meteor/meteor';`
-loses its types.
+If `meteor/*` imports become `any` or fail after an upgrade, inspect the
+selected declaration provider and TypeScript resolution. Do not assume the
+framework upgrade invalidated every existing type package or that changing
+the transpiler fixes declaration lookup.
 
-## What to install
+## Select the provider
+
+On Meteor 3.0 through 3.5, keep or repair the established provider; `meteor
+types` is unavailable. On 3.6+, ordinary run/build/test/lint commands still do
+not select or generate native declarations. If the user explicitly wants the
+native provider, follow [native package types](../../meteor-modern-build-stack/references/native-package-types.md)
+for generation, per-package paths and the explicit ambient barrel. A direct
+`zodern:types` dependency makes `meteor types` skip successfully; transitive
+presence alone does not. Do not remove providers just to upgrade Meteor.
+
+## Existing zodern provider
 
 ```bash
 meteor add zodern:types
@@ -56,7 +66,8 @@ regenerates the types directory on demand.
 - `import { Meteor } from 'meteor/meteor';` resolves to `any`, no
   autocomplete. The `paths` mapping in `tsconfig.json` is missing.
 - "Cannot find module 'meteor/meteor' or its corresponding type
-  declarations." `zodern:types` is not installed.
+  declarations." Inspect the selected provider and its generated files; do
+  not automatically install zodern over an explicitly chosen native provider.
 - "Duplicate identifier 'Meteor'." `preserveSymlinks` is not set.
 
 ---

@@ -13,7 +13,7 @@ metadata:
   area: data
   tagline: "Write and debug Mongo queries in Meteor 3 (server async vs Minimongo, oplog vs change streams, indexes, selectors, modifiers)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-09-08"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -121,8 +121,13 @@ changeStreams -> oplog -> polling
 
 Change streams require MongoDB 6+ on a replica set or sharded cluster, an
 unordered observer, no `skip` or `limit`, and a selector Minimongo can compile.
-An ineligible query falls through to the next configured driver. Oplog is
-available only when `MONGO_OPLOG_URL` is configured.
+An ineligible query falls through to the next configured driver. On the
+hardened Meteor 3.6 pairing (`mongo@2.5.2-rc360.0` for the RC), `$where` and
+`$near` selectors explicitly decline Change Streams. This is a driver
+eligibility decision, not proof that MongoDB rejects the query. Oplog also
+cannot handle these selector forms, so polling can be the valid fallback;
+configuring `MONGO_OPLOG_URL` alone does not fix it. On earlier packages verify
+their eligibility behavior rather than forcing the new driver contract.
 
 On Meteor 3.5+, override the app-wide order with
 `METEOR_REACTIVITY_ORDER=oplog,polling` or:

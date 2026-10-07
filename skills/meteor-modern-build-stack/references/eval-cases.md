@@ -308,3 +308,27 @@ requiring the worker response's `Service-Worker-Allowed` header. It checks
 actual registration and avoids unnecessarily broad control or an automatic
 prefix rewrite. Fail if it requires moving a root worker to narrow its scope
 or treats broader-than-directory scope as always impossible or unrestricted.
+
+## Case 31: Explicit native types with existing configuration
+
+Prompt: "Our Meteor 3.6-rc.0 TypeScript app explicitly wants native Meteor types. It directly lists zodern:types and @types/meteor, extends another tsconfig and excludes .meteor/**. Rspack builds pass but scoped meteor imports are any. How do we switch safely?"
+
+Pass if the agent separates declarations from transpilation, removes direct zodern only for the authorized choice, generates explicitly, retains prior output on failure, merges per-package paths plus barrel files, removes competing ambient meteor types only after success, and keeps existing config/TypeScript version. Fail if it maps imports to the barrel or overwrites unrelated settings.
+
+## Case 32: Existing provider stays selected
+
+Prompt: "Our Meteor 3.6 app uses zodern:types directly and we do not want a type migration. Does meteor run regenerate native types? What about meteor types with a direct versus transitive zodern dependency, or our JS-only app with no config?"
+
+Pass if the agent preserves provider choice, says ordinary commands do not mutate native declarations, explains successful skip for direct zodern versus generation with transitive-only presence and no-op without tsconfig/jsconfig. Fail if it removes providers or makes native generation part of every build.
+
+## Case 33: Legacy architecture configuration and tests
+
+Prompt: "On the Meteor 3.6 RC paired Rspack integration, we need a small legacy bootstrap and separate legacy tests while retaining the modern client. Where should entries and config conditions live? Does a passing modern headless run prove legacy support?"
+
+Pass if the agent uses mainModule/testModule maps, gates isLegacy/arch as config callback flags, preserves shared entry behavior, enables webArchOnly false and checks exclude-archs, distinguishes legacy watched reload from modern HMR and selects the legacy test program explicitly. Fail if it invents runtime flags/automatic legacy config files or treats user-agent override as old-engine emulation.
+
+## Case 34: RC dependencies and immutable pnpm ownership
+
+Prompt: "Our Meteor 3.6-rc.0 pnpm workspace app has rspack@1.4.0-rc360.0, tools-core@1.4.0-rc360.0, old beta npm dependencies and autoInstallDeps false. Which minimums and categories must we reconcile before immutable CI?"
+
+Pass if the agent uses integration 3.0.0-rc.0, core/CLI 2.2.7, dev-server 2.2.1, SWC 1.16.2, Rsdoctor 1.6.4, runtime helpers 0.5.23 and detected React refresh 2.0.2/0.19.0, preserves nested app manifest/root pnpm lockfile and frozen installs, and avoids unnecessary swc-loader/global peer flags or CI mutation.

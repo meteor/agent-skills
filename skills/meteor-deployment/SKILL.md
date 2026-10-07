@@ -18,7 +18,7 @@ metadata:
   area: ops
   tagline: "Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching)."
   bundle: ["ops"]
-  docs_synced_at: "2026-08-26"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -39,9 +39,13 @@ Match the Node version to the bundled Meteor Node:
 |---|---|
 | 3.0 | 20 |
 | 3.1 through 3.4 | 22 |
-| 3.5+ | 24 |
+| 3.5 | 24 |
+| 3.6 (including RC) | 26 |
 
-Mismatch causes runtime errors. Run `meteor node -v` to confirm.
+Mismatch causes runtime errors. Run `meteor node -v` from the pinned app to
+confirm the exact version; an extracted bundle records it in
+`bundle/.node_version.txt`. The host Node used by the npm installer is a
+separate prerequisite.
 
 ## Decision flow
 

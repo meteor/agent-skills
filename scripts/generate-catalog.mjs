@@ -5,7 +5,7 @@
 import { readFileSync, writeFileSync, readdirSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import matter from "gray-matter";
+import { parseFrontmatter } from "./frontmatter.mjs";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(here, "..");
@@ -39,7 +39,7 @@ function loadSkills(skillsRoot) {
     .filter((e) => e.isDirectory() && isPublishable(e.name))
     .map((e) => {
       const raw = readFileSync(join(skillsRoot, e.name, "SKILL.md"), "utf8");
-      const { data } = matter(raw);
+      const { data } = parseFrontmatter(raw);
       return { folder: e.name, frontmatter: data };
     });
 }

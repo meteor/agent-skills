@@ -18,7 +18,7 @@ metadata:
   area: migration
   tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
   bundle: ["migration"]
-  docs_synced_at: "2026-08-25"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -48,7 +48,9 @@ in phases. Do not flip the framework version flag first.
    pin `api.versionsFrom(['2.x', '3.0'])`. See
    `references/package-triage.md`. Save `.meteor/versions` and npm lockfile
    checkpoints so package-major changes remain distinguishable from Meteor.
-5. Upgrade to Meteor 3.x.
+5. For Meteor 3.6+ with bundled MongoDB 8, back up and prepare local MongoDB
+   7 FCV before updating; see `meteor-cli-installation`. Manage external
+   databases separately. Then upgrade to the selected Meteor release.
 6. Sweep implicit globals; rewrite to `const` or `export` / `import`.
    See `references/module-system.md`.
 7. Audit Blaze helpers and `Tracker.autorun` blocks for lost reactivity
@@ -64,8 +66,10 @@ in phases. Do not flip the framework version flag first.
    not inside the invoked handler. Verify invocation context before and after
    `await`. See `references/publications.md` and
    `references/other-breaking-changes.md`.
-10. For TypeScript projects, install `zodern:types` and update
-    `tsconfig.json`. See `references/typescript-migration.md`.
+10. For TypeScript projects, retain or choose the declaration provider
+    separately from transpilation. Meteor 3.6+ offers explicit native types;
+    earlier releases retain the existing provider. See
+    `references/typescript-migration.md`.
 11. For React projects, decide whether to adopt the Suspense-aware
     `react-meteor-data` import. See `references/react-migration.md`, then use
     `meteor-react` for current hook, scaffold, and build guidance.
@@ -139,7 +143,6 @@ in phases. Do not flip the framework version flag first.
 
 ## Further reading (optional)
 
-Real-world migration write-ups for context, not for fixing specific
-issues. The symptom router above is sufficient on its own. Open
+Migration write-ups provide context, not targeted fixes. The symptom router above is sufficient on its own. Open
 `references/community-case-studies.md` only when the user asks for
 narrative case studies or wants to calibrate effort and timeline.

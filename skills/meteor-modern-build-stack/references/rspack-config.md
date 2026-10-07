@@ -14,6 +14,7 @@ Match both integration packages to the Meteor release:
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and app-extension discovery; retains the v2 helper API. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Required-dependency diagnostics, mode isolation, TypeScript config dependency tracking, and full-app/TLA fixes. |
 | 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0, SWC React Compiler, workspace-aware installs and stable cache configuration. |
+| 3.6-rc.0 | `1.4.0-rc360.0` | `3.0.0-rc.0` | Rspack core/CLI 2.2.7, dev-server 2.2.1 and per-architecture compilations. |
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
 arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
@@ -60,7 +61,7 @@ with dev dependencies available. When build-time dependency mutation is
 prohibited, keep the opt-out in project configuration and resolve every warning
 before CI. Do not rely on a container silently repairing an incomplete lockfile.
 
-For Meteor 3.6-beta.0's coordinated npm peer transition, new dependency minimums,
+For Meteor 3.6's RC pairing, historical beta minimums and coordinated npm peer transition,
 pnpm scaffold and workspace-owned installs, read
 [3.6 dependencies and workspaces](meteor-3.6-workspaces.md).
 Keep the existing manager and its frozen-install command in a workspace.
@@ -105,9 +106,17 @@ module.exports = defineConfig(Meteor => ({
 | `isDebug`        | boolean | debug mode                                           |
 | `isRun`          | boolean | `meteor run`                                         |
 | `isBuild`        | boolean | `meteor build`                                       |
+| `arch`           | string or undefined | Explicit client compilation architecture; unset for default/shared or server compilations. Meteor 3.6 pairing. |
+| `isLegacy`       | boolean | Explicit legacy compilation; Meteor 3.6 pairing. |
 | `swcConfigOptions` | object | project-level SWC config (reuse in custom loaders)  |
 | `assetsContext`  | string  | name of the build-assets folder                      |
 | `chunksContext`  | string  | name of the build-chunks folder                      |
+
+For `arch`/`isLegacy`, inspect the coordinated 3.6 integration first. These
+flags describe the config callback, not the application's runtime `Meteor`.
+Use [architecture entries](architecture-entries.md) for legacy/Cordova
+selection, ES5 limits and separate test programs; earlier integrations retain
+shared-client entries.
 
 ## Helpers
 
@@ -342,6 +351,36 @@ Auto-added to `.gitignore`. To rename, set in `package.json`:
     "chunksContext": "chunks"
   }
 }
+```
+
+## Memory limits
+
+Rspack runs as a child process and may OOM on large apps. Raise the heap
+for tool processes temporarily when capturing evidence (Meteor 3.4.1+):
+
+```bash
+TOOL_NODE_FLAGS="--max-old-space-size=16384" meteor run
+```
+
+On Meteor 3.4.0, use `NODE_OPTIONS="--max-old-space-size=16384"`.
+
+First distinguish a one-shot build failure from growth during a long watch
+session. Audit large directories visible to Meteor and check the exact release
+for fixes. Test heap size and persistent cache as separate variables; revert a
+change that does not improve the failure or a measured memory trend.
+
+## Multiple instances
+
+Meteor 3.5.2 separates development, normal test, and full-app test output
+within one context (`_build/main-dev`, `_build/test`, `_build/app-test`, plus
+mode-suffixed assets/chunks). This does not isolate Meteor caches, local Mongo,
+or ports. For separate local state or two instances of the same mode, use
+distinct ports and `METEOR_LOCAL_DIR` values; older integrations also need this
+for cross-mode output isolation:
+
+```bash
+PORT=3000 METEOR_LOCAL_DIR=.meteor/local-1 meteor run
+PORT=3001 METEOR_LOCAL_DIR=.meteor/local-2 meteor run
 ```
 
 ---

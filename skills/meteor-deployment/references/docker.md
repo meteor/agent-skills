@@ -37,7 +37,9 @@ CMD ["node", "main.js"]
 
 This sample targets Meteor 3.1 through 3.4. Match both `node:` tags to the
 bundled Node major: Meteor 3.0 uses Node 20, 3.1 through 3.4 use Node 22,
-and 3.5+ uses Node 24. Run `meteor node -v` to verify the exact version. On
+3.5 uses Node 24, and 3.6 (including RC) uses Node 26. Run `meteor node -v`
+from the pinned project, or read the extracted bundle's `.node_version.txt`,
+to verify the exact version. Keep the older sample when targeting 3.4. On
 M-series Macs targeting x86_64 Linux, add
 `--architecture os.linux.x86_64` to `meteor build`.
 

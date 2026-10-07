@@ -2,7 +2,9 @@
 
 Use this branch for Meteor 3.6, verified on `3.6-beta.0`, with
 `rspack@1.4.0-beta360.0` and `@meteorjs/rspack@3.0.0-beta.1`.
-Meteor 3.5.2 keeps `rspack@1.3.0`, `@meteorjs/rspack@2.2.0` and Rspack 1.x.
+The 3.6-rc.0 target uses `rspack@1.4.0-rc360.0` with
+`@meteorjs/rspack@3.0.0-rc.0`. Meteor 3.5.2 keeps `rspack@1.3.0`,
+`@meteorjs/rspack@2.2.0` and Rspack 1.x.
 Do not force Rspack 2 into a constrained older release.
 
 ## Upgrade the coordinated dependency set
@@ -12,7 +14,7 @@ Do not force Rspack 2 into a constrained older release.
 2. With default `meteor.autoInstallDeps` enabled, update then start normally:
 
    ```bash
-   meteor update --release 3.6-beta.0
+   meteor update --release 3.6-rc.0
    meteor run
    ```
 
@@ -23,14 +25,18 @@ Do not force Rspack 2 into a constrained older release.
    dependencies explicitly in an authorized local workflow, then commit and
    test a frozen install. `meteor update --npm` overrides the opt-out for that
    invocation; do not put a lockfile-rewriting step in immutable CI.
-3. The beta's required npm minimums are core/CLI/dev-server 2.2.0, Meteor integration
+3. For the RC, use the [coordinated dependency table](../../meteor-modern-build-stack/references/meteor-3.6-workspaces.md#rspack-2-dependency-set):
+   core/CLI 2.2.7, dev-server 2.2.1, integration 3.0.0-rc.0, SWC 1.16.2,
+   helpers 0.5.23, Rsdoctor 1.6.4 and detected React refresh 2.0.2/0.19.0.
+   For historical beta.0, the minimums were core/CLI/dev-server 2.2.0, integration
    3.0.0-beta.1, SWC core 1.15.32, helpers 0.5.23 and Rsdoctor 1.5.9.
    Keep helpers in runtime dependencies, the bundler tools in dev dependencies.
-   Detected React adds refresh plugin 2.0.0 and refresh runtime 0.17.0.
+   Historical beta.0 React used refresh plugin 2.0.0/runtime 0.17.0.
    Record the resolved versions: compatible newer patches can satisfy these
    minimums without matching the original examples' lockfiles exactly.
 4. With npm and installed Rspack 1.x peers, the automatic upgrade uses
-   `--legacy-peer-deps`. The beta's manual warning can omit it. If that exact
+   `--legacy-peer-deps`. The RC manual command includes it; the historical
+   beta.0 warning can omit it. If that exact
    coordinated update is rejected for stale peers, use the flag for that
    invocation, review the lockfile and validate the installed majors. Do not
    use `--force`, a global peer bypass or a flag copied into pnpm/Yarn.
@@ -59,7 +65,7 @@ Also check these [upstream migration boundaries](https://www.rspack.dev/guide/mi
 
 | Surface | Migration check |
 |---|---|
-| Node and ESM | Rspack 2 requires Node `^20.19.0 \|\| >=22.12.0`. Meteor 3.6-beta.0 bundles Node 24.15.0; host Node 18 alone does not prove a Meteor build incompatibility. Identify which binary actually invokes each tool before upgrading that runtime. Keep valid Meteor CommonJS configs/output despite pure-ESM Rspack packages. |
+| Node and ESM | Rspack 2 requires Node `^20.19.0 \|\| >=22.12.0`. Meteor 3.6-rc.0 bundles Node 26.10.0 (historical beta.0 used 24.15.0); host Node 18 alone does not prove a Meteor build incompatibility. Identify which binary actually invokes each tool before upgrading that runtime. Keep valid Meteor CommonJS configs/output despite pure-ESM Rspack packages. |
 | Dev server | `@rspack/dev-server` is now explicit; Meteor's dependency check supplies it. Review custom `devServer.proxy` and `watchFiles` against the v2 guide before reusing old shapes. |
 | Resolution | Upstream changes cover `.wasm` extension lookup, CSS `@import` conditions and empty `resolve.roots`. Meteor supplies explicit extensions and project roots. Inspect `resolve.byDependency` and custom overrides; test the failing import before changing resolution globally. |
 | Custom plugins | Review the plugin's Rspack 2 support and the [2.0 breaking-change overview](https://www.rspack.dev/blog/announcing-2-0), including compiler hook and stats API changes when used. |

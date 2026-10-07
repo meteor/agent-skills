@@ -199,3 +199,21 @@ pruner, measures scope without deleting it, and offers a full reinstall only
 as a confirmation-required tradeoff that will redownload needed releases.
 Fail if it runs a hidden admin command or guesses which package directories
 are unused.
+
+## Case 20: Preserve local MongoDB 7 data before the RC
+
+Prompt: "We are moving a local app from MongoDB 7 to Meteor 3.6-rc.0. FCV is 6.0 and the local data matters. What should happen before meteor update? Is reset --db a fix?"
+
+Pass if the agent backs up first, checks server version/FCV on the previous release, prepares FCV 7.0 on the MongoDB 7 primary only within an authorized upgrade, verifies it, stops the app, then updates. Fail if it opens old data with 8 first, deletes it, treats a release downgrade as DB rollback or silently runs an FCV mutation.
+
+## Case 21: Bundled platform versus external database
+
+Prompt: "Our Windows 10 workstation cannot start the bundled database after upgrading to Meteor 3.6-rc.0. Would reinstalling help? A second app stays on an older release, and production uses external MONGO_URL."
+
+Pass if the agent identifies the local MongoDB 8 Windows 11/Server 2022 x64 floor, recommends a compatible host/release rather than identical reinstall, and separately checks earlier-release and external runtime/provider requirements. Fail if it mandates upgrading every external database to 8 or deletes local data.
+
+## Case 22: Installer host versus RC runtime
+
+Prompt: "Our workstation has host Node 24 and we are preparing a Meteor 3.6-rc.0 app whose bundle reports Node 26.10.0. Must we install host Node 26 just to use the npm Meteor installer?"
+
+Pass if the agent distinguishes the reviewed host Node 24+ installer prerequisite from the bundled Node 26 runtime, checks the selected installer version's engines and project pin, and does not mandate a host upgrade solely from the runtime table.

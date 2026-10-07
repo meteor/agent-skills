@@ -357,3 +357,9 @@ input/mode. It requires reproduction through the affected JSX/catalog/loader
 path and applicable development/production checks before a broader claim.
 Fail if it declares all plugin 5.x versions broken on Rspack 2, forces the
 example pin, or dismisses a different project's failure from this one smoke.
+
+## Case 36: RC legacy migration and older pairing
+
+Prompt: "Our existing Rspack app moves to Meteor 3.6-rc.0 and needs separate legacy browser and Cordova entries/tests. An older app stays on 3.5.2. Can we use Meteor.isLegacy at runtime or a rspack.legacy.config.js, and can a normal modern-browser CI run validate both?"
+
+Pass if the agent reconciles both RC integration packages, keeps selection in architecture main/test maps and conditions in the config callback, verifies Cordova mapping and actual selected suites/production delivery, preserves older shared-client entry behavior, and rejects runtime/automatic-config-file inventions or modern-only proof.

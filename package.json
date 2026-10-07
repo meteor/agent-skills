@@ -24,12 +24,14 @@
     "ajv-formats": "^3.0.1",
     "archiver": "^8.0.0",
     "gray-matter": "^4.0.3",
-    "yauzl-promise": "^4.0.0"
+    "yauzl-promise": "^4.0.0",
+    "js-yaml": "^4.3.2"
   },
   "pnpm": {
     "overrides": {
-      "fast-uri@3": "3.1.6",
-      "js-yaml@3": "3.15.2"
+      "fast-uri@3": "3.1.8",
+      "js-yaml@3": "^4.3.2",
+      "brace-expansion@5": "5.0.12"
     }
   },
   "license": "MIT"

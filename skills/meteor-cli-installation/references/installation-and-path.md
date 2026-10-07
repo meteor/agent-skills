@@ -11,10 +11,29 @@ Check the host before selecting a command:
 | Existing project | Read `.meteor/release`. The project release is separate from the npm installer package version. |
 | Existing executable | Run `meteor --version`. Do not reinstall only to replace a project-specific release. |
 
-Current Meteor 3.5 installation documentation requires host Node 24 or newer.
+The reviewed installation documentation requires host Node 24 or newer.
+Meteor 3.6 bundles Node 26.10.0 separately; that does not raise the installer's
+host prerequisite to 26.
 Earlier Meteor 3 installers can have earlier host requirements. Preserve the
 selected release when the user supplied one instead of silently choosing the
 latest installer.
+
+## Bundled MongoDB 8 platform boundary (Meteor 3.6+)
+
+These prerequisites apply when Meteor starts its local bundled MongoDB 8:
+
+| Host | Required local database support |
+|---|---|
+| Windows x64 | Windows 11 or Windows Server 2022; not Windows 10/Server 2019. |
+| Linux x86_64 | glibc 2.34+; `libcurl.so.4`, `libssl.so.3`, `libcrypto.so.3`. |
+| Linux ARM64 | glibc 2.35+ and the same OpenSSL 3/libcurl libraries. |
+
+A missing library or unsupported OS is not proof of CLI corruption. Update
+that host or keep a compatible Meteor release; reinstalling the same binary
+cannot repair incompatibility. Do not impose these bundled-database floors on
+an earlier release. With an external `MONGO_URL`, check Meteor runtime and the
+provider's requirements separately; do not mandate a production MongoDB 8
+upgrade from the framework label alone.
 
 ## Install
 

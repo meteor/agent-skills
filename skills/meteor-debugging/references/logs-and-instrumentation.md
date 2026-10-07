@@ -43,6 +43,41 @@ wrappers, binary values, and large documents need different handling.
 - Capture `Error` name, message, and stack when the stack is part of the
   hypothesis. Do not swallow or downgrade the original failure.
 
+## Server lifecycle events (Meteor 3.6+)
+
+For method/publication/DDP correlation, the optional server-only
+`instrumentation` package exposes read-only lifecycle events. Earlier releases
+retain explicit redacted boundary observations or the app's existing logger;
+do not patch framework internals to imitate the API.
+
+```javascript
+// Server only, after adding the instrumentation package.
+import { Instrumentation } from "meteor/instrumentation";
+
+const handle = Instrumentation.on("method.end", (event) => {
+  console.log("method completed", {
+    name: event.name,
+    traceId: event.traceId,
+    durationMs: event.durationMs,
+  });
+});
+
+// Stop when the diagnostic no longer has an owner.
+handle.stop();
+```
+
+Select `method.start/end/error`, `publication.start/ready/stop/error`, or
+`ddp.connection.open/close` for the uncertain boundary. Inside a method or
+publication, `Instrumentation.currentContext()` supplies matching trace/span
+and connection identifiers. Do not substitute generic timers for correlation.
+The package emits events; it does not install an APM/OpenTelemetry backend.
+
+Argument/result/client-address capture is off by default. Enable only approved
+bounded/redacted observations if metadata cannot answer the question. Previews
+are snapshots, not permission to log private data; official Accounts payloads
+remain redacted. Stop the listener and remove temporary settings after the
+reproduction. Do not mutate invocation objects or swallow the original error.
+
 ## Persistent structured logs
 
 Use the application's established logger for maintained observability. Meteor's
@@ -82,3 +117,4 @@ appropriate level, and a reason to exist after the fix.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/logging.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/instrumentation.md

@@ -16,7 +16,7 @@ metadata:
   area: ops
   tagline: "Install, locate, repair, reset, or cleanly reinstall the Meteor 3 CLI with correct version and PATH handling."
   bundle: ["essentials", "migration", "fullstack", "ops", "blaze", "react"]
-  docs_synced_at: "2026-09-02"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -43,7 +43,9 @@ installer permanently to global npm packages.
 2. Inspect the host and intended project. Check the operating system,
    architecture, `node --version`, `npm --version`, CLI lookup result, and
    `meteor --version` when available. In an application, read
-   `.meteor/release` before selecting a release.
+   `.meteor/release` before selecting a release. For Meteor 3.6+ with local
+   bundled MongoDB 8, check its platform requirements and prepare existing
+   MongoDB 7 data before changing the pin; see the references below.
 3. Distinguish the requested version:
    - The npm selector in `npx meteor@<version>` chooses an installer package.
    - A Meteor application is pinned to a framework release in

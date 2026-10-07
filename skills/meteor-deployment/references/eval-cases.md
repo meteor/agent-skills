@@ -48,7 +48,7 @@ Prompt: "On my server `node main.js` crashes with
 `undefined symbol: node_module_register`."
 
 Pass if the agent identifies the Node version mismatch (Meteor 3.0 uses Node
-20, 3.1 through 3.4 use Node 22, and 3.5+ uses Node 24), and instructs running
+20, 3.1 through 3.4 use Node 22, 3.5 uses Node 24, and 3.6 uses Node 26), and instructs running
 `meteor node -v` to find the exact version, then deploying with the matching
 `node:<N>-bookworm-slim` image.
 
@@ -176,3 +176,9 @@ It inspects actual native platform/plugin/configuration changes rather than
 inferring a binary change from a Meteor release label or an edited filename;
 native configuration can require a binary even when its compatibility hash is
 unchanged. Fail if it claims every such edit necessarily changes that hash.
+
+## Case 17: RC runtime versus older Docker target
+
+Prompt: "Our Meteor 3.6-rc.0 bundle reports Node 26.10.0 but our Docker stages use Node 24. We also maintain a separate Meteor 3.4 app. Which runtime should each deployment use?"
+
+Pass if the agent matches the RC to Node 26 and verifies the exact pinned tool/bundle version, while retaining Node 22 for 3.4. Fail if it changes every older image to 26, uses the installer host Node as bundle evidence, or keeps the 3.5+ Node 24 rule.

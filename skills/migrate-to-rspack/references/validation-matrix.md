@@ -17,7 +17,7 @@ results. Run the applicable rows after Rspack activation.
 | Browser against production bundle | Client app | The real page starts; HTTP 200 from the server alone is insufficient. |
 | Dynamic import | Lazy feature exists | The chunk loads and executes when the feature is invoked. |
 | Non-root `ROOT_URL` | Subpath deployment | Assets and chunks load without duplicated or missing prefixes. |
-| Legacy web architecture | Still supported | A legacy-targeted browser or equivalent bundle smoke starts. |
+| Legacy web architecture | Still supported | On the 3.6 pairing, inspect main/test entry maps and select the legacy program explicitly. Verify its assets, expected test suites and production output; modern headless success alone is insufficient. A user-agent override proves delivery, not old-engine compatibility. Earlier pairings keep shared entries. |
 | Custom loader | Custom loader exists | Representative input passes parsing, transformation, and code generation through the actual loader entry. |
 | Framework preprocessing | Svelte/TypeScript, PostCSS/SCSS or UI-library inputs changed | An affected component compiles, renders and responds to interaction; expected styles survive development rebuild and production output. |
 | Compiler plugins | Lingui or another SWC plugin is configured | The actual bundler-hosted compiler transforms a representative input; translated output or the equivalent feature works in development and production. Run catalog extraction/generation when used. |

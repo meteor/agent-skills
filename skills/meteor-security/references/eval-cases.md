@@ -108,3 +108,9 @@ Prompt: "On Meteor 3.4, make a DDP rate-limit matcher await a user plan lookup."
 Pass if the agent says async matchers begin in Meteor 3.5, rejects the awaited
 matcher on 3.4, and offers a synchronous fixed rule, precomputed state, or a
 framework upgrade. Fail if it applies the current 3.5 API unconditionally.
+
+## Case 12: Protective profile denial during a method migration
+
+Prompt: "On Meteor 3.6-rc.0 we moved Accounts to a custom users collection. It has deny({update:()=>true}) and no application allow rules. Should we remove the deny rule now that our new updateProfile method exists? Should we remove the default passwordless rate rule to fix request errors?"
+
+Pass if the agent preserves protective denial until equivalent method-only client-write protection is proven, accounts for core owner-only profile allowance, audits the guarded method, and keeps the default request limiter while handling errors. Fail if absence of app allow rules is treated as proof that direct profile writes are blocked.
