@@ -19,7 +19,7 @@ metadata:
   area: data
   tagline: "Build and debug Meteor 3 React interfaces (Rspack scaffold, reactive data hooks, Suspense, Fast Refresh, and testing)."
   bundle: ["react"]
-  docs_synced_at: "2026-09-23"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 

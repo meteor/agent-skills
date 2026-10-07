@@ -13,7 +13,7 @@ metadata:
   area: data
   tagline: "Write and debug Mongo queries in Meteor 3 (server async vs Minimongo, oplog vs change streams, indexes, selectors, modifiers)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-09-29"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -125,7 +125,8 @@ An ineligible query falls through to the next configured driver. Oplog is
 available only when `MONGO_OPLOG_URL` is configured.
 
 Meteor 3.6, verified on beta.3's `mongo@2.5.2-beta360.3`, also declines
-`$where`/`$near` selectors for Change Streams: live events cannot be re-matched
+`$where`/`$near` selectors for Change Streams (the RC resolves
+`mongo@2.5.2-rc360.0`): live events cannot be re-matched
 with MongoDB semantics by Minimongo. Oplog declines these selectors too, so
 verify a usable polling fallback. Minimongo-incompatible projections also
 require fallback. A MongoDB-supported projection rejected by Minimongo is a

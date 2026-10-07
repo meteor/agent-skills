@@ -93,7 +93,8 @@ Ordinary Meteor commands and a skipped native run do not delete either tree.
 
 ## Compiler configuration compatibility
 
-For Meteor 3.6, the workflow above is verified through beta.3. Keep native
+For Meteor 3.6, the workflow above is verified through beta.3 and against
+the 3.6-rc.0 source; no installed RC runtime certification is implied. Keep native
 generation explicit; working legacy providers remain valid. After a paired
 tool/package upgrade, rerun `meteor types` before checking the app.
 If reaching beta.3 requires changing the framework release, use

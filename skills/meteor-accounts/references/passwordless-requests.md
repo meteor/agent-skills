@@ -8,6 +8,15 @@ resolved versions in `.meteor/versions` before relying on these protections.
 Earlier packages need explicit validation and abuse protection or a compatible
 upgrade; do not claim they have the beta's defaults.
 
+The RC pairing is `accounts-passwordless@3.1.2-rc360.0` with
+`accounts-base@3.4.0-rc360.0`. The public client wrapper accepts a documented
+string selector convenience and normalizes it; the schema below describes
+the direct DDP payload. Preserve supported `options.extra` data used by
+token URLs/email templates; options are not a boolean-only whitelist.
+Validate application-specific `extra` fields at their consumer before using
+them in links or templates; the core request schema does not enforce the app's
+custom data contract.
+
 ## Custom caller contract
 
 | Field | Requirement |
@@ -34,6 +43,38 @@ rule's interval; individual requests do not age out in a rolling window.
 The cookie endpoint's 30-per-ten-second address limit is independent. Calling
 `Accounts.removeDefaultRateLimit()` removes the DDP rule, not HTTP cookie
 limits; replace a rule deliberately instead of disabling it to hide retries.
+
+## Callback errors and sign-in completion
+
+`Accounts.requestLoginTokenForUser` is a callback API. Wrap it explicitly
+when a caller needs a Promise:
+
+```javascript
+function requestToken(email) {
+  return new Promise((resolve, reject) => {
+    Accounts.requestLoginTokenForUser({
+      selector: { email },
+      userData: {},
+      options: { userCreationDisabled: true },
+    }, (error) => error ? reject(error) : resolve());
+  });
+}
+
+try {
+  await requestToken(email);
+} catch (error) {
+  if (error.error === "too-many-requests") {
+    // Show a cooldown instead of immediately resubmitting.
+  } else {
+    // Report validation or delivery failure without logging credentials.
+  }
+}
+```
+
+After a successful request, use `Meteor.passwordlessLoginWithToken` with
+the matching selector and received token. Configure the sender/template
+before testing delivery. Earlier packages retain their callback flow and
+verified explicit abuse controls.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/api/accounts.md

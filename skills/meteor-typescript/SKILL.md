@@ -17,7 +17,7 @@ metadata:
   meteor: ">=3.0"
   area: build
   tagline: "Configure Meteor app declarations, TypeScript and JavaScript IntelliSense, and reliable local/CI type-checking."
-  docs_synced_at: "2026-09-29"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -49,13 +49,14 @@ runs just because SWC itself only transpiles.
 ## Choose the provider
 
 Native declarations start with 3.6-beta.1; this workflow is verified through
-3.6-beta.3. Beta.3 adds the declaration corrections linked below.
+3.6-beta.3 and against the 3.6-rc.0 source. Beta.3 adds the declaration
+corrections linked below; the RC retains explicit generation and provider choice.
 
 | Target and intent | Decision |
 |---|---|
 | Meteor 3 before 3.6-beta.1 | Native `meteor types` is unavailable. Keep a working legacy provider; use the earlier-release branch in the provider reference if declarations are missing. |
 | New or existing 3.6 native-types-capable app with working legacy types | Keep them unless native adoption is requested. Beta.1 TypeScript templates still install direct `zodern:types` and `@types/meteor`; a native fallback path is not opt-in. |
-| Explicit native adoption on 3.6-beta.1 through beta.3 | Root config required. Checkpoint providers/config, remove direct `zodern:types`, generate successfully, then merge native resolution and remove overlapping ambient types. |
+| Explicit native adoption on 3.6-beta.1 through beta.3 or 3.6-rc.0 | Root config required. Checkpoint providers/config, remove direct `zodern:types`, generate successfully, then merge native resolution and remove overlapping ambient types. |
 | JavaScript-only 3.6 beta app wanting IntelliSense | Use `jsconfig.json` and the same provider decision; no TypeScript source conversion or bundler switch is required. |
 
 Read [declaration providers](references/declaration-providers.md) for the
@@ -67,7 +68,7 @@ TypeScript 7 compatibility, earlier providers and rollback. Read
 
 1. Confirm generation actually ran. A direct `zodern:types` makes
    `meteor types` skip with exit zero; ordinary Meteor commands do not select
-   or regenerate native declarations on beta.1 through beta.3.
+   or regenerate native declarations on beta.1 through beta.3 or the RC.
 2. Use the app's local compiler. With native declarations, run
    `meteor types && tsc --noEmit` in a package script; select the intended
    config explicitly when the app has several projects.

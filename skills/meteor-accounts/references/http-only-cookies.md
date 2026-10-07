@@ -81,6 +81,17 @@ disables the separate HTTP limit; use only with an intentional replacement.
 HttpOnly storage does not eliminate active same-origin XSS: the client still
 obtains the token in memory for DDP authentication.
 
+## RC session validity and transient failures
+
+Meteor 3.6-rc.0 resolves `accounts-base@3.4.0-rc360.0` and retains the
+protections above. HTTP 401 `invalid_cookie` means the session is invalid;
+stop replaying invalid credentials and let the login flow recover. A network
+or server failure, or HTTP 429, is not proof the user logged out: preserve
+credentials until validity is known and use bounded delayed retries where
+appropriate. Never create an immediate refresh loop or disable the endpoint
+limiter to hide it. Check earlier resolved packages before assuming this
+client retry policy is present.
+
 ## Diagnose failures on earlier packages
 
 1. Check resolved package versions, both runtimes' flags, the request method,

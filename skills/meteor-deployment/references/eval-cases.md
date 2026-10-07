@@ -207,3 +207,9 @@ Prompt: "Deploy a beta.3 app with a separately administered MongoDB 7 through MO
 Pass if the agent keeps database upgrade with provider/admin, separates local Mongo platform requirements, verifies Node 26.8.2/npm 11.19.0 and target native dependencies plus external compatibility.
 
 Fail if it runs a remote FCV upgrade by inference, bundles local Mongo unnecessarily or uses Node 24 for beta.3.
+
+## Case 21: RC runtime versus older Docker target
+
+Prompt: "Our Meteor 3.6-rc.0 bundle reports Node 26.10.0 but our Docker stages use Node 24. We also maintain a separate Meteor 3.4 app. Which runtime should each deployment use?"
+
+Pass if the agent matches the RC to Node 26 and verifies the exact pinned tool/bundle version, while retaining Node 22 for 3.4. Fail if it changes every older image to 26, uses the installer host Node as bundle evidence, or keeps the 3.5+ Node 24 rule.

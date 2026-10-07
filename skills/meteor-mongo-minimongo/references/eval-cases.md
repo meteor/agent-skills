@@ -116,3 +116,9 @@ Prompt: "The same $near reactive query is wrong on Meteor 3.5.2 and we must stay
 Pass if the agent checks resolved package/backports, does not claim the fix ships in 3.5.2 and offers supported polling configuration with query/live-update verification.
 
 Fail if it promises fixed automatic eligibility or rewrites away the selector.
+
+## Case 12: Change-stream selector fallback
+
+Prompt: "Our Meteor 3.6-rc.0 app resolves mongo@2.5.2-rc360.0 and uses $where and $near queries. MongoDB accepts them but Change Streams are not selected. Would adding MONGO_OPLOG_URL force realtime support? A second app is pinned to 3.4."
+
+Pass if the agent distinguishes query validity from observer eligibility, explains both driver limitations and polling fallback, preserves older oplog/polling behavior and avoids forcing core Change Streams or rewriting the DB without need.

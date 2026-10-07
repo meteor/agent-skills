@@ -210,3 +210,44 @@ Prompt: "After adopting beta.3, what should our login-failure hook expect in att
 Pass if the agent uses resolved Accounts package, resolved user when found with absent-user/projection handling, preserves any valid service match when no user emails, retains nonempty user.emails precedence and policy.
 
 Fail if it logs full user records, treats domain acceptance as verified email, removes restrictions or lets a service rescue an invalid nonempty email list.
+
+## Case 24: Strict cookie entry navigation and transient failures
+
+Prompt: "With accounts-base@3.4.0-rc360.0, the first request from an email link has no login cookie. We added httpOnlyCookieAllowedOrigins and credentials include, but it still happens. Refresh sometimes returns 429; should we erase credentials or retry immediately?"
+
+Pass if the agent explains SameSite=Strict first cross-site navigation and that allowed origins/credentials do not override it, adapts the entry flow, distinguishes invalid-cookie 401 from transient/429, and uses bounded delayed recovery without changing to Web Storage or weakening the cookie.
+
+
+## Case 25: Custom cookie set request
+
+Prompt: "Our accounts-base@3.4.0-rc360.0 cookie client POSTs a full profile and a token as text/plain to /_accounts/cookie/set from a different origin. The token may have expired. How do we diagnose the failure behind a reverse proxy?"
+
+Pass if the agent checks both runtime opt-in, trusted origin/ROOT_URL/Host, JSON content type, full 4096 UTF-8-byte payload and valid unexpired token, rejects logging credentials, and configures the actual proxy chain for client-address rate buckets. Fail if it replaces the core endpoint, bypasses token/size/origin validation or trusts arbitrary forwarded headers.
+
+
+## Case 26: Users collection identity and instance ownership
+
+Prompt: "In Meteor 3.6-rc.0 with accounts-base@3.4.0-rc360.0, configure appUsers for both runtimes. What happens if we configure the same name again or change a separate AccountsServer instance? Does this copy old users?"
+
+Pass if the agent configures early before application reads/validators, preserves same-name instance/validators and secondary-instance isolation from Meteor.users, and separates document migration from collection selection. Fail if it claims a live transactional switch or automatic copy.
+
+
+## Case 27: Users collection without client mutation methods
+
+Prompt: "Our custom Accounts users collection has defineMutationMethods false on the 3.6 RC pairing. Do we need to enable client writes for account indexes, or attach allow/deny validators to make setup work?"
+
+Pass if the agent keeps the method-only policy, says RC account indexes are still created, and avoids validators on a collection without mutation methods. Fail if it enables client writes to obtain indexes or silently applies this fixed setup to an older unresolved package.
+
+
+## Case 28: Passwordless validation and request throttling
+
+Prompt: "With accounts-passwordless@3.1.2-rc360.0 and accounts-base@3.4.0-rc360.0, direct DDP token requests use selector {$or:[{email:"a@example.com"}]} and await Accounts.requestLoginTokenForUser. We also retry too-many-requests immediately. Is the public wrapper still allowed to take a string selector and options.extra data for email templates? Can you correct this sign-in-only flow?"
+
+Pass if the agent uses exactly one nonempty id/username/email object for direct DDP, distinguishes the public string convenience and preserves supported options.extra with application validation, wraps the client callback rather than assuming a Promise, sets userCreationDisabled true, handles validation/rate errors and preserves the default five-per-ten-second per-method/connection rule. Fail if it forwards operators or disables the limiter.
+
+
+## Case 29: Older cookie contract
+
+Prompt: "Our app must remain on Meteor 3.5.2 with accounts-base@3.3.1. Can we assume the RC Strict cookie and endpoint origin/token/rate checks are already present? We have configured both runtimes."
+
+Pass if the agent retains that release and its server opt-in/4096-byte limit, distinguishes the later hardened pairing, and proposes a compatible upgrade only if those additional guarantees are required. Fail if it promises every RC protection or forces an unrequested provider/storage change.

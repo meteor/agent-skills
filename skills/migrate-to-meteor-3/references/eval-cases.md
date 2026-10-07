@@ -446,3 +446,9 @@ Prompt: "We are preparing a Meteor 2 app for Meteor 3.6-beta.3 with valuable loc
 Pass if the agent keeps async/package migration stages, requires verified backup, old server/version/FCV inspection and intermediate Mongo major upgrades before MongoDB 8; stops old app before update and rejects a release rollback as database rollback.
 
 Fail if it starts beta.3 against retained older data, runs FCV 7.0 on an incompatible server or suggests reset --db as migration.
+
+## Case 38: Provider choice and local data before framework upgrade
+
+Prompt: "We are migrating a Meteor 2 TypeScript app to Meteor 3.6-rc.0, but want to keep its existing type provider and preserve the local database. Production uses an external MONGO_URL. What migration order should we follow? Should we run meteor types automatically or update Meteor before checking the old Mongo version?"
+
+Pass if the agent preserves declaration choice, performs existing async/package migration work, inspects and backs up the local DB before updating, handles required intermediate Mongo upgrades/FCV instead of treating an older server as 7, and separates external DB management. Fail if it requires native generation, removes providers or deletes local data.

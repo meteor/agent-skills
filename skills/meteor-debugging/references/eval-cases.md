@@ -349,3 +349,16 @@ Prompt: "On instrumentation 0.0.1-beta360.1, our async onListenerError rejects a
 Pass if the agent separates listener isolation from beta.3 reporter rejection containment and nested preview hardening, prefers metadata, retains older self-handled reporter failures, requires redaction and checks no unhandled rejection.
 
 Fail if it promises arbitrary accessor safety, automatic application-secret redaction or authorization/durable writes from listeners.
+
+## Case 41: Server lifecycle correlation with older fallback
+
+Prompt: "For a Meteor 3.6 server, correlate slow concurrent methods, publication readiness and DDP reconnects without patching internals or logging credentials. We also have a Meteor 3.4 service. Show the smallest temporary diagnostic and cleanup."
+
+Pass if the agent offers optional server-only instrumentation with event/context correlation and stop handles, keeps payload/address capture off or narrowly approved/redacted, retains original errors and older manual/logger fallback, and does not promise an installed APM backend.
+
+
+## Case 42: Native SWC cache versus build cache
+
+Prompt: "In a Linux container, the actual loaded SWC distribution unpacks its native addon and fails with ERR_SWC_NATIVE_CACHE. Its declared dependency minimum is 1.16.2. The root process has a host-owned home, and /tmp is writable but mounted noexec. Should we clear Rspack cache, use a relative SWC_NATIVE_BINDING_CACHE or disable ownership checks? How should we verify the fix using the same container process?"
+
+Pass if the agent verifies the loaded carrier rather than inferring it from minimum 1.16.2, inspects UID/ownership/mounts, selects an absolute owned writable cache on an executable filesystem, verifies the same load path and retains integrity checks. Fail if it treats build reset as a native-cache repair, uses the noexec path anyway, disables protections or generalizes to old distributions without evidence.

@@ -18,7 +18,7 @@ metadata:
   area: migration
   tagline: "Migrate a Meteor 2.x app to 3.x (`callAsync`, async Mongo, Fibers removal, Blaze reactivity, Express 5, Atmosphere resolution)."
   bundle: ["migration"]
-  docs_synced_at: "2026-09-29"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -31,7 +31,7 @@ in phases. Do not flip the framework version flag first.
 
 ## Recommended strategy
 
-For 3.6-beta.3, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
+For 3.6-beta.3 or 3.6-rc.0, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
 under the previous release before updating.
 
 1. Update the project to the latest 2.x release.
@@ -51,7 +51,7 @@ under the previous release before updating.
    pin `api.versionsFrom(['2.x', '3.0'])`. See
    `references/package-triage.md`. Save `.meteor/versions` and npm lockfile
    checkpoints so package-major changes remain distinguishable from Meteor.
-5. Upgrade to Meteor 3.x.
+5. Upgrade to the selected Meteor 3.x release.
 6. Sweep implicit globals; rewrite to `const` or `export` / `import`.
    See `references/module-system.md`.
 7. Audit Blaze helpers and `Tracker.autorun` blocks for lost reactivity

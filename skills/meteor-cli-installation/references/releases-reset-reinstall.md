@@ -32,6 +32,14 @@ Do not edit `.meteor/release` alone as an upgrade workflow. `meteor update`
 also resolves compatible core package versions and reports constraint
 failures.
 
+## Preserve local data before MongoDB 8
+
+Before selecting Meteor 3.6-beta.3 or 3.6-rc.0 for retained local data,
+follow [local database preparation](local-database-upgrade.md): verify backup
+and recovery, inspect the previous server and FCV, complete required MongoDB
+7 preparation before updating, and distinguish local from external databases.
+Do not use `meteor reset --db` to migrate data you intend to keep.
+
 ## Reset project state
 
 For a build, bundler, generated-type, or resolver-cache failure confined to one

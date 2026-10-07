@@ -126,6 +126,7 @@ Meteor 3 does not have one Node baseline across every minor release:
 | 3.1 through 3.4 | Node 22     |
 | 3.5.x and 3.6-beta.0 | Node 24 |
 | 3.6-beta.1 through beta.3 | Node 26.8.2 (npm 11.19.0) |
+| 3.6-rc.0 | Node 26.10.0 (npm 11.19.1) |
 
 Run `meteor node --version` in the target app and use that version in CI,
 native dependency builds, and container images. Audit `engines.node` and

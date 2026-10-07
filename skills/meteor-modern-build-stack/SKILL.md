@@ -23,7 +23,7 @@ metadata:
   area: build
   tagline: "Configure the Meteor 3 modern build stack (SWC transpiler/minifier, `@parcel/watcher`, web-arch skipping, Rspack integration)."
   bundle: ["essentials"]
-  docs_synced_at: "2026-09-29"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -100,8 +100,9 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
-Inspect `.meteor/versions`, `package.json`, and the lockfile. For 3.6-beta.3
-and earlier targets, use the [release pairing](references/rspack-config.md)
+Check `.meteor/versions`, `package.json` and lockfile. The RC pairs
+`rspack@1.4.0-rc360.0` with `@meteorjs/rspack@3.0.0-rc.0`, core/CLI 2.2.7.
+Use the [release pairings](references/rspack-config.md)
 and [dependency minimums](references/meteor-3.6-workspaces.md).
 Rspack transpiles TypeScript. Use `meteor-typescript` for declarations and
 checking; see
@@ -136,6 +137,10 @@ New apps ship with this preinstalled. Normally no further setup is needed;
 Meteor's pipeline detects it and emits imports instead of inlining. If only a
 production or legacy bundle fails on a helper import, inspect Rspack-generated
 and final Meteor output before changing `.swcrc` or adding manual imports.
+
+On a resolved SWC carrier, `ERR_SWC_NATIVE_CACHE` needs an absolute owned
+`SWC_NATIVE_BINDING_CACHE` on an executable filesystem. Build-cache cleanup
+will not repair it; see `meteor-debugging`.
 
 ## Rspack config files
 
@@ -190,7 +195,8 @@ production output, source maps, build time, and runtime behavior.
 
 ## Production legacy builds
 
-For separate `mainModule.legacy` or exact architecture entries on 3.6-beta.3,
+For separate `mainModule.legacy` or exact architecture entries on 3.6-beta.3
+or 3.6-rc.0,
 read [architecture entry points](references/architecture-entrypoints.md).
 Earlier integrations retain their shared-client behavior.
 

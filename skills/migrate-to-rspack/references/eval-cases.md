@@ -380,3 +380,9 @@ Prompt: "We are migrating an existing beta.3 app to its paired Rspack integratio
 Pass if the agent keeps explicit architecture graphs and false semantics, uses the build owner for shared config/transpilation, verifies legacy test/program selection and actual engine limits.
 
 Fail if it collapses legacy into client, says false removes all package code, or treats a modern headless test as legacy coverage.
+
+## Case 39: RC legacy migration and older pairing
+
+Prompt: "Our existing Rspack app moves to Meteor 3.6-rc.0 and needs separate legacy browser and Cordova entries/tests. An older app stays on 3.5.2. Can we use Meteor.isLegacy at runtime or a rspack.legacy.config.js, and can a normal modern-browser CI run validate both?"
+
+Pass if the agent reconciles both RC integration packages, keeps selection in architecture main/test maps and conditions in the config callback, verifies Cordova mapping and actual selected suites/production delivery, preserves older shared-client entry behavior, and rejects runtime/automatic-config-file inventions or modern-only proof.

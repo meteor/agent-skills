@@ -17,7 +17,7 @@ metadata:
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-09-29"
+  docs_synced_at: "2026-10-07"
 license: MIT
 ---
 
@@ -36,6 +36,11 @@ the client a resume token mapped to that document.
 4. 2FA? Layer `accounts-2fa` on top of `accounts-password`.
 5. Token storage on the client? Default is Web Storage. Meteor 3.3+
    supports an HttpOnly cookie flow; see the section below.
+
+For a custom users collection, configure both runtimes before app reads or
+validators. The 3.6 RC fixes collection setup and publication lookup; review
+[collection identity and client-write policy](references/users-collection.md)
+before changing profile rules.
 
 ## Username + password
 
@@ -128,7 +133,9 @@ larger requests return HTTP 413. See
 routes, version boundary, and diagnostic checks. Meteor 3.6-beta.1's
 `accounts-base@3.4.0-beta360.1` also requires trusted origins and valid tokens,
 uses `SameSite=Strict`, and adds a separate per-address endpoint rate limit.
-Review custom callers and cross-site entry flows before upgrading.
+Review custom callers and cross-site entry flows before upgrading. The RC uses
+`accounts-base@3.4.0-rc360.0`; distinguish invalid sessions from transient or
+rate-limit responses before retrying or discarding credentials.
 
 ## OAuth (Google example)
 
@@ -230,7 +237,10 @@ requests. With Meteor 3.6-beta.1's `accounts-passwordless@3.1.2-beta360.1`
 and `accounts-base@3.4.0-beta360.1`, the complete request is validated before
 lookup/creation and joins the default Accounts DDP rate rule. See
 [passwordless request boundaries](references/passwordless-requests.md)
-for custom callers and earlier packages.
+for custom callers and earlier packages. The RC pairs
+`accounts-passwordless@3.1.2-rc360.0` with `accounts-base@3.4.0-rc360.0`;
+retain the default limiter and handle callback errors without an immediate
+retry loop.
 
 ## 2FA
 

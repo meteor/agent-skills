@@ -128,6 +128,11 @@ disables emission initially; `Instrumentation.configure({ enabled: false })`
 can disable it at runtime. Runtime configuration can override the environment
 default. Bound and clean up any application-maintained correlation maps.
 
+The RC uses `instrumentation@0.0.1-rc360.0` and retains these lifecycle,
+context and reporter boundaries. Verify the resolved package before
+selecting a release-specific fix; metadata-only observation remains the
+default.
+
 ## Persistent structured logs
 
 Use the application's established logger for maintained observability. Meteor's
@@ -167,3 +172,4 @@ appropriate level, and a reason to exist after the fix.
 
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/logging.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/instrumentation.md
