@@ -11,26 +11,37 @@ before changing traffic.
 | Push to Deploy | Connect GitHub or Bitbucket, select the repository and branch, then set the Meteor root directory and build options. | Every push to the selected branch creates and deploys a version. Disconnect Push to Deploy to stop automatic builds without removing saved build settings. |
 | Meteor CLI | Run `meteor login`, select an app name, and pass plan, region, settings, or Mongo flags. | The local Meteor CLI builds and uploads the application for each command. |
 
-Free CLI deployments use a simple app name:
+Check the signed-in user with `meteor whoami`. Add `--owner my-account` when
+selecting a specific user or organization, including in CI commands.
+
+New Free CLI deployments use a simple app name:
 
 ```bash
-meteor deploy myapp --free --settings settings.json
+meteor deploy myapp --owner my-account --free --settings settings.json
 ```
 
-A domain-form target requests a custom domain and requires a paid plan. Let
-Galaxy create `myapp.sandbox.galaxycloud.app` for Free. Paid apps receive a
-regional `myapp.<region>.galaxycloud.app` hostname.
+For a new app, a domain-form target requests a custom domain and requires a
+paid plan. Let Galaxy create `myapp.sandbox.galaxycloud.app` for Free. Paid
+apps receive a regional `myapp.<region>.galaxycloud.app` hostname.
 
-Choose a paid region with `DEPLOY_HOSTNAME`:
+Choose a paid region with `DEPLOY_HOSTNAME` when creating an app:
 
 ```bash
 DEPLOY_HOSTNAME=eu-west-1.galaxy-deploy.meteor.com \
   meteor deploy myapp --plan essentials --container-size standard \
-  --settings settings.json
+  --owner my-account --settings settings.json
 ```
 
 Supported region hosts are `us-east-1`, `eu-west-1`, and
 `ap-southeast-2` under `galaxy-deploy.meteor.com`. Free apps deploy in US East.
+`--plan` and `--container-size` set a new app's plan and container size. Change
+an existing app's plan or size in the Galaxy dashboard.
+
+For an existing or migrated app, verify its current Galaxy hostname, region,
+and account, then use that hostname with the matching `DEPLOY_HOSTNAME` and
+`--owner`. Do not repeat creation flags as a requirement for every redeploy or
+use a new simple name that could create another app.
+
 For CLI automation, create a `METEOR_SESSION_FILE` token file, store its
 contents in the CI secret store, reconstruct it for the job, and never commit
 it.
@@ -142,6 +153,16 @@ service authentication because the addresses are shared.
 The deployment-time Free MongoDB toggle is for testing and development. It
 adds `MONGO_URL`, has no backups, and is tied to the app lifecycle. Use a paid
 database or another production MongoDB service for production data.
+
+From the CLI, optionally add `--mongo` to provision the free shared database:
+
+```bash
+meteor whoami
+meteor deploy myapp --owner my-account --free --mongo --settings settings.json
+```
+
+Omit `--mongo` when using an existing database. Configure the free database's
+TLS settings below before deploying; the flag does not replace them.
 
 Galaxy's free shared MongoDB requires its documented certificate bypass:
 
