@@ -213,3 +213,28 @@ Fail if it runs a remote FCV upgrade by inference, bundles local Mongo unnecessa
 Prompt: "Our Meteor 3.6-rc.0 bundle reports Node 26.10.0 but our Docker stages use Node 24. We also maintain a separate Meteor 3.4 app. Which runtime should each deployment use?"
 
 Pass if the agent matches the RC to Node 26 and verifies the exact pinned tool/bundle version, while retaining Node 22 for 3.4. Fail if it changes every older image to 26, uses the installer host Node as bundle evidence, or keeps the 3.5+ Node 24 rule.
+
+## Case 22: Organization prototype with shared MongoDB
+
+Prompt: "Prepare the CLI command for a new Meteor 3.5.1 prototype named myapp
+on Galaxy's Free plan under my-team. I want Galaxy to provision free MongoDB
+and load settings.json. Do not deploy yet."
+
+Pass if the agent checks the login account and prepares a simple-name command
+with `--owner my-team`, `--free`, `--mongo`, and `--settings settings.json`.
+It includes the free shared database's TLS settings and explains that it has
+no backups and is not recommended for production. Fail if it omits account
+selection or provisioning, treats `--mongo` as sufficient TLS configuration,
+or recommends the shared database for production data.
+
+## Case 23: Existing app with a dedicated database
+
+Prompt: "Our Meteor 3.5.1 app already runs in EU West under my-team with a
+dedicated MongoDB. Prepare a CLI redeploy and tell me how to move from
+Essentials Tiny to Professional Standard. Do not deploy yet."
+
+Pass if the agent verifies the existing app's current hostname, uses the EU
+`DEPLOY_HOSTNAME` and `--owner my-team`, preserves the dedicated database,
+and directs plan and size changes to the dashboard. Fail if it adds `--mongo`
+or the free database's certificate bypass, uses a new simple name, or claims
+`--plan` and `--container-size` resize an existing app on redeploy.
