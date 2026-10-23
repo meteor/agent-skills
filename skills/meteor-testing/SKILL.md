@@ -96,8 +96,12 @@ not proof of legacy coverage.
 
 ## Method test (server-side)
 
+Shared test entries also reach the browser. Use `assert` with strict methods;
+server guards cannot hide static imports. See
+[assertion imports](references/mocha-setup.md#assertion-imports).
+
 ```javascript
-import assert from "node:assert/strict";
+import assert from "assert";
 import { Meteor } from "meteor/meteor";
 import { Items } from "/imports/api/items";
 
@@ -113,7 +117,7 @@ if (Meteor.isServer) {
         [{ title: "x", qty: 1 }],
       );
       const doc = await Items.findOneAsync(_id);
-      assert.equal(doc.title, "x");
+      assert.strictEqual(doc.title, "x");
     });
 
     it("rejects when unauthed", async function () {
@@ -143,7 +147,7 @@ if (Meteor.isServer) {
       const cursor = await Meteor.server.publish_handlers["items.mine"]
         .apply({ userId: "u1" }, []);
       const docs = await cursor.fetchAsync();
-      assert.deepEqual(docs.map((d) => d._id), ["a"]);
+      assert.deepStrictEqual(docs.map((d) => d._id), ["a"]);
     });
   });
 }
@@ -193,7 +197,7 @@ if (Meteor.isClient) {
     it("filters by ownerId", function () {
       Items.insert({ _id: "a", ownerId: "u1" });
       Items.insert({ _id: "b", ownerId: "u2" });
-      assert.equal(Items.find({ ownerId: "u1" }).count(), 1);
+      assert.strictEqual(Items.find({ ownerId: "u1" }).count(), 1);
     });
   });
 }

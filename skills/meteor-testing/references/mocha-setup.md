@@ -7,6 +7,35 @@ meteor add meteortesting:mocha
 meteor npm install --save-dev @types/mocha
 ```
 
+## Assertion imports
+
+A string `meteor.testModule`, such as `"tests/main.js"`, supplies a shared
+entry that can be bundled for both client and server. Static imports resolve
+before `if (Meteor.isServer)` runs. With the scaffold's `meteor-node-stubs`,
+`node:assert/strict` can fail the Rspack browser build with
+`Cannot find module 'assert/strict' for matched aliased key 'assert'`.
+
+Use the scaffold's portable import and explicit strict methods:
+
+```javascript
+import assert from "assert";
+
+assert.strictEqual(actual, expected);
+assert.deepStrictEqual(actualItems, expectedItems);
+await assert.rejects(() => rejectedOperation());
+```
+
+Changing the import alone would make `equal` and `deepEqual` coercive. Keep
+strict assertions when porting an example from `node:assert/strict`.
+Do not add a fictitious `assert/strict` package or disable client tests.
+`node:assert/strict` remains valid in a genuinely server-only entry graph;
+verify the actual `meteor.testModule` mapping and imports before changing it.
+
+Build and execute the selected client and server suites, including the
+configured full-app mode when used. A passing server suite alone does not
+verify browser bundling. Evidence: [generated scaffold test](https://github.com/meteor/meteor/blob/4c94e92457c06cb73082a8d59908257bf6b518d1/tools/static-assets/skel-blaze/tests/main.js)
+and [browser stub map](https://github.com/meteor/meteor/blob/4c94e92457c06cb73082a8d59908257bf6b518d1/npm-packages/meteor-node-stubs/map.json).
+
 ## Env vars
 
 | Var                    | Purpose                                                              |

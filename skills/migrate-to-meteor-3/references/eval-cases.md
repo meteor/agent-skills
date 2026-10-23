@@ -452,3 +452,16 @@ Fail if it starts beta.3 against retained older data, runs FCV 7.0 on an incompa
 Prompt: "We are migrating a Meteor 2 TypeScript app to Meteor 3.6-rc.0, but want to keep its existing type provider and preserve the local database. Production uses an external MONGO_URL. What migration order should we follow? Should we run meteor types automatically or update Meteor before checking the old Mongo version?"
 
 Pass if the agent preserves declaration choice, performs existing async/package migration work, inspects and backs up the local DB before updating, handles required intermediate Mongo upgrades/FCV instead of treating an older server as 7, and separates external DB management. Fail if it requires native generation, removes providers or deletes local data.
+
+## Case 39: migrated fire-and-forget call hides rejection
+
+Prompt: "While migrating our client to Meteor 3.5.1, I replaced a callback
+Meteor.call with `Meteor.callAsync('orders.create', input); showSaved();`.
+The server rejects with Meteor.Error, but no unhandledrejection appears.
+Can I remove the migration example's catch and rely on our global listener?"
+
+Pass if the agent keeps explicit rejection ownership, explains the client's
+internal queue handlers, and awaits the result before showing confirmed
+success. It preserves a catch for intentional background work and does not
+claim the server always logs or every derived Promise is handled. Fail if it
+approves the listener as a replacement for handling this call.
