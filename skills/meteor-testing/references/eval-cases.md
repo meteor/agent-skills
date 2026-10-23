@@ -17,6 +17,8 @@ Pass if the agent uses
 with a stubbed userId and awaits the Mongo result. Avoids
 `Meteor.call`/`callAsync` from the test (which goes over the wire and
 adds DDP overhead).
+Any example that can reach the browser uses a compatible assertion import
+and strict equality; a server guard alone does not isolate static imports.
 
 ## Case 3: publication test
 
@@ -28,6 +30,7 @@ Pass if the agent uses
 { userId: "u1" }, [])`, calls `.fetchAsync()` on the resolved cursor, and
 asserts on the returned `_id`s. The `await` is required so the test also
 works when the publication handler is async.
+Keep array comparison strict when using the portable `assert` import.
 
 ## Case 4: --full-app DDP test
 
@@ -211,3 +214,29 @@ Prompt: "On beta.3 our testModule maps client and legacy separately. meteor test
 Pass if the agent requires explicit legacy program selection with webArchOnly false/no exclusion, expected cases per program and actual engine tests; explains beta.1 lacks the complete separate-graph flow.
 
 Fail if it claims a modern headless pass or user-agent spoof alone proves old-engine compatibility, or promises beta.3 behavior on beta.1.
+
+## Case 23: shared Rspack test entry cannot resolve assert/strict
+
+Prompt: "On Meteor 3.5.1 with Rspack, meteor.testModule is 'tests/main.js'.
+The method test imports assert from 'node:assert/strict' and guards its suite
+with Meteor.isServer. The client build fails with Cannot find module
+'assert/strict' for matched aliased key 'assert'. Fix it without weakening
+assert.equal/assert.deepEqual checks or disabling browser tests."
+
+Pass if the agent uses `import assert from "assert"`, changes equality calls
+to `strictEqual`/`deepStrictEqual`, retains rejection assertions, and explains
+why shared static imports reach the client despite runtime guards. It checks
+both client and server execution and full-app mode if configured. Fail if it
+installs `assert/strict`, suppresses the client build, or retains coercive
+equality after changing the import.
+
+## Case 24: isolated server assertion import near miss
+
+Prompt: "Our Meteor 3.5.1 Rspack app maps meteor.testModule.client to
+'client/tests.js' and meteor.testModule.server to 'server/tests.js'. Only the
+server graph imports node:assert/strict, and both suites pass. Must we replace
+it because a shared Blaze test example uses assert?"
+
+Pass if the agent preserves the valid server import after checking no client
+entry reaches it. Fail if it bans Node assertions everywhere or suggests a
+runtime guard alone establishes server isolation.

@@ -3,7 +3,8 @@ name: meteor-debugging
 description: >
   Use when diagnosing an unexplained failure in a Meteor 3 application before
   the failing layer or fix is known. Triggers on server crashes, client-only
-  errors, stuck subscriptions, DDP or WebSocket disconnects, Minimongo/server
+  errors, Errors prevented startup, Meteor App - Error, stuck subscriptions,
+  DDP or WebSocket disconnects, Minimongo/server
   data mismatches, hanging or flaky tests, slow builds, --inspect, console.log,
   .only, Playwright traces, Instrumentation lifecycle events, or requests to debug a Meteor app. Use this skill
   when evidence must distinguish Meteor tool, server, client, data, test,

@@ -14,6 +14,27 @@ Meteor tool or bundler. Start with:
 3. `meteor run --verbose` for build output hidden by normal formatting.
 4. One profile or build-specific log source selected below.
 
+## Blaze compile errors in the browser
+
+During `meteor run`, the development proxy's `Meteor App - Error` page
+includes the tool log. A matching `=> Errors prevented startup:` message
+in the terminal identifies a build failure, even when first seen in the
+browser. Read its first file/line diagnostic before using browser tracing or
+changing Rspack configuration.
+
+| Compiler signature | First repair through `meteor-blaze` |
+|---|---|
+| `Reactive HTML attributes must either have a constant name` / `BLOCKOPEN is not allowed here` | Replace a block in a start tag with a named boolean attribute or one attribute-dictionary helper. |
+| `TRIPLE template tag is not allowed in an HTML attribute` | Use ordinary double-brace attribute interpolation. |
+| `Expected "li" end tag` | Close the list items explicitly. |
+| `Template can't be named "let"` | Rename the reserved template and its references. |
+
+Built-in blocks inside quoted attribute values are valid; literal `import`
+text inside `<pre><code>` is not an executed module import. Hand confirmed
+Spacebars errors to `meteor-blaze`; keep loader/configuration failures with
+the build owner. Verify startup and rendering after the template repair.
+Evidence: [development proxy error page](https://github.com/meteor/meteor/blob/4c94e92457c06cb73082a8d59908257bf6b518d1/tools/runners/run-proxy.js).
+
 ## Profile by Meteor release
 
 Meteor 3.0 and 3.1 use the earlier build timing output:
