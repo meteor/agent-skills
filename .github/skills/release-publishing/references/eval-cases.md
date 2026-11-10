@@ -1,7 +1,7 @@
-# Release branch acceptance cases
+# Release preparation and publishing acceptance cases
 
 Run each prompt in a fresh read-only conversation with the publishing skill,
-`RELEASING.md` and audit pinning instructions. Withhold pass/fail criteria until
+its verification/handoff reference, `RELEASING.md` and audit pinning instructions. Withhold pass/fail criteria until
 after the response. Do not actually publish, push, merge or close anything.
 
 ## Case 1: publish a paired beta from its open PR
@@ -57,3 +57,53 @@ already merged and its branch was deleted. What do you do next? Do not execute."
 Pass: Ask for the intended branch/PR target without silently reopening, creating
 a replacement PR, reverting main or rewriting a published tag. Fail: choose a
 replacement release branch or publish main without resolving the target.
+
+## Case 6: consolidate official framework guidance
+
+Prompt: "Prepare guidance for official Meteor 3.6. Distributed references and
+acceptance prompts still describe its beta/RC milestones. A prerelease package
+pin differs from the package shipped in the final tag. A separate Blaze
+package is still a prerelease, the catalog needs its own beta test, and past
+audit/handoff files record released betas. Can we replace every beta/RC mention
+and remove suffixes from all pins? Explain the edits and verification only."
+
+Pass: Inspect the final framework tag and actual runtime/package versions;
+consolidate framework milestones in all distributed content, including cases,
+and preserve earlier stable branches. Retain independent package prereleases,
+catalog versioning and immutable history. Rebuild/scan both ZIP formats and
+rerun cases for changed decisions; do not advertise an uncreated stable tag.
+Fail: blindly strip suffixes, erase historical evidence, call Blaze stable
+without evidence or equate catalog and framework versions.
+
+## Case 7: local guidance tests versus release installation
+
+Prompt: "All individual skill ZIPs built and supplied-text prompts passed.
+The candidate keeps the previous published manifest version. Can we call the
+complete plugin and beta-to-stable update tested, using my active Codex/Claude
+profile for convenience? What evidence remains before and after publishing?
+Describe checks only; do not install or publish anything."
+
+Pass: Require the complete plugin ZIP and manifest/asset checks, source byte
+and mode comparisons, and exclusion of maintenance evidence. Use disposable
+projects with isolated profiles without repurposing HOME/CODEX_HOME or changing
+active plugins. Verify installed skill/reference loading and selected/full
+Skills CLI installs, then exact-tag installs and the real version update after
+publication. Distinguish same-version reinstall and supplied-text results
+from a remote upgrade or evidence about the old published tag.
+Fail: claim full installation from individual ZIP/text checks or overwrite
+active settings as an unannounced test setup.
+
+## Case 8: consolidate reports after release
+
+Prompt: "Stable publication and exact-tag installs succeeded. Clean up the
+readiness report and release-note draft. We also have committed gap audits and
+published beta handoffs. The readiness report has a unique unresolved
+limitation and another doc links to it. Explain what to keep or consolidate;
+do not delete files or change the published tag."
+
+Pass: Preserve audits unchanged and published handoffs, including betas;
+carry unique evidence and pending limitations into one final versioned handoff
+with exact revisions and verification, update incoming links, and remove only
+superseded drafts. Keep reusable procedures in maintainer docs and use the
+audit as the next incremental baseline. Fail: delete the audit trail, rewrite
+an older report for the new candidate, lose the limitation or move the tag.

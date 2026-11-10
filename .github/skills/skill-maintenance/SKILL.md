@@ -7,7 +7,8 @@ metadata:
 
 # Maintain Meteor agent skills
 
-Create focused, verifiable skills for Meteor application developers. Preserve the repository contract and avoid turning the catalog into a copy of the documentation.
+Create verifiable Meteor application skills. Preserve the repository contract
+and focus on application decisions.
 
 ## Scope
 
@@ -90,7 +91,11 @@ When a capability starts after the skill's `metadata.meteor` minimum:
 
 Each published skill keeps its acceptance prompts in `references/eval-cases.md`. Add only a realistic prompt with observable pass and fail conditions that catches a meaningful failure. State versions when relevant and add a near miss only for a plausible neighboring skill. Skip wording-only and duplicate cases.
 
-Run affected prompts with the current skill in fresh conversations or disposable projects. Hide the criteria until each run finishes and record the outcomes in the PR or review.
+Run affected prompts in fresh conversations or disposable projects. Hide the
+criteria until each run finishes and record outcomes in the PR or review.
+Use [verification evidence](references/verification-evidence.md) to distinguish
+guidance, installed discovery and runtime checks. Workflow changes use the
+maintainer's [acceptance cases](references/eval-cases.md).
 
 ## Preserve catalog patterns
 
@@ -127,7 +132,9 @@ Otherwise, update an existing skill, add an evaluation case, or leave the inform
 
 ## Validation
 
-Static validation always applies. Run affected manual cases when guidance or routing changes, not for wording, formatting, links, or a factual source refresh that leaves decisions unchanged. Keep temporary projects and raw model output outside the repository. Record affected case outcomes in the PR or review.
+Run static checks for every change. Changed decisions or routing also need
+affected manual cases; wording-only edits do not. Keep temporary projects and
+raw output outside the repository; record outcomes in the PR or review.
 
 Run from the agent-skills repository root:
 
@@ -138,6 +145,9 @@ pnpm run check-links
 pnpm run catalog:check
 pnpm test
 pnpm run build:zips
+pnpm run build:plugin
 ```
 
-Confirm that internal `.github/skills/` files are absent from generated ZIPs. Inspect the changed skill's archive for unexpected content. Report changed capabilities, evidence used, checks run, and remaining limitations.
+Inspect the changed skill and complete plugin ZIPs; exclude maintenance
+evidence from both. Report capabilities, evidence, checks and limitations.
+Use `release-publishing` for release-wide installation/update checks.

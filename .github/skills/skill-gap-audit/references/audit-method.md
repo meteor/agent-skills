@@ -49,6 +49,36 @@ Use a release audit when the task targets the current or latest Meteor release:
 4. Use the changelog as a discovery index, not as complete proof. Verify its entries against the Git diff, current documentation, implementation, and tests.
 5. Include relevant user-facing changes omitted from the changelog.
 
+### Final tag, release branch and backports
+
+For an official release, record the exact tag, its peeled commit and the
+resolved release-branch head separately. Establish remote freshness through
+the caller's preparation workflow; this read-only audit does not fetch or
+switch branches. If the final tag is unavailable, identify the work as
+pre-publication and leave final shipped-version claims pending.
+
+Compare tag-to-branch changes before using branch documentation as evidence:
+
+| Difference | Treatment |
+|---|---|
+| Documentation-only correction after the tag | Verify it against tagged runtime/source and label the later docs revision. It can clarify shipped behavior without moving the runtime baseline. |
+| Runtime change after the tag | Treat as unshipped by that tag. Do not give the official release that behavior merely because its branch contains it. |
+| Unresolved tag/branch identity or unavailable evidence | Record uncertainty and obtain the exact revision through the caller; do not guess from the branch name or GitHub's latest-release label. |
+
+Before marking a capability as new in the target release, inspect relevant
+earlier stable tags, patch releases and independent package histories. Compare
+the specific behavior, not only the symbol or feature name. An earlier
+release may already have token validation or history-loss recovery while the
+target adds native-client compatibility, event splitting or tighter write
+coordination. State exactly which part changed and preserve the earlier
+branch for what it already supports.
+
+Record framework and resolved package versions independently. Prefer explicit
+release/package evidence for each floor; do not infer a floor from current
+`devel` docs or convert a framework version into a package pin. If release
+notes, package metadata and tagged code disagree, resolve the discrepancy or
+classify that floor as uncertain. Keep source remote URLs free of credentials.
+
 ### Incremental audit
 
 Use an incremental audit when a reviewed Meteor revision is known. Compare the supplied or recorded base with the target revision, defaulting the target to the current checked-out `HEAD`. Ask when the correct base is ambiguous.

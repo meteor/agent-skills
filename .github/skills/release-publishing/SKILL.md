@@ -94,18 +94,12 @@ only when this is a newly published paired tag and its remote installation tests
 otherwise the section must be omitted, not filled with `N/A`. Independent catalog
 releases never create that Meteor changelog section.
 
-Keep the Meteor changelog handoff concise and client-neutral. For a Meteor beta or RC,
-record the exact tested `vX.Y.Z-beta.N` release link and promote the generic
-`npx skills@latest add 'meteor/agent-skills#vX.Y.Z-beta.N'` installer. For an official
-Meteor release, use the same shape with the verified stable tag in both the link and
-command. Test the displayed npm command remotely and verify its installed files match
-the tag. Keep client-specific commands in this catalog's release notes. Link the
-changelog section to the official
-[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills) for further
-installation options.
-
-On a repeated `skills add`, selected existing skill directories are replaced and their
-`skills-lock.json` refs are updated; unselected installed skills remain in place.
+Use the concise client-neutral changelog shape in `RELEASING.md`: the verified
+release link and generic `npx skills@latest add 'meteor/agent-skills#<tag>'`
+command must use the same exact tag. Test that command remotely and compare
+installed files with the tag. Link to the official
+[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills); keep
+client-specific commands in the catalog's release notes.
 
 ## Prepare the version
 
@@ -128,15 +122,18 @@ repository tag identifies the complete catalog snapshot.
 
 ## Verify
 
-Run the checks in `RELEASING.md`. The tag workflow automatically rejects a tag
-that does not match both manifests.
+Run the checks in `RELEASING.md`. The tag workflow rejects a tag that does not
+match both manifests. Before publishing guidance for an official Meteor
+release, complete [stable consolidation](references/verification-and-handoff.md#stable-consolidation).
+For every release, use the same reference for complete-plugin packaging,
+isolated installation/update checks and post-publication report retention.
 
 Test from the working tree before making the repository public. After pushing a
 beta tag, repeat the Codex, Claude Code, and individual-skill installations
 from that exact tag.
 
-For branch-policy changes, run the affected
-[release acceptance cases](references/eval-cases.md) in read-only fresh conversations.
+For changes to release decisions, run the affected
+[acceptance cases](references/eval-cases.md) in read-only fresh conversations.
 
 ## Publish
 
