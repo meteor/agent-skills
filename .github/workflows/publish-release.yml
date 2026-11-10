@@ -57,3 +57,11 @@ jobs:
             dist/meteor-plugin.zip
           generate_release_notes: true
           prerelease: ${{ contains(github.ref_name, '-') }}
+
+  installation:
+    needs: release
+    permissions:
+      contents: read
+    uses: ./.github/workflows/install-smoke.yml
+    with:
+      tag: ${{ github.ref_name }}

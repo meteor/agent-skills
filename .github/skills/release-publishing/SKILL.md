@@ -95,7 +95,7 @@ otherwise the section must be omitted, not filled with `N/A`. Independent catalo
 releases never create that Meteor changelog section.
 
 Use the concise client-neutral changelog shape in `RELEASING.md`: the verified
-release link and generic `npx skills@latest add 'meteor/agent-skills#<tag>'`
+release link and generic `npx skills@1.5.18 add 'meteor/agent-skills#<tag>'`
 command must use the same exact tag. Test that command remotely and compare
 installed files with the tag. Link to the official
 [Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills); keep

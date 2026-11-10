@@ -64,7 +64,7 @@ function renderSkills(skills, repoSlug) {
       lines.push(`- **\`${s.frontmatter.name}\`**: ${tagline}`);
       lines.push("");
       lines.push("  ```bash");
-      lines.push(`  npx skills add ${repoSlug} --skill ${s.frontmatter.name}`);
+      lines.push(`  npx skills@1.5.18 add ${repoSlug} --skill ${s.frontmatter.name}`);
       lines.push("  ```");
       lines.push("");
     }
@@ -79,7 +79,7 @@ function renderBundles(bundles, repoSlug) {
     lines.push("");
     lines.push("```bash");
     lines.push(
-      `npx skills add ${repoSlug} ${skillNames
+      `npx skills@1.5.18 add ${repoSlug} ${skillNames
         .map((s) => "--skill " + s)
         .join(" ")}`,
     );
@@ -88,7 +88,7 @@ function renderBundles(bundles, repoSlug) {
     lines.push("Or via `bundles.json`:");
     lines.push("");
     lines.push("```bash");
-    lines.push(`npx skills add ${repoSlug} \\`);
+    lines.push(`npx skills@1.5.18 add ${repoSlug} \\`);
     lines.push(
       `  $(curl -sf https://raw.githubusercontent.com/${repoSlug}/main/bundles.json \\`,
     );

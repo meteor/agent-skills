@@ -81,8 +81,8 @@ or when the catalog release was independent; do not use an `N/A` placeholder.
 Keep the Meteor changelog entry concise and client-neutral. Record the exact tested
 `vX.Y.Z-beta.N` release link for a Meteor beta or RC, or the verified stable tag for an
 official release. Use the same tag in the generic npm command:
-`npx skills@latest add 'meteor/agent-skills#vX.Y.Z-beta.N'` or
-`npx skills@latest add 'meteor/agent-skills#vX.Y.Z'`. Test the displayed command
+`npx skills@1.5.18 add 'meteor/agent-skills#vX.Y.Z-beta.N'` or
+`npx skills@1.5.18 add 'meteor/agent-skills#vX.Y.Z'`. Test the displayed command
 remotely and verify that the installed files match the tag. Link the official
 [Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills), and keep
 client-specific commands in the Agent Skills release notes.
@@ -123,6 +123,47 @@ claude plugin validate .claude-plugin/plugin.json --strict
   with the stable catalog and confirm it preserves the accepted beta behavior.
 
 ## Test the plugin locally
+
+### Published installation smoke checks
+
+The `published-install` workflow runs on PRs, pushes to `main`, manual dispatch,
+and after the release workflow creates a GitHub release. PR/manual runs default
+to the most recently published catalog, including prereleases. Post-publication
+runs use that release's exact tag. An explicit missing tag fails rather than
+falling back to another version.
+
+Run the same check locally:
+
+```bash
+pnpm run test:install
+pnpm run test:install v1.1.0-beta.4
+node scripts/smoke-install.mjs v1.1.0-beta.4 --installer latest
+```
+
+The script uses disposable projects and a fresh npm cache. It defaults to the
+documented compatible installer, `skills@1.5.18`. CI runs it directly on
+Meteor 3.0's Node 20.15.1, the reported Node 20.16.0 shell, Meteor 3.1's Node
+22.11.0, and the Node 24/26 lines. A separate Node 22.20.0 job tracks
+`skills@latest`. The compatible jobs must not substitute a newer runtime.
+These are installation environments, not new requirements for Meteor apps.
+
+Skills CLI 1.5.18's `--all` also includes internal maintainer skills and selects
+all agents. The public full-catalog check uses `--agent codex --copy --yes`
+without a skill selector. Keep generated README and bundle commands on the
+tested installer pin, and verify any replacement before changing it.
+
+Checks include selected installation, selected-file refresh with unselected
+content preserved, and all published skills. Installed inventories, file bytes
+and executable modes must match the actual tag; maintainer skills must remain
+absent. Both plugin manifests must match the tag, and all expected ZIP assets
+must be present. CI records the tag, commit, installer, Node and npm versions.
+
+This job tests public Skills CLI distribution, not the PR's untagged skill
+content. Plugin-client discovery, model behavior, platform-specific installs
+and downloaded ZIP byte comparisons remain separate release checks. `@latest`
+can change between runs; a green run verifies the recorded installer version.
+
+### Working-tree plugin checks
 
 Test Claude Code directly from the working tree while iterating:
 

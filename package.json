@@ -17,6 +17,7 @@
     "catalog:check": "node scripts/generate-catalog.mjs --check",
     "release:bump": "node .github/skills/release-publishing/scripts/plugin-version.mjs",
     "test": "rstest run",
+    "test:install": "node scripts/smoke-install.mjs",
     "build:plugin": "node scripts/build-plugin.mjs"
   },
   "devDependencies": {

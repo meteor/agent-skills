@@ -61,6 +61,18 @@ path rather than silently changing the user's active plugins.
    An unpublished working tree with an old manifest version is not evidence
    about that previously published version.
 
+Use `node scripts/smoke-install.mjs <tag>` from the repository root for the
+isolated public Skills CLI checks, or omit the tag to select the latest
+publication including betas. The PR and post-publication workflows run this
+script. Record the shell's Node/npm versions as well as the installer version.
+Test the documented compatible installer directly on Meteor 3.0's Node 20.15.1
+and later Meteor Node generations. Keep `skills@latest` checks separate:
+its runtime requirements must not become a new application requirement.
+Use `--agent codex --copy --yes` without a skill selector for the full catalog;
+the compatible installer's `--all` includes internal maintainer skills. See
+[published installation smoke checks](../../../../RELEASING.md#published-installation-smoke-checks)
+for scope; this CI job does not replace client discovery or behavior checks.
+
 ## Retain release evidence
 
 After the release and exact-tag installation checks succeed, consolidate

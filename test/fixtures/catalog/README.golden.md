@@ -8,7 +8,7 @@ Preamble that the generator must not touch.
 - **`meteor-bar`**: Fixture tagline for the catalog generator (bar).
 
   ```bash
-  npx skills add meteor/agent-skills --skill meteor-bar
+  npx skills@1.5.18 add meteor/agent-skills --skill meteor-bar
   ```
 
 ### Data
@@ -16,7 +16,7 @@ Preamble that the generator must not touch.
 - **`meteor-foo`**: Fixture tagline for the catalog generator (foo).
 
   ```bash
-  npx skills add meteor/agent-skills --skill meteor-foo
+  npx skills@1.5.18 add meteor/agent-skills --skill meteor-foo
   ```
 <!-- SKILLS:END -->
 
@@ -24,13 +24,13 @@ Preamble that the generator must not touch.
 ### `essentials`
 
 ```bash
-npx skills add meteor/agent-skills --skill meteor-foo
+npx skills@1.5.18 add meteor/agent-skills --skill meteor-foo
 ```
 
 Or via `bundles.json`:
 
 ```bash
-npx skills add meteor/agent-skills \
+npx skills@1.5.18 add meteor/agent-skills \
   $(curl -sf https://raw.githubusercontent.com/meteor/agent-skills/main/bundles.json \
     | jq -r '.bundles["essentials"] | map("--skill " + .) | join(" ")')
 ```
