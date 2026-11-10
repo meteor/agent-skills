@@ -1,5 +1,7 @@
 # meteor/agent-skills
 
+[![Meteor AI Skills: official skills for your AI agent, with Codex and Claude Code support](./assets/meteor-ai-skills-banner.png)](#install)
+
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
 > Status: beta. Seventeen Meteor 3 skills are available in the current catalog.
