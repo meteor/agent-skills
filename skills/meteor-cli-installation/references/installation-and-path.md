@@ -12,7 +12,7 @@ Check the host before selecting a command:
 | Existing executable | Run `meteor --version`. Do not reinstall only to replace a project-specific release. |
 
 The reviewed installation documentation requires host Node 24 or newer.
-Meteor 3.6-rc.0 bundles Node 26.10.0 separately; that does not raise the installer's
+Meteor 3.6 bundles Node 26.13.0 separately; that does not raise the installer's
 host prerequisite to 26.
 Earlier Meteor 3 installers can have earlier host requirements. Preserve the
 selected release when the user supplied one instead of silently choosing the
@@ -20,7 +20,7 @@ latest installer.
 
 ## Install
 
-For Meteor 3.6-beta.3 or 3.6-rc.0's bundled MongoDB 8, also check
+For Meteor 3.6's bundled MongoDB 8, also check
 [local database platform requirements](local-database-upgrade.md#bundled-mongodb-host-requirements).
 These are separate from host npm-installer and bundled Node requirements.
 

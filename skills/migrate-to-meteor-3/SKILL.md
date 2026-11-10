@@ -31,7 +31,7 @@ in phases. Do not flip the framework version flag first.
 
 ## Recommended strategy
 
-For 3.6-beta.3 or 3.6-rc.0, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
+For Meteor 3.6, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
 under the previous release before updating.
 
 1. Update the project to the latest 2.x release.
@@ -69,7 +69,7 @@ under the previous release before updating.
    `references/other-breaking-changes.md`.
 10. For TypeScript projects, inspect the target release and existing declaration
     provider. Keep working `@types/meteor` or `zodern:types` setups. Meteor
-    3.6-beta.1 adds explicit native opt-in through `meteor types`; earlier
+    3.6 adds explicit native opt-in through `meteor types`; earlier
     releases retain the legacy workflow. See
     `references/typescript-migration.md`, then use `meteor-typescript` for
     provider changes and checking.

@@ -50,7 +50,7 @@ installer permanently to global npm packages.
      `.meteor/release`.
    Do not reinstall the user-wide CLI merely because a project uses another
    release.
-   Before selecting Meteor 3.6-beta.3 or 3.6-rc.0 for existing local data, read
+   Before selecting Meteor 3.6 for existing local data, read
    [local database preparation](references/local-database-upgrade.md).
    Its bundled MongoDB 8 requires host checks and MongoDB 7 FCV preparation
    under the previous release before the new release starts.

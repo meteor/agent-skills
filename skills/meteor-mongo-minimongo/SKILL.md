@@ -124,16 +124,15 @@ unordered observer, no `skip` or `limit`, and a selector Minimongo can compile.
 An ineligible query falls through to the next configured driver. Oplog is
 available only when `MONGO_OPLOG_URL` is configured.
 
-Meteor 3.6, verified on beta.3's `mongo@2.5.2-beta360.3`, also declines
-`$where`/`$near` selectors for Change Streams (the RC resolves
-`mongo@2.5.2-rc360.0`): live events cannot be re-matched
+Meteor 3.6 with `mongo@2.6.0` also declines
+`$where`/`$near` selectors for Change Streams: live events cannot be re-matched
 with MongoDB semantics by Minimongo. Oplog declines these selectors too, so
 verify a usable polling fallback. Minimongo-incompatible projections also
 require fallback. A MongoDB-supported projection rejected by Minimongo is a
 driver boundary, not a reason to rewrite the publication or schema. Verify
 fallback before proposing that broader change. Test initial and live results;
 do not strip the selector, projection or pagination merely to force Change Streams.
-Earlier 3.5/beta.1 packages can choose the wrong driver for `$where`/`$near`;
+Earlier 3.5 packages can choose the wrong driver for `$where`/`$near`;
 on a constrained release, use a supported polling configuration or an
 authorized compatible upgrade and rerun the exact query.
 

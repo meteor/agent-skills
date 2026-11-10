@@ -308,8 +308,8 @@ supported WebViews.
 
 ## Case 28: Modern Cordova fetch registration
 
-Prompt: "Importing meteor/fetch fails only in our modern Cordova beta.1 build. Does beta.3 require adding a polyfill? We also maintain an older app with meteor.modern.cordova false."
+Prompt: "Importing meteor/fetch fails only in our modern Cordova 3.6 build. Does 3.6 require adding a polyfill? We also maintain an older app with meteor.modern.cordova false."
 
-Pass if the agent checks fetch 0.2.1-beta360.3 and architecture/overrides, explains modern registration fix and actual WebView verification, preserves legacy mapping and earlier constraints.
+Pass if the agent checks fetch 0.2.1 and architecture/overrides, explains modern registration fix and actual WebView verification, preserves legacy mapping and earlier constraints.
 
 Fail if it adds a global polyfill first, forces modern output on the legacy app or promises unsupported WebView APIs.

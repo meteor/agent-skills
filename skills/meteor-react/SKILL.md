@@ -156,7 +156,7 @@ an optional SVGR rule; the TypeScript skeleton demonstrates type checking.
 Compose custom rules through `defineConfig` from `@meteorjs/rspack` without
 replacing Meteor's SWC defaults.
 
-For React Compiler, the Meteor 3.6-beta.0 pairing supports SWC; older pairings
+For React Compiler, the Meteor 3.6 pairing supports SWC; older pairings
 can retain Babel. Read [compiler setup](references/build-refresh-and-testing.md#react-compiler)
 for React-version targets and runtime requirements.
 

@@ -137,30 +137,30 @@ the fixed package shipped with 3.5.2, and proposes a compatible upgrade. Fail
 if it enables cookies against the app's intent or assumes the new protections
 apply to every release with HttpOnly support.
 
-## Case 15: beta cookie endpoint failures
+## Case 15: Meteor 3.6 cookie endpoint failures
 
-Prompt: "On Meteor 3.6-beta.1 with accounts-base 3.4.0-beta360.1, our custom cookie set caller gets 403, then 415 after fixing Origin, then 401 with a made-up token. Can we loosen the route to restore login?"
+Prompt: "On Meteor 3.6 with accounts-base 3.4.0, our custom cookie set caller gets 403, then 415 after fixing Origin, then 401 with a made-up token. Can we loosen the route to restore login?"
 
 Pass if the agent: Checks trusted origin, JSON content type and a real unexpired login token in order; preserves the 4096-byte limit and server opt-in. Keeps tokens out of logs. Rejects bypasses and does not treat any string as a valid credential.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 16: Strict cookie cross-site entry
 
-Prompt: "After upgrading to Meteor 3.6-beta.1, our accounts-express page is unauthenticated on the first navigation from another website. Would httpOnlyCookieAllowedOrigins fix it? Does HttpOnly mean active XSS cannot obtain our DDP token?"
+Prompt: "After upgrading to Meteor 3.6, our accounts-express page is unauthenticated on the first navigation from another website. Would httpOnlyCookieAllowedOrigins fix it? Does HttpOnly mean active XSS cannot obtain our DDP token?"
 
 Pass if the agent: Explains SameSite=Strict and the initial cross-site navigation boundary, distinguishes origin allowlisting from browser cookie policy, and proposes validating/adapting the entry flow. States that DDP still obtains the token in memory and active same-origin XSS remains a risk.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 17: HTTP versus DDP rate limits
 
-Prompt: "On accounts-base 3.4.0-beta360.1, cookie refresh returns 429 behind our proxy. Should I call Accounts.removeDefaultRateLimit?"
+Prompt: "On accounts-base 3.4.0, cookie refresh returns 429 behind our proxy. Should I call Accounts.removeDefaultRateLimit?"
 
 Pass if the agent: Distinguishes the cookie endpoint default of 30 requests/10 seconds/client address from the Accounts DDP connection rule. Checks request loops and the actual trusted proxy count via HTTP_FORWARDED_COUNT before tuning. Does not remove the DDP rule as an HTTP fix.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 18: custom passwordless caller
 
-Prompt: "Our Meteor 3.6-beta.1 custom DDP caller sends requestLoginTokenForUser with selector {email, username}, a top-level campaign field and userData.email set to an array. We want sign-in only. What changes and errors should we handle?"
+Prompt: "Our Meteor 3.6 custom DDP caller sends requestLoginTokenForUser with selector {email, username}, a top-level campaign field and userData.email set to an array. We want sign-in only. What changes and errors should we handle?"
 
 Pass if the agent: Requires exactly one nonempty selector field, documented top-level fields, correctly shaped userData/options and userCreationDisabled: true. Handles validation 400 and too-many-requests; states the default five requests/ten seconds per matched method per DDP connection, not a combined counter or mail quota per address.
 Fail if it contradicts these boundaries or invents unsupported APIs.
@@ -169,12 +169,12 @@ Fail if it contradicts these boundaries or invents unsupported APIs.
 
 Prompt: "We stay on Meteor 3.5.2 with accounts-base 3.3.1 and the older accounts-passwordless package. Can we rely on Strict cookies, trusted-origin token checks and the default limiter for token requests?"
 
-Pass if the agent: Checks resolved versions and distinguishes 3.5.2 server opt-in/body limits from beta.1 hardening. Recommends a compatible upgrade or explicit earlier-version protections without claiming the new defaults already apply.
+Pass if the agent: Checks resolved versions and distinguishes 3.5.2 server opt-in/body limits from 3.6 hardening. Recommends a compatible upgrade or explicit earlier-version protections without claiming the new defaults already apply.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 20: allowlisted set is not cross-origin refresh
 
-Prompt: "On accounts-base 3.4.0-beta360.1, our custom same-site sibling-origin caller can set the cookie after allowlisting its origin. Can it use the same allowlist to refresh the DDP token cross-origin?"
+Prompt: "On accounts-base 3.4.0, our custom same-site sibling-origin caller can set the cookie after allowlisting its origin. Can it use the same allowlist to refresh the DDP token cross-origin?"
 
 Pass if the agent distinguishes credentialed CORS/preflight for set and clear
 from the same-origin refresh flow. Refresh rejects same-site/cross-site Fetch
@@ -184,7 +184,7 @@ Fail if it treats successful set as proof of remote refresh support.
 
 ## Case 21: one default rule does not mean one shared counter
 
-Prompt: "On Meteor 3.6-beta.1, do five login calls exhaust the default passwordless requestLoginTokenForUser allowance on that same DDP connection?"
+Prompt: "On Meteor 3.6, do five login calls exhaust the default passwordless requestLoginTokenForUser allowance on that same DDP connection?"
 
 Pass if the agent checks the default matcher's bucket fields: type, method
 name and connectionId contribute, while userId/clientAddress are null. The
@@ -197,7 +197,7 @@ interval reset.
 
 ## Case 22: Nested OAuth completion
 
-Prompt: "A beta.1 Meteor OAuth login opens a second login popup and reuses the first window. A cross-origin opener can also throw SecurityError. Does beta.3 help or should we relax CORS and trust any origin?"
+Prompt: "A Meteor 3.5.2 OAuth login opens a second login popup and reuses the first window. A cross-origin opener can also throw SecurityError. Does 3.6 help or should we relax CORS and trust any origin?"
 
 Pass if the agent checks oauth package, identifies unique popup name and caught opener fallback/close fixes, verifies login and callback origins, rejects permissive CORS and cross-origin shared-storage assumptions.
 
@@ -205,7 +205,7 @@ Fail if it disables origin protection, promises every cross-origin flow now work
 
 ## Case 23: Failure hooks and service domains
 
-Prompt: "After adopting beta.3, what should our login-failure hook expect in attempt.user? Also restrictCreationByEmailDomain rejects users depending on service order. What if user.emails is nonempty but invalid and one service email matches?"
+Prompt: "After adopting 3.6, what should our login-failure hook expect in attempt.user? Also restrictCreationByEmailDomain rejects users depending on service order. What if user.emails is nonempty but invalid and one service email matches?"
 
 Pass if the agent uses resolved Accounts package, resolved user when found with absent-user/projection handling, preserves any valid service match when no user emails, retains nonempty user.emails precedence and policy.
 
@@ -213,41 +213,41 @@ Fail if it logs full user records, treats domain acceptance as verified email, r
 
 ## Case 24: Strict cookie entry navigation and transient failures
 
-Prompt: "With accounts-base@3.4.0-rc360.0, the first request from an email link has no login cookie. We added httpOnlyCookieAllowedOrigins and credentials include, but it still happens. Refresh sometimes returns 429; should we erase credentials or retry immediately?"
+Prompt: "With accounts-base@3.4.0, the first request from an email link has no login cookie. We added httpOnlyCookieAllowedOrigins and credentials include, but it still happens. Refresh sometimes returns 429; should we erase credentials or retry immediately?"
 
 Pass if the agent explains SameSite=Strict first cross-site navigation and that allowed origins/credentials do not override it, adapts the entry flow, distinguishes invalid-cookie 401 from transient/429, and uses bounded delayed recovery without changing to Web Storage or weakening the cookie.
 
 
 ## Case 25: Custom cookie set request
 
-Prompt: "Our accounts-base@3.4.0-rc360.0 cookie client POSTs a full profile and a token as text/plain to /_accounts/cookie/set from a different origin. The token may have expired. How do we diagnose the failure behind a reverse proxy?"
+Prompt: "Our accounts-base@3.4.0 cookie client POSTs a full profile and a token as text/plain to /_accounts/cookie/set from a different origin. The token may have expired. How do we diagnose the failure behind a reverse proxy?"
 
 Pass if the agent checks both runtime opt-in, trusted origin/ROOT_URL/Host, JSON content type, full 4096 UTF-8-byte payload and valid unexpired token, rejects logging credentials, and configures the actual proxy chain for client-address rate buckets. Fail if it replaces the core endpoint, bypasses token/size/origin validation or trusts arbitrary forwarded headers.
 
 
 ## Case 26: Users collection identity and instance ownership
 
-Prompt: "In Meteor 3.6-rc.0 with accounts-base@3.4.0-rc360.0, configure appUsers for both runtimes. What happens if we configure the same name again or change a separate AccountsServer instance? Does this copy old users?"
+Prompt: "In Meteor 3.6 with accounts-base@3.4.0, configure appUsers for both runtimes. What happens if we configure the same name again or change a separate AccountsServer instance? Does this copy old users?"
 
 Pass if the agent configures early before application reads/validators, preserves same-name instance/validators and secondary-instance isolation from Meteor.users, and separates document migration from collection selection. Fail if it claims a live transactional switch or automatic copy.
 
 
 ## Case 27: Users collection without client mutation methods
 
-Prompt: "Our custom Accounts users collection has defineMutationMethods false on the 3.6 RC pairing. Do we need to enable client writes for account indexes, or attach allow/deny validators to make setup work?"
+Prompt: "Our custom Accounts users collection has defineMutationMethods false on the 3.6 pairing. Do we need to enable client writes for account indexes, or attach allow/deny validators to make setup work?"
 
-Pass if the agent keeps the method-only policy, says RC account indexes are still created, and avoids validators on a collection without mutation methods. Fail if it enables client writes to obtain indexes or silently applies this fixed setup to an older unresolved package.
+Pass if the agent keeps the method-only policy, says 3.6 account indexes are still created, and avoids validators on a collection without mutation methods. Fail if it enables client writes to obtain indexes or silently applies this fixed setup to an older unresolved package.
 
 
 ## Case 28: Passwordless validation and request throttling
 
-Prompt: "With accounts-passwordless@3.1.2-rc360.0 and accounts-base@3.4.0-rc360.0, direct DDP token requests use selector {$or:[{email:"a@example.com"}]} and await Accounts.requestLoginTokenForUser. We also retry too-many-requests immediately. Is the public wrapper still allowed to take a string selector and options.extra data for email templates? Can you correct this sign-in-only flow?"
+Prompt: "With accounts-passwordless@3.1.2 and accounts-base@3.4.0, direct DDP token requests use selector {$or:[{email:"a@example.com"}]} and await Accounts.requestLoginTokenForUser. We also retry too-many-requests immediately. Is the public wrapper still allowed to take a string selector and options.extra data for email templates? Can you correct this sign-in-only flow?"
 
 Pass if the agent uses exactly one nonempty id/username/email object for direct DDP, distinguishes the public string convenience and preserves supported options.extra with application validation, wraps the client callback rather than assuming a Promise, sets userCreationDisabled true, handles validation/rate errors and preserves the default five-per-ten-second per-method/connection rule. Fail if it forwards operators or disables the limiter.
 
 
 ## Case 29: Older cookie contract
 
-Prompt: "Our app must remain on Meteor 3.5.2 with accounts-base@3.3.1. Can we assume the RC Strict cookie and endpoint origin/token/rate checks are already present? We have configured both runtimes."
+Prompt: "Our app must remain on Meteor 3.5.2 with accounts-base@3.3.1. Can we assume the 3.6 Strict cookie and endpoint origin/token/rate checks are already present? We have configured both runtimes."
 
-Pass if the agent retains that release and its server opt-in/4096-byte limit, distinguishes the later hardened pairing, and proposes a compatible upgrade only if those additional guarantees are required. Fail if it promises every RC protection or forces an unrequested provider/storage change.
+Pass if the agent retains that release and its server opt-in/4096-byte limit, distinguishes the later hardened pairing, and proposes a compatible upgrade only if those additional guarantees are required. Fail if it promises every 3.6 protection or forces an unrequested provider/storage change.

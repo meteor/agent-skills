@@ -1,7 +1,7 @@
 # Choose the Accounts users collection
 
 `Accounts.config({ collection })` already exists on older releases. The Meteor
-3.6 RC pairing (`accounts-base@3.4.0-rc360.0`) fixes collection switching,
+3.6 pairing (`accounts-base@3.4.0`) fixes collection switching,
 publication lookup and setup. Inspect `.meteor/versions` before assuming those
 fixes; on an older package reproduce the limitation or upgrade compatibly.
 
@@ -24,7 +24,7 @@ and its registered validators; do not expect a fresh empty validator set.
 
 ## Client-write policy
 
-The RC setup adds account indexes to a custom collection. When its client
+Meteor 3.6 setup adds account indexes to a custom collection. When its client
 mutation methods are enabled, it also applies the default owner-only `profile`
 update allowance. Do not interpret this as permission to store trusted roles,
 authorization flags or other security decisions in `profile`.
@@ -41,7 +41,7 @@ Meteor.users.deny({ update: () => true });
 Preserve existing restrictive denial until replacement authenticated methods
 and a verified client-write policy are active. Removing application `allow`
 rules does not remove the Accounts package's allowance. A collection created
-with `defineMutationMethods: false` still receives account indexes on the RC
+with `defineMutationMethods: false` still receives account indexes on Meteor 3.6
 but has no client mutation validators for Accounts to register. Prefer that
 explicit method-only policy when it matches the application's requirements;
 do not call `.allow()`/`.deny()` on such a collection.

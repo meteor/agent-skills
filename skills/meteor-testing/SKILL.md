@@ -76,7 +76,7 @@ Test-mode conventions:
   `*.app-spec[s].*` files, and sets `Meteor.isAppTest`.
 
 For Meteor 3.5.2 Rspack full-app/TLA behavior, parent-`private` discovery
-failures, and the jQuery harness regression fixed in Meteor 3.6-beta.0, read
+failures, and the jQuery harness regression fixed in Meteor 3.6, read
 [release-specific test setup](references/meteor-3.5.2-testing.md). Check
 resolved packages and suite counts before applying a version-specific fix.
 
@@ -89,7 +89,7 @@ narrowing entrypoint imports. Restore every temporary focus or import change,
 then run the normal affected suite. Read the configured entrypoint paths from
 the project; do not invent paths, scripts, ports, or helpers.
 
-For 3.6-beta.3 Rspack ignore exceptions or separate legacy test entries, use
+For Meteor 3.6 Rspack ignore exceptions or separate legacy test entries, use
 the [architecture and ignore boundaries](references/focused-runs.md#rspack-architecture-and-ignore-boundaries).
 Check expected suites on each selected program; a modern zero-exit run is
 not proof of legacy coverage.

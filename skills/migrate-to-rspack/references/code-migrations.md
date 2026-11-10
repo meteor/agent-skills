@@ -24,12 +24,12 @@ Loading order belongs in the entry file. Imports cascade from there. See
 
 ### Architecture preservation
 
-On the 3.6-beta.3 pairing, preserve explicit `legacy`, `web.browser`,
+On the 3.6 pairing, preserve explicit `legacy`, `web.browser`,
 `web.browser.legacy` and `web.cordova` entries and matching test entries.
 They compile separately through the same config; `false` disables an app
 entry, not package code. Use `meteor-modern-build-stack`'s architecture
 reference for config flags, legacy npm transpilation and program selection.
-Beta.0/beta.1 and earlier integrations lack this complete flow. Do not collapse
+Earlier Meteor integrations lack this complete flow. Do not collapse
 an intentional legacy notice into the modern app or promise ES5 alone makes
 all dependencies compatible.
 

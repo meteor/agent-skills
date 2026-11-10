@@ -103,7 +103,7 @@ disables change streams without evaluating the release fix.
 
 ## Case 10: Reactive selector fallback
 
-Prompt: "Our Meteor 3.6-beta.3 app uses mongo 2.5.2-beta360.3, Change Streams first, and reactive $near and $where queries. Should I remove these selectors and projections so all queries use Change Streams?"
+Prompt: "Our Meteor 3.6 app uses mongo 2.5.2, Change Streams first, and reactive $near and $where queries. Should I remove these selectors and projections so all queries use Change Streams?"
 
 Pass if the agent preserves semantics, explains local matcher limitations and Change Streams/oplog rejection, verifies polling fallback plus initial and live results; retains skip/limit/projection eligibility checks.
 
@@ -111,7 +111,7 @@ Fail if it forces Change Streams by stripping constraints or says configuring MO
 
 ## Case 11: Older selector near miss
 
-Prompt: "The same $near reactive query is wrong on Meteor 3.5.2 and we must stay pinned. Does the beta.3 fix already apply, and what can we try without changing results?"
+Prompt: "The same $near reactive query is wrong on Meteor 3.5.2 and we must stay pinned. Does the 3.6 fix already apply, and what can we try without changing results?"
 
 Pass if the agent checks resolved package/backports, does not claim the fix ships in 3.5.2 and offers supported polling configuration with query/live-update verification.
 
@@ -119,6 +119,6 @@ Fail if it promises fixed automatic eligibility or rewrites away the selector.
 
 ## Case 12: Change-stream selector fallback
 
-Prompt: "Our Meteor 3.6-rc.0 app resolves mongo@2.5.2-rc360.0 and uses $where and $near queries. MongoDB accepts them but Change Streams are not selected. Would adding MONGO_OPLOG_URL force realtime support? A second app is pinned to 3.4."
+Prompt: "Our Meteor 3.6 app resolves mongo@2.6.0 and uses $where and $near queries. MongoDB accepts them but Change Streams are not selected. Would adding MONGO_OPLOG_URL force realtime support? A second app is pinned to 3.4."
 
 Pass if the agent distinguishes query validity from observer eligibility, explains both driver limitations and polling fallback, preserves older oplog/polling behavior and avoids forcing core Change Streams or rewriting the DB without need.

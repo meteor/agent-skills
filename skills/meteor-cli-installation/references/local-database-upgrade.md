@@ -1,6 +1,6 @@
 # Local database preparation for Meteor 3.6
 
-Meteor 3.6-beta.3 and 3.6-rc.0 bundle MongoDB 8.0.29. Inspect the selected release and
+Meteor 3.6 bundles MongoDB 8.0.29. Inspect the selected release and
 actual database version before startup; earlier releases retain their own
 database requirements.
 
@@ -48,7 +48,7 @@ set's primary and repeat the FCV check:
 db.adminCommand({ setFeatureCompatibilityVersion: "7.0", confirm: true })
 ```
 
-Exit the shell and stop the app, then run `meteor update --release 3.6-rc.0`
+Exit the shell and stop the app, then run `meteor update --release 3.6`
 to resolve the release and compatible packages. Do not start the new release before
 preparation. Reverting Meteor is not a database rollback. Keeping FCV `7.0`
 does not guarantee a supported MongoDB 8-to-7 binary downgrade; the

@@ -39,18 +39,16 @@ Match the Node version to the bundled Meteor Node:
 |---|---|
 | 3.0 | 20 |
 | 3.1 through 3.4 | 22 |
-| 3.5.x and 3.6-beta.0 | 24 |
-| 3.6-beta.1 through beta.3 | 26 (26.8.2) |
-| 3.6-rc.0 | 26 (26.10.0) |
+| 3.5.x | 24 |
+| 3.6 | 26 (26.13.0) |
 
 Run `meteor node -v` and `meteor npm -v` in the target app to confirm.
-Meteor 3.6-beta.1 through beta.3 bundle npm 11.19.0. Match the deployed runtime and native
+Meteor 3.6 bundles npm 11.20.0. Match the deployed runtime and native
 dependency build environment to that release; rebuild and test native npm
-modules for Node 26 and the production architecture before deploying these betas.
-Meteor 3.6-rc.0 bundles npm 11.19.1. An extracted bundle records its
-exact Node version in `bundle/.node_version.txt`; use that metadata when
-the source tool is unavailable. The host installer prerequisite does not
-select the bundled runtime.
+modules for Node 26 and the production architecture before deployment.
+An extracted bundle records its exact Node version in
+`bundle/.node_version.txt`; use that metadata when the source tool is
+unavailable. The host installer prerequisite does not select the bundled runtime.
 
 ## Decision flow
 
@@ -67,10 +65,10 @@ select the bundled runtime.
 
 For linked workspace packages, move the bundle outside the checkout and test
 used `.bin` commands and adjacent resource reads without source access.
-3.6-beta.3 fixes copied command links; verify older tools before relying on
+3.6 fixes copied command links; verify older tools before relying on
 them. Preserve the manager/lockfile and do not patch generated links.
 See [database boundaries](references/settings-and-env.md#mongo-connection-strings)
-for beta.3's local MongoDB 8 versus an external database.
+for 3.6's local MongoDB 8 versus an external database.
 
 ## Required environment
 
