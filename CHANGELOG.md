@@ -32,7 +32,7 @@ Meteor 3.6. Catalog and framework versions remain independent.
 - Build a complete plugin ZIP alongside the 17 individual skill archives,
   including shared Meteor artwork and both marketplace formats.
 - Record implementation and release gates in the
-  [first stable readiness report](docs/releases/first-stable-readiness-2026-11-10.md).
+  [first stable readiness report](https://github.com/meteor/agent-skills/blob/b163fc9ecc06e4c56a86ea7693b68e4d2da6eea9/docs/releases/first-stable-readiness-2026-11-10.md).
 - Preserve the final candidate audit and record exact-tag installation results
   in the [beta.4 handoff](docs/releases/v1.1.0-beta.4.md).
 - Update maintainer workflows for final-tag audits, stable consolidation,
