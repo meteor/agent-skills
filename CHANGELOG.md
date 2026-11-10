@@ -2,6 +2,22 @@
 
 ## Unreleased
 
+## 1.1.0 - 2026-11-10
+
+First stable release of the 17-skill Meteor catalog, with guidance for official
+Meteor 3.6 and explicit compatibility with earlier supported Meteor versions.
+
+- Promote the tested beta.4 skills without changing their guidance.
+- Cover application setup, migrations, React and Blaze, reactive data,
+  Accounts, security, testing, deployment, native apps and TypeScript.
+- Distribute the complete Codex/Claude Code plugin and 17 individual skill ZIPs.
+- Use the standard `npx skills add` command with the installer's Node 22.20.0+
+  requirement and a separate fallback for older Meteor Node runtimes.
+- Verify published installations and selected updates in public CI across
+  the documented installer/runtime combinations.
+- Preserve source audits and release verification in the
+  [stable handoff](docs/releases/v1.1.0.md).
+
 ## 1.1.0-beta.4 - 2026-11-10
 
 Installation-test beta for the first stable catalog, with guidance for official
