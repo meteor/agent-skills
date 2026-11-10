@@ -110,7 +110,7 @@ claude plugin validate .claude-plugin/plugin.json --strict
 - Compare extracted files with the tagged sources, including executable script
   modes. `build:plugin` uses fixed timestamps and ordering for reproducible ZIPs.
 - Directory submission is separate from repository distribution. Review the
-  listing in `docs/releases/first-stable-release-notes.md` and the artwork
+  [listing draft](docs/releases/v1.1.0.md#directory-listing-draft) and the artwork
   provenance in `assets/README.md`. Obtain an approved original at the required
   directory dimensions before submitting; the repository icon is 298 x 298.
 - Validate the Codex manifest with the current plugin-creator validator.

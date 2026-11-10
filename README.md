@@ -4,14 +4,14 @@
 
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
-> Status: beta. Seventeen Meteor 3 skills are available in the current catalog.
+> Status: stable. Seventeen Meteor 3 skills are available in the current catalog.
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-[Version 1.1.0-beta.4](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.4)
+[Version 1.1.0](https://github.com/meteor/agent-skills/releases/tag/v1.1.0)
 consolidates guidance around official Meteor 3.6, including MongoDB recovery,
 Accounts, deployment and native TypeScript. Earlier Meteor 3 compatibility
-branches remain explicit. See the [verification handoff](./docs/releases/v1.1.0-beta.4.md).
+branches remain explicit. See the [verification handoff](./docs/releases/v1.1.0.md).
 
 ## Install
 
@@ -28,11 +28,11 @@ codex plugin marketplace add meteor/agent-skills
 codex plugin add meteor@meteor
 ```
 
-To test a specific prerelease, pin the marketplace checkout to its repository
-tag before installing:
+To install the official release, pin the marketplace checkout to its
+repository tag:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.4
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0
 codex plugin add meteor@meteor
 ```
 
@@ -45,11 +45,11 @@ claude plugin marketplace add meteor/agent-skills
 claude plugin install meteor@meteor
 ```
 
-To test a specific prerelease, append its repository tag to the marketplace
+To install the official release, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.0-beta.4
+claude plugin marketplace add meteor/agent-skills#v1.1.0
 claude plugin install meteor@meteor
 ```
 
@@ -71,10 +71,10 @@ Run this from your project directory to select skills from the default branch:
 npx skills add meteor/agent-skills
 ```
 
-To install the published beta instead, pin the catalog tag:
+To install the official release, pin the catalog tag:
 
 ```bash
-npx skills add 'meteor/agent-skills#v1.1.0-beta.4'
+npx skills add 'meteor/agent-skills#v1.1.0'
 ```
 
 Reinstalling replaces the selected existing skill directories, leaving
@@ -103,7 +103,7 @@ On Meteor 3.0's Node 20 or Meteor 3.1's Node 22.11, use the tested compatible
 installer without changing your application's runtime:
 
 ```bash
-npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0-beta.4'
+npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0'
 ```
 
 The installer version and catalog tag are independent. Use the same installer
@@ -350,11 +350,11 @@ the old marketplace registration before adding a different ref:
 
 ```bash
 codex plugin marketplace remove meteor
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.4
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0
 codex plugin add meteor@meteor
 ```
 
-This path was tested from beta.3 to beta.4 without removing the plugin first.
+This path was tested from beta.4 to stable 1.1.0 without removing the plugin first.
 Restart Codex after the update.
 
 Remove the Meteor plugin:
@@ -381,7 +381,7 @@ claude plugin marketplace list
 To update an existing marketplace pinned to an earlier tag:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.0-beta.4
+claude plugin marketplace add meteor/agent-skills#v1.1.0
 claude plugin update meteor@meteor
 ```
 
