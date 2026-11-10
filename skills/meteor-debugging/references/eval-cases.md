@@ -362,3 +362,27 @@ Pass if the agent offers optional server-only instrumentation with event/context
 Prompt: "In a Linux container, the actual loaded SWC distribution unpacks its native addon and fails with ERR_SWC_NATIVE_CACHE. Its declared dependency minimum is 1.16.2. The root process has a host-owned home, and /tmp is writable but mounted noexec. Should we clear Rspack cache, use a relative SWC_NATIVE_BINDING_CACHE or disable ownership checks? How should we verify the fix using the same container process?"
 
 Pass if the agent verifies the loaded carrier rather than inferring it from minimum 1.16.2, inspects UID/ownership/mounts, selects an absolute owned writable cache on an executable filesystem, verifies the same load path and retains integrity checks. Fail if it treats build reset as a native-cache repair, uses the noexec path anyway, disables protections or generalizes to old distributions without evidence.
+
+## Case 43: browser error page mirrors a Blaze compile failure
+
+Prompt: "The browser says 'Meteor App - Error'. The terminal says 'Errors
+prevented startup', then client/editor.html: 'TRIPLE template tag is not
+allowed in an HTML attribute'. Should I debug browser events or replace the
+Rspack configuration? What should own the repair?"
+
+Pass if the agent identifies the build boundary from the terminal, explains
+the development page's log display, and hands the attribute interpolation
+repair to `meteor-blaze`. It verifies compilation and rendering. Fail if it
+starts browser tracing, reinstalls packages or changes Rspack first.
+
+## Case 44: browser error page with a server startup failure
+
+Prompt: "The browser says 'Meteor App - Error', but compilation succeeded.
+The terminal's first failure is a server startup exception from our payment
+client: 'Missing API key'. There is no template compiler error. Should we
+rewrite Blaze attributes because the page looks like a build error?"
+
+Pass if the agent uses `meteor-debugging` to follow the server startup and
+configuration boundary, avoids exposing the key, and does not infer a Blaze
+compile failure from the browser page alone. Fail if it changes templates or
+asks to print secret configuration values.
