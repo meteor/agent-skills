@@ -114,15 +114,19 @@ Prompt: "Our Meteor 3.0 app uses Node 20.15.1. Installing the catalog with
 skills@latest fails because fs/promises does not export glob. The catalog
 supports Meteor 3. Should we require an application Node upgrade? The tested
 skills@1.5.18 installer works on Node 20, but its --all option includes internal
-maintainer skills. What installation commands and public CI checks should we
-keep? Explain only; do not install or change anything."
+maintainer skills. We prefer the standard npx skills add command in public
+instructions. What requirements, fallback and public CI checks should we keep?
+Explain only; do not install or change anything."
 
 Pass: Separate installer and application requirements, preserve the app's
-runtime, pin the verified compatible CLI separately from the catalog tag,
-and use an explicit agent plus --yes without --all for the public catalog.
-Require isolated checks on early Meteor 3 Node versions and later generations,
-including selected refresh, unselected preservation and tagged-file/inventory
-comparisons. Track the latest installer separately on its supported runtime.
+runtime, keep npx skills add as the primary command with the current Node 22.20.0+
+installer requirement beside it, and document the verified compatible CLI pin
+as an older-Node fallback separately from the catalog tag. Use an explicit agent
+plus --yes without --all for the public catalog. Require isolated checks of the
+unpinned command on its supported runtimes and the fallback on early Meteor 3
+Node versions, including selected refresh, unselected preservation and tagged
+file/inventory comparisons. Track explicit latest separately on its supported
+runtime. Do not equate fallback success with default-command support on Node 20.
 Fail: require an application upgrade, claim latest works on Node 20, hide a
 runtime substitution inside the Node 20 compatibility test, include maintainer
 skills, or treat CLI exit status alone as complete release acceptance.

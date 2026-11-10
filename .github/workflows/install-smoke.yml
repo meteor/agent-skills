@@ -30,19 +30,22 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # Meteor 3.0 and the reported failing shell, with no runtime substitution.
+          # The documented fallback for older Meteor runtimes, without substitution.
           - node: '20.15.1'
             installer: '1.5.18'
           - node: '20.16.0'
             installer: '1.5.18'
-          # Meteor 3.1's first Node 22 runtime and the later Node generations.
+          # Meteor 3.1's first Node 22 runtime also needs the fallback.
           - node: '22.11.0'
             installer: '1.5.18'
+          # The documented npx skills command requires Node 22.20.0 or later.
+          - node: '22.20.0'
+            installer: default
           - node: '24'
-            installer: '1.5.18'
+            installer: default
           - node: '26'
-            installer: '1.5.18'
-          # Track upstream changes separately from the documented compatible installer.
+            installer: default
+          # Also verify the explicit npm latest tag.
           - node: '22.20.0'
             installer: latest
     steps:

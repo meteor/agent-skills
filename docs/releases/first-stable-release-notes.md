@@ -26,10 +26,10 @@ version-specific capability. Skills complement application tests and review.
 
 ## Commands to verify after stable publication
 
-Pin the tested installer separately from the catalog tag. Skills CLI `1.5.18`
-supports the Node 20 runtime used by early Meteor 3 apps; the current
-`skills@latest` requires Node 22.20.0+. Users do not need to change their
-application's runtime to install the catalog.
+The `npx skills` command requires Node.js 22.20.0 or later in the installation
+shell. This requirement belongs to the installer; the Meteor application can
+keep its existing runtime. Users on Node 20 or early Node 22 can use
+`npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0'` as a compatibility fallback.
 
 ```bash
 codex plugin marketplace add meteor/agent-skills --ref v1.1.0
@@ -38,7 +38,7 @@ codex plugin add meteor@meteor
 claude plugin marketplace add meteor/agent-skills#v1.1.0
 claude plugin install meteor@meteor
 
-npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0'
+npx skills add 'meteor/agent-skills#v1.1.0'
 ```
 
 Do not copy these commands into the README or Core changelog until the tag is

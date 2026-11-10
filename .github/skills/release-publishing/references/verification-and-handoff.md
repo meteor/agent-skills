@@ -65,9 +65,12 @@ Use `node scripts/smoke-install.mjs <tag>` from the repository root for the
 isolated public Skills CLI checks, or omit the tag to select the latest
 publication including betas. The PR and post-publication workflows run this
 script. Record the shell's Node/npm versions as well as the installer version.
-Test the documented compatible installer directly on Meteor 3.0's Node 20.15.1
-and later Meteor Node generations. Keep `skills@latest` checks separate:
-its runtime requirements must not become a new application requirement.
+Test the documented `npx skills` command on its minimum supported Node version
+and later Meteor Node generations. State that installer requirement beside the
+public command. Test the older-Node fallback with `--installer 1.5.18` directly
+on Meteor 3.0's Node 20.15.1 and Meteor 3.1's Node 22.11.0. Keep explicit
+`skills@latest` checks separate. A passing fallback does not prove the default
+command supports Node 20; installer requirements do not change app requirements.
 Use `--agent codex --copy --yes` without a skill selector for the full catalog;
 the compatible installer's `--all` includes internal maintainer skills. See
 [published installation smoke checks](../../../../RELEASING.md#published-installation-smoke-checks)

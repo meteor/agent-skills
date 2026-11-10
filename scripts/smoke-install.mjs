@@ -64,9 +64,9 @@ async function github(path) {
   return response.json();
 }
 
-export async function smokeInstall({ requested = "latest", installerSpec = "1.5.18" } = {}) {
+export async function smokeInstall({ requested = "latest", installerSpec = "default" } = {}) {
   assert(requested === "latest" || tagPattern.test(requested), "Use latest or an exact vX.Y.Z[-beta.N] tag");
-  assert(installerSpec === "latest" || /^\d+\.\d+\.\d+$/.test(installerSpec), "Use latest or an exact Skills CLI version");
+  assert(["default", "latest"].includes(installerSpec) || /^\d+\.\d+\.\d+$/.test(installerSpec), "Use default, latest or an exact Skills CLI version");
   // /releases/latest excludes prereleases. Resolve the newest publication including betas.
   const releases = requested === "latest"
     ? await github("releases?per_page=100")
@@ -81,7 +81,7 @@ export async function smokeInstall({ requested = "latest", installerSpec = "1.5.
   const { GH_TOKEN, GITHUB_TOKEN, ...environment } = process.env;
   // Project-only installs and a fresh npm cache, without global installation flags.
   const env = { ...environment, npm_config_cache: cache, DISABLE_TELEMETRY: "1", CI: "1", GIT_TERMINAL_PROMPT: "0" };
-  const npxPrefix = ["--yes", `skills@${installerSpec}`];
+  const npxPrefix = ["--yes", installerSpec === "default" ? "skills" : `skills@${installerSpec}`];
   function run(command, args, cwd = root) {
     console.log(`$ ${command} ${args.join(" ")}`);
     try {
@@ -145,7 +145,7 @@ export async function smokeInstall({ requested = "latest", installerSpec = "1.5.
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { values, positionals } = parseArgs({ options: { installer: { type: "string" } }, allowPositionals: true });
-  if (positionals.length > 1) throw new Error("Usage: node scripts/smoke-install.mjs [latest|vX.Y.Z] [--installer X.Y.Z]");
+  if (positionals.length > 1) throw new Error("Usage: node scripts/smoke-install.mjs [latest|vX.Y.Z] [--installer default|latest|X.Y.Z]");
   smokeInstall({ requested: positionals[0] || "latest", installerSpec: values.installer }).catch((error) => {
     console.error(error);
     process.exitCode = 1;

@@ -95,11 +95,13 @@ otherwise the section must be omitted, not filled with `N/A`. Independent catalo
 releases never create that Meteor changelog section.
 
 Use the concise client-neutral changelog shape in `RELEASING.md`: the verified
-release link and generic `npx skills@1.5.18 add 'meteor/agent-skills#<tag>'`
+release link and generic `npx skills add 'meteor/agent-skills#<tag>'`
 command must use the same exact tag. Test that command remotely and compare
 installed files with the tag. Link to the official
 [Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills); keep
-client-specific commands in the catalog's release notes.
+client-specific commands in the catalog's release notes. Put the current
+Skills CLI Node requirement beside the short command and keep the older-Node
+installer pin in separate compatibility guidance.
 
 ## Prepare the version
 
