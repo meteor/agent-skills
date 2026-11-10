@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 1.1.0-beta.4 - 2026-11-10
+
+Installation-test beta for the first stable catalog, with guidance for official
+Meteor 3.6. Catalog and framework versions remain independent.
+
 - Consolidate distributed guidance around official Meteor 3.6 and preserve
   earlier Meteor and independent package compatibility branches.
 - Cover Change Streams large-event recovery, native OAuth token validation,
@@ -12,6 +17,10 @@
   including shared Meteor artwork and both marketplace formats.
 - Record implementation and release gates in the
   [first stable readiness report](docs/releases/first-stable-readiness-2026-11-10.md).
+- Preserve the final candidate audit and record exact-tag installation results
+  in the [beta.4 handoff](docs/releases/v1.1.0-beta.4.md).
+- Update maintainer workflows for final-tag audits, stable consolidation,
+  isolated installations and release evidence retention.
 
 ## 1.1.0-beta.3 - 2026-09-29
 
