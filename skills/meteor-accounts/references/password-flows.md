@@ -59,6 +59,17 @@ The link is sent via `Accounts.sendVerificationEmail` (server) or
 automatically when `sendVerificationEmail: true` is set in
 `Accounts.config`. Customize the URL with `Accounts.urls.verifyEmail`.
 
+With `accounts-password@3.3.2` (Meteor 3.6), verification consumes the token
+and verifies its matching address in one conditional write. A concurrent
+replay, replaced token or changed address can return an expired-link error.
+Do not mark an email verified manually, retry with another address or assume
+a failed callback means success. Request a fresh link for the current address.
+Check earlier packages/backports before relying on this atomic behavior.
+
+Email verification and login are separate outcomes: with 2FA enabled,
+`2fa-enabled` can mean the email was verified but the user was not logged in.
+Continue through the normal 2FA login flow; do not bypass it.
+
 ## Server APIs (async)
 
 - `await Accounts.createUserAsync(options)`

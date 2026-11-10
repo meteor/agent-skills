@@ -2,7 +2,7 @@
 name: migrate-to-rspack
 description: >
   Use when migrating an existing Meteor app to Rspack (Meteor 3.4+), or
-  upgrading Rspack 1 to 2 on Meteor 3.6 beta. Triggers on nested imports,
+  upgrading Rspack 1 to 2 on Meteor 3.6. Triggers on nested imports,
   mainModule entry points, server-only apps, replacing fourseven:scss /
   meteor/less / coffeescript / jorgenvatle:vite / zodern:melte with loaders,
   Svelte/TypeScript preprocessing or Lingui SWC plugin failures after upgrade,
@@ -42,17 +42,14 @@ Match `@meteorjs/rspack` to the Meteor release, not to
 | 3.4.1 and 3.5 | `1.1.0` | `2.0.1` | Adds v2 helpers and inherited `TOOL_NODE_FLAGS`. |
 | 3.5.1 | `1.2.0` | `2.1.0` | Revised client polyfills and extension discovery. |
 | 3.5.2 | `1.3.0` | `2.2.0` | Dependency diagnostics, mode isolation, full-app/TLA and cache fixes. |
-| 3.6-beta.0 | `1.4.0-beta360.0` | `3.0.0-beta.1` | Rspack 2.2.0 and workspace-aware installs. |
-| 3.6-beta.1 | `1.4.0-beta360.1` | `3.0.0-beta.2` | TypeScript rebuild-loop fix; Node 26.8.2. |
-| 3.6-beta.3 | `1.4.0-beta360.3` | `3.0.0-beta.3` | Rspack 2.2.7; architecture graphs and test-ignore fixes. |
-| 3.6-rc.0 | `1.4.0-rc360.0` | `3.0.0-rc.0` | Rspack 2 and separate architecture entries. |
+| 3.6 | `1.4.0` | `3.0.0` | Rspack core/CLI 2.2.7+, dev server 2.2.1+, React Compiler, workspace installs and separate architecture graphs. |
 
 Inspect `.meteor/versions`, `package.json`, and the lockfile: Atmosphere,
 Meteor npm integration and Rspack core versions are independent. With automatic
 installs enabled, startup aligns dependencies; review and commit the changes.
 `meteor update --npm` is an alternative. Keep the release pairing.
 
-Already using Rspack? For the Meteor 3.6 beta or RC upgrade, follow
+Already using Rspack? For the Meteor 3.6 upgrade, follow
 [Rspack 1 to 2](references/rspack-2-upgrade.md) and its toolchain checks.
 Keep valid entries/configuration; skip the first-activation steps below.
 
@@ -103,7 +100,7 @@ Without `mainModule`, Rspack has no entry. Meteor's eager-loading model
 does not apply: Rspack does not auto-discover modules. See
 `references/framework-and-css.md` for CSS and HTML routing.
 
-For 3.6-beta.3 and RC separate legacy/native entries and earlier-version limits,
+For Meteor 3.6 separate legacy/native entries and earlier-version limits,
 read [architecture preservation](references/code-migrations.md#architecture-preservation).
 
 ## Required: no nested imports in app code
@@ -149,8 +146,8 @@ See `references/framework-and-css.md`.
 | `meteor/coffeescript`     | `coffee-loader` (optionally chained with `swc-loader`).              |
 | `zodern:melte` (Svelte)   | Official Rspack Svelte loader.                                       |
 | `jorgenvatle:vite` (Vue/Solid) | Native Rspack Vue/Solid loaders.                                |
-| `babel-plugin-react-compiler` | SWC on the 3.6 beta pairing; earlier integrations retain Babel. See framework reference. |
-| `zodern:types` | Keep the working declaration provider during bundler migration; beta.1 native adoption is a separate explicit choice. |
+| `babel-plugin-react-compiler` | SWC on the 3.6 pairing; earlier integrations retain Babel. See framework reference. |
+| `zodern:types` | Keep the working declaration provider during bundler migration; 3.6 native adoption is a separate explicit choice. |
 
 Plugins acting only on Atmosphere package files can stay. Plugins acting on
 app-folder files (entry folder excluded) must move to Rspack.

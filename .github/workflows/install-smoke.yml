@@ -1,0 +1,63 @@
+name: published-install
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published tag, or latest including prereleases
+        type: string
+        default: latest
+  workflow_call:
+    inputs:
+      tag:
+        description: Exact tag published by the release workflow
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  install:
+    name: Skills ${{ matrix.installer }} / Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # The documented fallback for older Meteor runtimes, without substitution.
+          - node: '20.15.1'
+            installer: '1.5.18'
+          - node: '20.16.0'
+            installer: '1.5.18'
+          # Meteor 3.1's first Node 22 runtime also needs the fallback.
+          - node: '22.11.0'
+            installer: '1.5.18'
+          # The documented npx skills command requires Node 22.20.0 or later.
+          - node: '22.20.0'
+            installer: default
+          - node: '24'
+            installer: default
+          - node: '26'
+            installer: default
+          # Also verify the explicit npm latest tag.
+          - node: '22.20.0'
+            installer: latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install the published catalog in disposable projects
+        env:
+          RELEASE_TAG: ${{ inputs.tag || 'latest' }}
+          SKILLS_INSTALLER: ${{ matrix.installer }}
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/smoke-install.mjs "$RELEASE_TAG" --installer "$SKILLS_INSTALLER"

@@ -1,15 +1,17 @@
 # meteor/agent-skills
 
+[![Meteor AI Skills: official skills for your AI agent, with Codex and Claude Code support](./assets/meteor-ai-skills-banner.png)](#install)
+
 Agent Skills for AI assistants helping developers build, debug, migrate, and operate **Meteor 3 applications**.
 
 > Status: beta. Seventeen Meteor 3 skills are available in the current catalog.
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-[Version 1.1.0-beta.3](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.3)
-updates MongoDB upgrade preparation, Rspack, TypeScript and runtime guidance
-through Meteor `3.6-beta.3`, preserving earlier Meteor 3 compatibility branches.
-See the [verification handoff](./docs/releases/v1.1.0-beta.3.md).
+[Version 1.1.0-beta.4](https://github.com/meteor/agent-skills/releases/tag/v1.1.0-beta.4)
+consolidates guidance around official Meteor 3.6, including MongoDB recovery,
+Accounts, deployment and native TypeScript. Earlier Meteor 3 compatibility
+branches remain explicit. See the [verification handoff](./docs/releases/v1.1.0-beta.4.md).
 
 ## Install
 
@@ -30,7 +32,7 @@ To test a specific prerelease, pin the marketplace checkout to its repository
 tag before installing:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.3
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.4
 codex plugin add meteor@meteor
 ```
 
@@ -47,7 +49,7 @@ To test a specific prerelease, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills@v1.1.0-beta.3
+claude plugin marketplace add meteor/agent-skills#v1.1.0-beta.4
 claude plugin install meteor@meteor
 ```
 
@@ -58,30 +60,60 @@ Claude Code, Cursor, Codex, Copilot, Gemini CLI, OpenCode, and other supported
 agents. Use this route when you want only selected skills instead of the full
 Meteor plugin.
 
-To install this exact beta from your project directory:
+Requires Node.js 22.20.0 or later in the shell running `npx`, as specified by
+[Skills CLI](https://github.com/vercel-labs/skills#install-a-skill). This is an
+installer requirement; your Meteor application can keep its own Node version.
+For Node 20 or early Node 22, see [Older Node versions](#older-node-versions).
+
+Run this from your project directory to select skills from the default branch:
 
 ```bash
-npx skills@latest add 'meteor/agent-skills#v1.1.0-beta.3'
+npx skills add meteor/agent-skills
 ```
 
-The tag pins the skill contents; `@latest` selects the installer. Reinstalling
-replaces the selected existing skill directories, leaving unselected skills
-in place. Restart your agent after installation.
-
-For the current default-branch catalog:
+To install the published beta instead, pin the catalog tag:
 
 ```bash
-# all skills (interactive picker)
-npx skills add meteor/agent-skills
+npx skills add 'meteor/agent-skills#v1.1.0-beta.4'
+```
 
+Reinstalling replaces the selected existing skill directories, leaving
+unselected skills in place. Restart your agent after installation.
+
+```bash
 # one skill
 npx skills add meteor/agent-skills --skill migrate-to-meteor-3
 
-# every skill, non-interactive
-npx skills add meteor/agent-skills --all
+# every published skill for Codex, non-interactive
+npx skills add meteor/agent-skills --agent codex --yes
 ```
 
 Already installed? See [Manage an installation](#manage-an-installation).
+
+The public [installation smoke checks](https://github.com/meteor/agent-skills/actions/workflows/install-smoke.yml)
+exercise the unpinned command on Node 22.20.0, 24 and 26. Separate jobs check
+`skills@latest` on Node 22.20.0 and the older-Node fallback below. The default
+command is not supported on Node 20. See
+[release verification](./RELEASING.md#published-installation-smoke-checks)
+for the tested scope and commands.
+
+#### Older Node versions
+
+On Meteor 3.0's Node 20 or Meteor 3.1's Node 22.11, use the tested compatible
+installer without changing your application's runtime:
+
+```bash
+npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0-beta.4'
+```
+
+The installer version and catalog tag are independent. Use the same installer
+pin for `list`, `remove` and other Skills CLI commands on these older runtimes.
+The default installer currently fails on Node 20 with a missing
+`fs/promises.glob` export before downloading any skills.
+
+For a full non-interactive install with this fallback, append
+`--agent codex --yes`. Avoid `--all` in Skills CLI 1.5.18: it also selects
+internal maintainer skills and all agents.
 
 ## Catalog
 
@@ -312,6 +344,19 @@ You can also enter `/plugins` in an interactive Codex session to inspect and
 manage plugins. See the
 [official OpenAI plugin documentation](https://developers.openai.com/codex/plugins).
 
+To update an existing marketplace pinned to an earlier tag, change the
+marketplace pin and install the new version. Codex 0.164.0 requires removing
+the old marketplace registration before adding a different ref:
+
+```bash
+codex plugin marketplace remove meteor
+codex plugin marketplace add meteor/agent-skills --ref v1.1.0-beta.4
+codex plugin add meteor@meteor
+```
+
+This path was tested from beta.3 to beta.4 without removing the plugin first.
+Restart Codex after the update.
+
 Remove the Meteor plugin:
 
 ```bash
@@ -332,6 +377,17 @@ List the installed plugins and configured marketplaces:
 claude plugin list
 claude plugin marketplace list
 ```
+
+To update an existing marketplace pinned to an earlier tag:
+
+```bash
+claude plugin marketplace add meteor/agent-skills#v1.1.0-beta.4
+claude plugin update meteor@meteor
+```
+
+Use the same scope as the existing installation, for example `--scope local`
+on both commands for a local project installation. Restart Claude Code after
+the update.
 
 Remove the Meteor plugin:
 

@@ -48,8 +48,8 @@ Prompt: "On my server `node main.js` crashes with
 `undefined symbol: node_module_register`."
 
 Pass if the agent identifies the Node version mismatch (Meteor 3.0 uses Node
-20, 3.1 through 3.4 use Node 22, 3.5.x/beta.0 use Node 24, and
-3.6-beta.1 uses Node 26), and instructs running
+20, 3.1 through 3.4 use Node 22, 3.5.x uses Node 24, and
+3.6 uses Node 26), and instructs running
 `meteor node -v` to find the exact version, then deploying with the matching
 `node:<N>-bookworm-slim` image.
 
@@ -178,23 +178,23 @@ inferring a binary change from a Meteor release label or an edited filename;
 native configuration can require a binary even when its compatibility hash is
 unchanged. Fail if it claims every such edit necessarily changes that hash.
 
-## Case 17: beta.1 runtime and native modules
+## Case 17: 3.6 runtime and native modules
 
-Prompt: "Deploy our Meteor 3.6-beta.1 bundle in Docker. Can we reuse Node 24 images and native modules from our Meteor 3.5.2 build?"
+Prompt: "Deploy our Meteor 3.6 bundles in Docker. Can we reuse Node 24 images and native modules from our Meteor 3.5.2 build?"
 
-Pass if the agent: Selects the target Node 26.8.2 runtime, notes bundled npm 11.19.0, verifies meteor node/npm versions, matches build/runtime architecture and rebuilds native modules. Does not reuse Node 24 native binaries or mistake host installer Node for app runtime.
+Pass if the agent: Selects the target Node 26.13.0 runtime, notes bundled npm 11.20.0, verifies meteor node/npm versions, matches build/runtime architecture and rebuilds native modules. Does not reuse Node 24 native binaries or mistake host installer Node for app runtime.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 18: keep earlier runtime
 
-Prompt: "Our app remains on Meteor 3.5.2, and another app is pinned to 3.6-beta.0. Does the 3.6-beta.1 Node 26 announcement require new Node 26 runtime images for either?"
+Prompt: "Our app remains on Meteor 3.5.2, and another app is pinned to 3.5.1. Does the 3.6 Node 26 announcement require new Node 26 runtime images for either?"
 
-Pass if the agent: Retains Node 24 for both targets, checks exact bundled versions, and does not upgrade their runtimes solely because a later beta exists.
+Pass if the agent: Retains Node 24 for both targets, checks exact bundled versions, and does not upgrade their runtimes solely because a later release exists.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 19: Relocated workspace command
 
-Prompt: "Our linked workspace package command works in development and in a bundle beside the checkout, but fails after moving the artifact to a clean deployment directory. What should we verify on beta.3?"
+Prompt: "Our linked workspace package command works in development and in a bundle beside the checkout, but fails after moving the artifact to a clean deployment directory. What should we verify on 3.6?"
 
 Pass if the agent checks tool version and copied workspace/bin links, executes used commands and adjacent resource reads from the moved artifact without source access; keeps manager/lockfile and earlier-version boundary.
 
@@ -202,17 +202,17 @@ Fail if it hand-patches generated links, uses absolute source paths, or claims s
 
 ## Case 20: External database and runtime
 
-Prompt: "Deploy a beta.3 app with a separately administered MongoDB 7 through MONGO_URL. Does local bundled MongoDB 8 mean Meteor upgrades it or that the app container needs local Mongo binaries? Which Node runtime applies?"
+Prompt: "Deploy a 3.6 app with a separately administered MongoDB 7 through MONGO_URL. Does local bundled MongoDB 8 mean Meteor upgrades it or that the app container needs local Mongo binaries? Which Node runtime applies?"
 
-Pass if the agent keeps database upgrade with provider/admin, separates local Mongo platform requirements, verifies Node 26.8.2/npm 11.19.0 and target native dependencies plus external compatibility.
+Pass if the agent keeps database upgrade with provider/admin, separates local Mongo platform requirements, verifies Node 26.13.0/npm 11.20.0 and target native dependencies plus external compatibility.
 
-Fail if it runs a remote FCV upgrade by inference, bundles local Mongo unnecessarily or uses Node 24 for beta.3.
+Fail if it runs a remote FCV upgrade by inference, bundles local Mongo unnecessarily or uses Node 24 for 3.6.
 
-## Case 21: RC runtime versus older Docker target
+## Case 21: 3.6 runtime versus older Docker target
 
-Prompt: "Our Meteor 3.6-rc.0 bundle reports Node 26.10.0 but our Docker stages use Node 24. We also maintain a separate Meteor 3.4 app. Which runtime should each deployment use?"
+Prompt: "Our Meteor 3.6 bundle reports Node 26.13.0 but our Docker stages use Node 24. We also maintain a separate Meteor 3.4 app. Which runtime should each deployment use?"
 
-Pass if the agent matches the RC to Node 26 and verifies the exact pinned tool/bundle version, while retaining Node 22 for 3.4. Fail if it changes every older image to 26, uses the installer host Node as bundle evidence, or keeps the 3.5+ Node 24 rule.
+Pass if the agent matches Meteor 3.6 to Node 26 and verifies the exact pinned tool/bundle version, while retaining Node 22 for 3.4. Fail if it changes every older image to 26, uses the installer host Node as bundle evidence, or keeps the 3.5+ Node 24 rule.
 
 ## Case 22: Organization prototype with shared MongoDB
 
@@ -238,3 +238,15 @@ Pass if the agent verifies the existing app's current hostname, uses the EU
 and directs plan and size changes to the dashboard. Fail if it adds `--mongo`
 or the free database's certificate bypass, uses a new simple name, or claims
 `--plan` and `--container-size` resize an existing app on redeploy.
+
+## Case 24: Rejected discovery
+
+Prompt: "Meteor 3.6 deploy refuses discovery pointing to https://galaxy-deploy.meteor.com.attacker.example. Should I put that URL in DEPLOY_HOSTNAME to get the deployment working?"
+
+Pass if the agent rejects the lookalike destination, explains credential forwarding risk and verifies app DNS/region before retrying. Fail if it copies the response into the explicit override or claims discovery failure and invalid destination behave identically.
+
+## Case 25: Deliberate deployment override
+
+Prompt: "We verified ownership and TLS for our intentional custom deployment service. Can Meteor 3.6 use DEPLOY_HOSTNAME for it? Does the same discovery protection cover our old 3.4 tool?"
+
+Pass if the agent allows the explicit trusted custom destination, explains it bypasses automatic discovery validation and checks older tool/backport behavior. Fail if it bans all overrides or assumes every Meteor 3 tool has the new guard.

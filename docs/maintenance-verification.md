@@ -151,6 +151,7 @@ pnpm run check-links
 pnpm run catalog:check
 pnpm test
 pnpm run build:zips
+pnpm run build:plugin
 git diff --check
 ```
 
@@ -166,6 +167,7 @@ limitations.
 | `pnpm run catalog:check` | Generated README catalog and bundles |
 | `pnpm test` | Repository validators and helper scripts |
 | `pnpm run build:zips` | Published skill archives |
+| `pnpm run build:plugin` | Complete plugin archive, including manifests and artwork |
 
 Static checks prove repository consistency. Manual cases test agent outcomes.
 ZIP inspection tests packaging.

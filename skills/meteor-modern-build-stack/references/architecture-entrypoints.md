@@ -1,11 +1,9 @@
 # Rspack entries by architecture
 
-Meteor 3.6, verified on beta.3 with `rspack@1.4.0-beta360.3` and
-`@meteorjs/rspack@3.0.0-beta.3`, compiles explicit client architectures
-separately. The RC pairs `rspack@1.4.0-rc360.0` with npm
-`@meteorjs/rspack@3.0.0-rc.0`. Beta.0/beta.1 and earlier integrations retain
-their shared-client behavior; preserve deliberate constraints or use a
-compatible paired upgrade before selecting these flags.
+Meteor 3.6 pairs `rspack@1.4.0` with `@meteorjs/rspack@3.0.0` to compile
+modern, legacy and Cordova entry graphs separately. Earlier Meteor
+integrations retain their shared-client behavior. Inspect the release,
+resolved packages and app entry map before selecting this workflow.
 
 Keep selection in `package.json`, not Rspack's reserved `entry` or `output`:
 

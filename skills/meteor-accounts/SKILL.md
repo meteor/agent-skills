@@ -38,7 +38,7 @@ the client a resume token mapped to that document.
    supports an HttpOnly cookie flow; see the section below.
 
 For a custom users collection, configure both runtimes before app reads or
-validators. The 3.6 RC fixes collection setup and publication lookup; review
+validators. Meteor 3.6 fixes collection setup and publication lookup; review
 [collection identity and client-write policy](references/users-collection.md)
 before changing profile rules.
 
@@ -130,11 +130,10 @@ only when it is opted in too. A client-only setting can therefore produce an
 HTML response or 404 from later handlers. The `/set` body limit is 4096 bytes;
 larger requests return HTTP 413. See
 [cookie endpoint troubleshooting](references/http-only-cookies.md) for the
-routes, version boundary, and diagnostic checks. Meteor 3.6-beta.1's
-`accounts-base@3.4.0-beta360.1` also requires trusted origins and valid tokens,
+routes, version boundary, and diagnostic checks. Meteor 3.6's
+`accounts-base@3.4.0` also requires trusted origins and valid tokens,
 uses `SameSite=Strict`, and adds a separate per-address endpoint rate limit.
-Review custom callers and cross-site entry flows before upgrading. The RC uses
-`accounts-base@3.4.0-rc360.0`; distinguish invalid sessions from transient or
+Review custom callers and cross-site entry flows before upgrading. Distinguish invalid sessions from transient or
 rate-limit responses before retrying or discarding credentials.
 
 ## OAuth (Google example)
@@ -168,6 +167,9 @@ Meteor.loginWithGoogle(
 `accounts-<service>` package: `accounts-google`, `accounts-github`,
 `accounts-facebook`, `accounts-twitter`, `accounts-apple`,
 `accounts-meetup`, `accounts-weibo`.
+
+For native Google/Facebook login, see
+[native token validation](references/oauth-services.md#native-google-and-facebook-tokens).
 
 To encrypt OAuth secrets at rest, add `oauth-encryption` and pass
 `oauthSecretKey` to `Accounts.config`. This seals the provider application
@@ -233,14 +235,12 @@ Set `userCreationDisabled: true` for sign-in-only flows. Configure
 `tokenSequenceLength`, `loginTokenExpirationHours`, and the
 `Accounts.emailTemplates.sendLoginToken` template on the server. Treat the
 token-request method as an abuse-sensitive endpoint and rate-limit repeated
-requests. With Meteor 3.6-beta.1's `accounts-passwordless@3.1.2-beta360.1`
-and `accounts-base@3.4.0-beta360.1`, the complete request is validated before
+requests. With Meteor 3.6's `accounts-passwordless@3.1.2`
+and `accounts-base@3.4.0`, the complete request is validated before
 lookup/creation and joins the default Accounts DDP rate rule. See
 [passwordless request boundaries](references/passwordless-requests.md)
-for custom callers and earlier packages. The RC pairs
-`accounts-passwordless@3.1.2-rc360.0` with `accounts-base@3.4.0-rc360.0`;
-retain the default limiter and handle callback errors without an immediate
-retry loop.
+for custom callers, one-time completion, 2FA and earlier packages. Retain the
+default limiter and handle callback errors without an immediate retry loop.
 
 ## 2FA
 

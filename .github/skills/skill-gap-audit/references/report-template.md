@@ -10,13 +10,19 @@ Meteor remote: <remote URL>
 Meteor branch: <branch>
 Meteor revision: <commit SHA and dirty state>
 Meteor release context: <version, release branch, or not applicable>
+Meteor release tag: <tag and peeled commit, not yet published, or not applicable>
+Meteor release branch revision: <resolved ref and SHA, or not applicable>
 Audit mode: <full, release, or incremental>
 Comparison: <base and target revisions, when applicable>
 Previous audit report: <committed path and commit, or none>
 Previous Meteor revision: <commit SHA, or none>
 ```
 
-Omit the local checkout path from a report intended for commit. Keep the remote and commit SHA.
+Omit the local checkout path from a report intended for commit. Keep the
+credential-free remote and commit SHA. For official releases, summarize the
+tag-to-branch diff and distinguish later documentation corrections from
+unshipped runtime changes. Record earlier stable/package backports supporting
+capability floors in the claim matrix; unresolved floors remain uncertain.
 
 ## Source coverage
 

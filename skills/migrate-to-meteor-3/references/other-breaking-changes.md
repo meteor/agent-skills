@@ -91,7 +91,7 @@ the database.
 
 ## Local database before Meteor 3.6
 
-Meteor 3.6-beta.3 ships MongoDB 8.0.29 locally. Before updating or running
+Meteor 3.6 ships MongoDB 8.0.29 locally. Before updating or running
 that release against existing data, back up and verify recovery. Start with
 the previous release, connect with `meteor mongo` (using `mongosh`), and check:
 
@@ -108,7 +108,7 @@ On MongoDB 7, if FCV is older, set it on the primary after backup and recheck:
 db.adminCommand({ setFeatureCompatibilityVersion: "7.0", confirm: true })
 ```
 
-Stop the app before selecting beta.3. Fresh databases do not need old-data
+Stop the app before selecting 3.6. Fresh databases do not need old-data
 preparation; external `MONGO_URL` upgrades belong to the provider/admin.
 `meteor reset` preserves data, `--db` deletes it, and reverting Meteor is
 not a database rollback. FCV `7.0` alone does not guarantee a supported
@@ -124,9 +124,8 @@ Meteor 3 does not have one Node baseline across every minor release:
 |----------------|--------------|
 | 3.0             | Node 20     |
 | 3.1 through 3.4 | Node 22     |
-| 3.5.x and 3.6-beta.0 | Node 24 |
-| 3.6-beta.1 through beta.3 | Node 26.8.2 (npm 11.19.0) |
-| 3.6-rc.0 | Node 26.10.0 (npm 11.19.1) |
+| 3.5.x | Node 24 |
+| 3.6 | Node 26.13.0 (npm 11.20.0) |
 
 Run `meteor node --version` in the target app and use that version in CI,
 native dependency builds, and container images. Audit `engines.node` and

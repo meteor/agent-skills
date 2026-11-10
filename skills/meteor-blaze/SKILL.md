@@ -75,7 +75,7 @@ requires jQuery; native DOM support starts at `blaze@3.1.0-alpha.0`
 (prerelease). Read [backend selection](references/jquery-backends.md) before
 removing either jQuery dependency; upgrading Meteor alone does not select it.
 
-Meteor 3.6-beta.0's `meteor create --pwa <name>` provides a Blaze/Rspack
+Meteor 3.6's `meteor create --pwa <name>` provides a Blaze/Rspack
 installable web app with a dependency-free service worker. It does not supply
 offline Meteor data or native binaries. Read
 [PWA boundaries](references/pwa-scaffold.md) before changing caching or scope.

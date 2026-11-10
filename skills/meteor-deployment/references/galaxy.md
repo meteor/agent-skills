@@ -51,6 +51,23 @@ METEOR_SESSION_FILE=token.json meteor login
 METEOR_SESSION_FILE=token.json meteor deploy myapp --settings settings.json
 ```
 
+## Discovery and credential destination
+
+Meteor 3.6's CLI validates automatic discovery before sending account tokens.
+It accepts HTTPS on `galaxy-deploy.meteor.com` or its subdomains, without
+embedded credentials or a non-default port. A lookalike suffix or an external
+host is rejected. Verify the app hostname, DNS and documented Galaxy region
+when discovery returns an unexpected destination.
+
+`DEPLOY_HOSTNAME` explicitly overrides discovery and trusts the supplied host.
+Use it for a verified Galaxy region or an intentionally configured deployment
+service whose ownership and TLS endpoint you have checked. Do not copy an
+untrusted discovery response into that variable just to suppress the error.
+Discovery request failure can fall back to the default Galaxy region; an
+invalid discovered destination is refused. Check the actual target before
+retrying. Older CLI releases may lack this guard, so verify tool updates or
+backports instead of assuming rejection protects every Meteor 3 deployment.
+
 ## Select the settings source
 
 Galaxy consumes one complete settings object:
@@ -241,3 +258,5 @@ object. In Push to Deploy with Galaxy Mode, keep that block in the stored JSON.
 - [Secrets Management](https://docs.galaxycloud.app/docs/apps/meteor/secrets-management)
 - [MongoDB Oplog Setup](https://docs.galaxycloud.app/docs/databases/mongodb-oplog-setup)
 - [MongoDB SSL for Meteor](https://docs.galaxycloud.app/docs/databases/mongodb-ssl-meteor)
+
+- [Meteor 3.6 deployment discovery](https://github.com/meteor/meteor/blob/e730097ce42a0dbc4c134aeb1706147b02112844/tools/meteor-services/deploy.js)

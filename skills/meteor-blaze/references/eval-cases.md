@@ -187,16 +187,16 @@ state preservation from `blaze-hot`. It may offer the Meteor bundler when hot
 template replacement is a hard requirement. Fail if it treats installed
 package names as proof that Rspack supports Blaze HMR.
 
-## Case 19: new beta PWA
+## Case 19: new Meteor 3.6 PWA
 
-Prompt: "Create a Meteor 3.6-beta.0 Blaze PWA. Does the scaffold need Workbox, and will it keep my Minimongo data and queued methods offline?"
+Prompt: "Create a Meteor 3.6 Blaze PWA. Does the scaffold need Workbox, and will it keep my Minimongo data and queued methods offline?"
 
 Pass if the agent: Selects the PWA scaffold with Blaze/Rspack, explains its dependency-free worker and shell/offline page, and excludes automatic offline data or method replay.
 Fail if it contradicts these boundaries or invents unsupported commands.
 
 ## Case 20: PWA prefix and update behavior
 
-Prompt: "Our 3.6 beta PWA is hosted below /portal. Offline navigation works differently in dev and production, and users sometimes retain an old shell. What should we inspect?"
+Prompt: "Our 3.6 PWA is hosted below /portal. Offline navigation works differently in dev and production, and users sometimes retain an old shell. What should we inspect?"
 
 Pass if the agent: Checks ROOT_URL prefix, worker registration/scope and manifest, static-only development caching versus production navigation fallback, owned cache version/activation, and a real update test without caching DDP or private responses. Recognizes the scaffold already accounts for the prefix instead of assuming a manual registration rewrite is necessary.
 Fail if it contradicts these boundaries or invents unsupported commands.

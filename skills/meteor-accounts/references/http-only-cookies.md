@@ -29,9 +29,9 @@ handler. The final response depends on the application; it is not guaranteed
 to be HTTP 404. Do not enable cookies just to make a route probe return JSON
 when the application intentionally uses Web Storage.
 
-## Meteor 3.6-beta.1 protections
+## Meteor 3.6 protections
 
-These checks require the beta's `accounts-base@3.4.0-beta360.1`. Inspect
+These checks require Meteor 3.6's `accounts-base@3.4.0`. Inspect
 `.meteor/versions`; 3.5.2's server opt-in and size limit alone do not provide
 this full behavior.
 
@@ -81,9 +81,9 @@ disables the separate HTTP limit; use only with an intentional replacement.
 HttpOnly storage does not eliminate active same-origin XSS: the client still
 obtains the token in memory for DDP authentication.
 
-## RC session validity and transient failures
+## 3.6 session validity and transient failures
 
-Meteor 3.6-rc.0 resolves `accounts-base@3.4.0-rc360.0` and retains the
+Meteor 3.6 resolves `accounts-base@3.4.0` and retains the
 protections above. HTTP 401 `invalid_cookie` means the session is invalid;
 stop replaying invalid credentials and let the login flow recover. A network
 or server failure, or HTTP 429, is not proof the user logged out: preserve

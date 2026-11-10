@@ -76,7 +76,10 @@ The checkout can live anywhere accessible in the current environment. Do not sto
 
 ## Audit method
 
-Read [`references/audit-method.md`](references/audit-method.md) before gathering evidence. It defines committed baselines, full, release, and incremental modes, changelog and release review, deep distributable-claim comparison, and source filtering.
+Read [the audit method](references/audit-method.md) before gathering evidence,
+including final-tag versus branch changes and earlier stable/package
+backports. Run affected [acceptance cases](references/eval-cases.md) in fresh
+read-only conversations when changing those audit decisions.
 
 ## Build the skill inventory
 

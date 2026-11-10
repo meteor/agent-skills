@@ -100,8 +100,8 @@ moves to Rspack; Meteor still handles Atmosphere packages and produces the
 final bundle. Requires entry points in `package.json` and no nested imports
 in app code. To migrate an existing app, use the `migrate-to-rspack` skill.
 
-Check `.meteor/versions`, `package.json` and lockfile. The RC pairs
-`rspack@1.4.0-rc360.0` with `@meteorjs/rspack@3.0.0-rc.0`, core/CLI 2.2.7.
+Check `.meteor/versions`, `package.json` and lockfile. Meteor 3.6 pairs
+`rspack@1.4.0` with `@meteorjs/rspack@3.0.0`, core/CLI 2.2.7.
 Use the [release pairings](references/rspack-config.md)
 and [dependency minimums](references/meteor-3.6-workspaces.md).
 Rspack transpiles TypeScript. Use `meteor-typescript` for declarations and
@@ -112,7 +112,7 @@ checking; see
 
 For new-app skeleton selection or framework-neutral PWA/Workbox setup, read
 [scaffolds and service workers](references/scaffolds-and-pwa.md).
-Meteor 3.6 (verified on `3.6-beta.0`) adds separate `--pnpm` workspace and
+Meteor 3.6 adds separate `--pnpm` workspace and
 `--pwa` Blaze starters; neither converts an existing app. A worker caches
 shell/assets, not offline Meteor data. Existing bundler migrations remain
 owned by `migrate-to-rspack`.
@@ -171,7 +171,7 @@ scripts/
 
 For per-command rules, set the `METEOR_IGNORE` env var.
 
-On the 3.6-beta.3 pairing, read the [test-ignore boundaries](references/meteor-3.6-workspaces.md#test-selection-and-generated-ignores)
+On the 3.6 pairing, read the [test-ignore boundaries](references/meteor-3.6-workspaces.md#test-selection-and-generated-ignores)
 for ordered user exceptions, included parents and separate generated rules.
 
 Do not copy `.gitignore` into `.meteorignore` blindly. Exclude unrelated large
@@ -195,8 +195,7 @@ production output, source maps, build time, and runtime behavior.
 
 ## Production legacy builds
 
-For separate `mainModule.legacy` or exact architecture entries on 3.6-beta.3
-or 3.6-rc.0,
+For separate `mainModule.legacy` or exact architecture entries on Meteor 3.6,
 read [architecture entry points](references/architecture-entrypoints.md).
 Earlier integrations retain their shared-client behavior.
 
