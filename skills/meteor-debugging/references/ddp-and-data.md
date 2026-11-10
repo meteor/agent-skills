@@ -66,6 +66,11 @@ capture message order before deciding either applies:
 | uWebSockets repeatedly reconnects during DDP version negotiation, with a missing `failed` frame | `ddp-server@3.6.0` flushes queued frames before closing. Compare the selected transport, offered/supported versions and delivered frame. Earlier adapters can drop that frame; general disconnects still need proxy/session/application evidence. |
 | `Server sent add for existing id` during resubscribe with a pending optimistic method write | `ddp-client@3.4.2` merges repeated server fields into the saved snapshot and retains the visible stub value until writes settle. Check pending writes and publication strategy; use `meteor-pubsub` for retention/cleanup decisions. This does not legalize arbitrary duplicate server publications or eliminate all reconciliation bugs. |
 
+For oversized events, lost history or a reconnect between fragments, inspect
+`mongo@2.6.0` (Meteor 3.6) and MongoDB 6.0.9+/7+ before changing transports.
+Use `meteor-mongo-minimongo` for split-event recovery and observer resync;
+verify resulting DDP/Minimongo state instead of clearing client collections.
+
 ## Mongo and Minimongo inspection
 
 On Meteor 3.6, `mongo@2.6.0` separately fixes fieldless

@@ -96,11 +96,21 @@ pnpm run check-links
 pnpm run catalog:check
 pnpm test
 pnpm run build:zips
+pnpm run build:plugin
 claude plugin validate . --strict
 claude plugin validate .claude-plugin/plugin.json --strict
 ```
 
 - Confirm `skills/` contains one ZIP for each published skill.
+- Inspect `dist/meteor-plugin.zip` for both plugin manifests, marketplace files,
+  the icon, license and all published skill files. It must exclude `.github/`,
+  audits, release notes, dependencies and nested per-skill ZIPs.
+- Compare extracted files with the tagged sources, including executable script
+  modes. `build:plugin` uses fixed timestamps and ordering for reproducible ZIPs.
+- Directory submission is separate from repository distribution. Review the
+  listing in `docs/releases/first-stable-release-notes.md` and the artwork
+  provenance in `assets/README.md`. Obtain an approved original at the required
+  directory dimensions before submitting; the repository icon is 298 x 298.
 - Validate the Codex manifest with the current plugin-creator validator.
 - Install one representative skill with `npx skills add` in a clean project.
 - Install one ZIP manually and confirm its references load.
@@ -159,7 +169,7 @@ git tag -a vX.Y.Z -m "vX.Y.Z"
 git push origin vX.Y.Z
 ```
 
-- Confirm the GitHub release contains every ZIP artifact.
+- Confirm the GitHub release contains every skill ZIP and `meteor-plugin.zip`.
 - Install one skill from the tagged release.
 - Install the complete Codex and Claude Code plugin from the same tag.
 - Check that the release notes state the tested scope and known limitations.

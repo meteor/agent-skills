@@ -16,7 +16,8 @@
     "catalog:write": "node scripts/generate-catalog.mjs",
     "catalog:check": "node scripts/generate-catalog.mjs --check",
     "release:bump": "node .github/skills/release-publishing/scripts/plugin-version.mjs",
-    "test": "rstest run"
+    "test": "rstest run",
+    "build:plugin": "node scripts/build-plugin.mjs"
   },
   "devDependencies": {
     "@rstest/core": "^0.11.10",

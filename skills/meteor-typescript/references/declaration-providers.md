@@ -127,6 +127,40 @@ For `TS2882` on stylesheet side-effect imports with TypeScript 6+, inspect
 module declarations such as `declare module '*.css';` in a `.d.ts` file.
 Do not disable unrelated checks or edit generated Meteor declarations.
 
+## Application user services and OAuth signatures
+
+Meteor 3.6 native declarations expose the mergeable `Meteor.UserServices`
+interface. Extend it in an application-owned `.d.ts` file included by the
+active config, preserving `Meteor.User.services` and its optionality:
+
+```typescript
+// imports/types/user-services.d.ts
+import "meteor/meteor";
+
+declare module "meteor/meteor" {
+  namespace Meteor {
+    interface UserServices {
+      internalSso?: { subject: string; tenantId: string };
+    }
+  }
+}
+```
+
+Then `user.services?.internalSso?.tenantId` is typed without replacing all
+services with `any`. Declare the actual stored shape and retain optional
+fields; types do not publish private service data or authorize client access.
+Do not add access tokens to client publications to satisfy a type error.
+Regenerate after package changes, include the application declaration in
+`tsc --listFiles --noEmit`, and check with the project's compiler. Do not edit
+the generated adapter or native barrel.
+
+For OAuth method/return-type errors, inspect the installed provider's native
+declarations and API locus, regenerate and check the real call signature.
+Corrected declarations do not convert a callback API into a Promise. On an
+earlier Meteor release or a working legacy provider, inspect that provider's
+augmentation contract instead of assuming native `UserServices` exists or
+forcing a provider switch.
+
 ## Earlier-release legacy declarations
 
 If required package declarations are missing on an older Meteor 3 app:

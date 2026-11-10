@@ -18,9 +18,13 @@ function withPluginRoot(run) {
       name: "meteor",
       version: "1.0.0-beta.1",
       skills: "./skills/",
-      interface: { capabilities: ["Interactive", "Read", "Write"] },
+      interface: { capabilities: ["Interactive", "Read", "Write"],
+        logo: "./assets/meteor-icon.png", composerIcon: "./assets/meteor-icon.png" },
     };
+    mkdirSync(join(root, "assets"));
+    writeFileSync(join(root, "assets/meteor-icon.png"), "icon fixture");
     const claude = {
+      icon: "./assets/meteor-icon.png",
       name: "meteor",
       version: "1.0.0-beta.1",
       skills: "./skills/",
@@ -52,6 +56,13 @@ describe("validatePlugins", () => {
   it("accepts matching plugin packaging", () => {
     withPluginRoot(({ root }) => {
       expect(validatePlugins({ root })).toEqual([]);
+    });
+  });
+
+  it("rejects missing packaged artwork", () => {
+    withPluginRoot(({ root }) => {
+      rmSync(join(root, "assets/meteor-icon.png"));
+      expect(validatePlugins({ root }).map(({ code }) => code)).toContain("E_PLUGIN_ICON");
     });
   });
 

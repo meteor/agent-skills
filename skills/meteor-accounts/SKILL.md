@@ -168,6 +168,9 @@ Meteor.loginWithGoogle(
 `accounts-facebook`, `accounts-twitter`, `accounts-apple`,
 `accounts-meetup`, `accounts-weibo`.
 
+For native Google/Facebook login, see
+[native token validation](references/oauth-services.md#native-google-and-facebook-tokens).
+
 To encrypt OAuth secrets at rest, add `oauth-encryption` and pass
 `oauthSecretKey` to `Accounts.config`. This seals the provider application
 secret in `ServiceConfiguration.configurations.secret` and the supported
@@ -236,8 +239,8 @@ requests. With Meteor 3.6's `accounts-passwordless@3.1.2`
 and `accounts-base@3.4.0`, the complete request is validated before
 lookup/creation and joins the default Accounts DDP rate rule. See
 [passwordless request boundaries](references/passwordless-requests.md)
-for custom callers and earlier packages. Retain the default limiter and handle callback errors without an immediate
-retry loop.
+for custom callers, one-time completion, 2FA and earlier packages. Retain the
+default limiter and handle callback errors without an immediate retry loop.
 
 ## 2FA
 

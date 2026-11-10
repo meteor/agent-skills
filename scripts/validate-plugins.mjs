@@ -83,6 +83,16 @@ export function validatePlugins({ root = repoRoot } = {}) {
   }
 
   if (
+    codex.interface?.logo !== "./assets/meteor-icon.png" ||
+    codex.interface?.composerIcon !== "./assets/meteor-icon.png" ||
+    claude.icon !== "./assets/meteor-icon.png" ||
+    !existsSync(join(root, "assets/meteor-icon.png"))
+  ) {
+    add(findings, "E_PLUGIN_ICON", codexPath,
+      "both plugins must reference the packaged assets/meteor-icon.png");
+  }
+
+  if (
     JSON.stringify(codex.interface?.capabilities) !==
     JSON.stringify(expectedCapabilities)
   ) {

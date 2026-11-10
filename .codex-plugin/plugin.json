@@ -33,6 +33,8 @@
       "Migrate this Meteor 2 application to Meteor 3.",
       "Review this Meteor publication and subscription flow.",
       "Audit this Meteor application for security issues."
-    ]
+    ],
+    "composerIcon": "./assets/meteor-icon.png",
+    "logo": "./assets/meteor-icon.png"
   }
 }

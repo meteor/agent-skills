@@ -119,10 +119,21 @@ Meteor 3.5+ defaults to:
 changeStreams -> oplog -> polling
 ```
 
-Change streams require MongoDB 6+ on a replica set or sharded cluster, an
-unordered observer, no `skip` or `limit`, and a selector Minimongo can compile.
-An ineligible query falls through to the next configured driver. Oplog is
-available only when `MONGO_OPLOG_URL` is configured.
+With `mongo@2.6.0` (Meteor 3.6), change streams require MongoDB 6.0.9+
+or 7+ on a replica set or sharded cluster. Earlier Meteor 3.5 packages accept
+MongoDB 6+ but lack split-event handling and the new resync fence holds.
+History-loss resynchronization already exists in the 3.5.3 source. Check
+`.meteor/versions` for package updates/backports before selecting guidance.
+All versions require an unordered observer, no `skip` or `limit`, and a
+selector Minimongo can compile. An ineligible query or server falls through
+to the next configured driver. Oplog requires `MONGO_OPLOG_URL` and its own
+query eligibility check. A paginated query rejected by Change Streams is not
+automatically polling-only; retain eligible oplog fallback.
+
+On MongoDB 6.0.8, do not force 3.6's Change Streams driver. Verify the selected
+oplog/polling fallback or plan a database upgrade with backups and compatibility
+checks. See [large events and recovery](references/change-streams.md) for
+fragmented events, lost history and write-fence reconciliation.
 
 Meteor 3.6 with `mongo@2.6.0` also declines
 `$where`/`$near` selectors for Change Streams: live events cannot be re-matched

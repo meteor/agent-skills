@@ -92,6 +92,7 @@ TypeScript 7 compatibility, earlier providers and rollback. Read
 | Ordinary imports work, scoped/sub-path imports fail | Explicit native barrel in `files` plus wildcard mapping to per-package adapters, not to the barrel. |
 | Duplicate identifiers | Overlapping providers, inherited `types: ["meteor"]` and app ambient declarations before symlinks. |
 | Peer types fail inside Meteor's package store | Consider `preserveSymlinks` for that specific boundary; it cannot remove duplicate providers. |
+| User service fields are `unknown`, or OAuth signatures disagree | Use [application augmentation and provider signatures](references/declaration-providers.md#application-user-services-and-oauth-signatures); keep generated types unedited. |
 | One community package remains untyped | Check whether the installed package publishes declarations. No generator can promise coverage for every Atmosphere package. |
 | Generated relative imports or subscription handle types disagree with runtime | Check the native declaration contract in [provider guidance](references/declaration-providers.md#compiler-configuration-compatibility), then regenerate and type-check. Keep generated files unedited and structural handles usable. |
 

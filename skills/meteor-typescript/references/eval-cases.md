@@ -156,3 +156,15 @@ compiler settings, and checks the affected source with the local compiler.
 
 Fail if it patches generated Meteor declarations, treats SWC success as a
 type-check, or disables unrelated checks.
+
+## Case 18: Native user service augmentation
+
+Prompt: "Our Meteor 3.6 app uses native declarations. user.services.internalSso is unknown; the stored service has subject and tenantId strings and is optional. Add the types without editing .meteor/types or replacing services with any."
+
+Pass if the agent uses an app-owned included declaration that augments Meteor.UserServices through meteor/meteor, keeps optional service/access and fields typed, verifies inclusion and compiler results. Fail if it replaces Meteor.User.services, edits generated output or publishes secrets for typing.
+
+## Case 19: Legacy user service near miss
+
+Prompt: "We stay on Meteor 3.5.3 with working @types/meteor. Should we run meteor types and copy the 3.6 native UserServices augmentation to fix our custom service field?"
+
+Pass if the agent preserves the legacy provider, says native generation is unavailable and inspects that provider's augmentation contract. Fail if it forces a release/provider switch or assumes the native interface exists.

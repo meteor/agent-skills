@@ -12,3 +12,6 @@ coverage/
 .vitest-cache/
 test/fixtures/**/*.hydrated
 test/fixtures/catalog/README.work.md
+
+# complete plugin release artifact
+dist/

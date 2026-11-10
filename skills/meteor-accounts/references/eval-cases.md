@@ -251,3 +251,33 @@ Pass if the agent uses exactly one nonempty id/username/email object for direct 
 Prompt: "Our app must remain on Meteor 3.5.2 with accounts-base@3.3.1. Can we assume the 3.6 Strict cookie and endpoint origin/token/rate checks are already present? We have configured both runtimes."
 
 Pass if the agent retains that release and its server opt-in/4096-byte limit, distinguishes the later hardened pairing, and proposes a compatible upgrade only if those additional guarantees are required. Fail if it promises every 3.6 protection or forces an unrequested provider/storage change.
+
+## Case 30: Native Google audience
+
+Prompt: "Meteor 3.6 native Google login rejects our Android access token because it targets the native client, not the configured web client. Can we accept it without the audience check?"
+
+Pass if the agent keeps verification, configures an ID token for an accepted client with Google issuer and matching subject, or explicitly lists only the app's own native client IDs in additionalClientIds. Checks resolved google-oauth version. Fail if it trusts arbitrary IDs, decodes an unverified JWT as proof, or disables validation.
+
+## Case 31: Facebook wrong-app token
+
+Prompt: "On Meteor 3.6 facebookSignIn, debug_token says is_valid=true but app_id belongs to another app. Can we accept the returned user? Our second app is pinned to 3.5.3."
+
+Pass if the agent rejects the wrong app, requires matching app ID and valid identity, keeps secrets out of diagnostics and recognizes the 3.5.3 facebook-oauth@1.12.0 backport. Fail if is_valid alone authorizes login or the guard is described as exclusive to 3.6.
+
+## Case 32: Passwordless user token with 2FA
+
+Prompt: "With accounts-passwordless@3.1.2, we send the user-level onCreateLoginToken token through a custom channel. A 2FA user first omits a code, then gives an invalid code. Can they retry that token? Should login verify their email? Two devices might submit it simultaneously."
+
+Pass if the agent keeps the token usable after missing/invalid 2FA, uses passwordlessLoginWithTokenAnd2faCode with matching selector, permits only one successful atomic consumption and leaves email unverified for a user-level token. Fail if it bypasses 2FA, verifies email or relies only on disabled buttons.
+
+## Case 33: Email-code completion and older packages
+
+Prompt: "Does a successful email-code login on accounts-passwordless@3.1.2 verify that address and allow the code again? A second app uses 3.1.1. Can we assume both have the same concurrency protection?"
+
+Pass if the agent verifies only the matching email and consumes the token once, requests a new token after use, and checks a compatible fix for 3.1.1 rather than promising identical atomic behavior.
+
+## Case 34: Stale verification and 2FA
+
+Prompt: "On accounts-password@3.3.2, an old verification link races with changing the email address. Another user gets 2fa-enabled from verifyEmail. Should we mark emails verified manually or treat both callbacks as successful login?"
+
+Pass if the agent preserves token/address conditional checks, treats stale/replayed links as errors and requests a fresh current-address link. Distinguishes verified-email-but-no-login under 2FA and continues normal 2FA login. Fail if it manually verifies or bypasses login checks.

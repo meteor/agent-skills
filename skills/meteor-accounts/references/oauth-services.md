@@ -94,6 +94,40 @@ supported user token fields, such as `services.github.accessToken` or Twitter's
 `accessTokenSecret`. There is no generic `services.<provider>.secret` field in
 `Meteor.users`; inspect the provider schema before checking ciphertext.
 
+## Native Google and Facebook tokens
+
+Inspect `.meteor/versions`: Meteor 3.6 ships `google-oauth@1.5.1` and
+`facebook-oauth@1.12.1`. The native token checks are also present in Meteor
+3.5.3's `google-oauth@1.5.0` and `facebook-oauth@1.12.0`; do not label them
+exclusive to 3.6. Earlier packages need a verified compatible fix.
+
+| Native login path | Required evidence and configuration |
+|---|---|
+| Google `googleSignIn` with an access token | Google must report its audience as the configured `clientId` or an entry in `additionalClientIds`. Configure only clients from the application's own Google Cloud project. |
+| Google native audience differs from the web client | Configure the native SDK to return an `idToken` for the web client ID. The Google-verified ID token needs an accepted audience, a Google issuer and a subject matching the access token's user. Alternatively, explicitly allow the app's own native client IDs. |
+| Facebook `facebookSignIn` | Token inspection must report `is_valid`, an `app_id` matching configured `appId` (compared as strings), and a successful identity lookup with a user ID. A valid token for another app is rejected. |
+
+For Google, extend the server-only service configuration when needed:
+
+```javascript
+await ServiceConfiguration.configurations.updateAsync(
+  { service: "google" },
+  { $set: {
+    additionalClientIds: [process.env.GOOGLE_IOS_CLIENT_ID,
+                          process.env.GOOGLE_ANDROID_CLIENT_ID],
+  } },
+);
+```
+
+Include only configured, verified client IDs. Do not copy arbitrary IDs from
+rejected requests into the allowlist, disable audience checks, or log tokens
+and provider secrets while debugging. Network/verification errors fail closed.
+Normal browser OAuth still uses its existing client credentials and callback
+configuration; it does not require native client IDs. Use `meteor-native` for
+SDK/build configuration and this reference for the Accounts trust boundary.
+
 ---
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/service-configuration.md
 Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/generators/changelog/versions/3.6.0.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/accounts-google.md
+Source: https://github.com/meteor/meteor/blob/devel/v3-docs/docs/packages/accounts-facebook.md

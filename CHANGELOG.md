@@ -1,5 +1,18 @@
 # Changelog
 
+## Unreleased
+
+- Consolidate distributed guidance around official Meteor 3.6 and preserve
+  earlier Meteor and independent package compatibility branches.
+- Cover Change Streams large-event recovery, native OAuth token validation,
+  passwordless 2FA and atomic token consumption, deployment discovery, and
+  native user-service type augmentation.
+- Correct native TypeScript scaffold defaults and add focused acceptance cases.
+- Build a complete plugin ZIP alongside the 17 individual skill archives,
+  including shared Meteor artwork and both marketplace formats.
+- Record implementation and release gates in the
+  [first stable readiness report](docs/releases/first-stable-readiness-2026-11-10.md).
+
 ## 1.1.0-beta.3 - 2026-09-29
 
 Cumulative Meteor 3.6 guidance verified through `3.6-beta.3`. The catalog
