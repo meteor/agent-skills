@@ -1,14 +1,16 @@
 # First stable Meteor Agent Skills release
 
 The confirmed content gaps are fixed. Distribution packaging and Core docs are
-prepared. The remaining steps are acceptance and publication, with optional
-directory submissions after publisher approval.
+prepared. [`1.1.0-beta.4`](v1.1.0-beta.4.md) is published and its exact-tag
+installations and upgrades pass. The remaining steps are outside acceptance,
+an authorized merge and stable `1.1.0` publication, with optional directory
+submissions after publisher approval.
 
 Review [Agent Skills PR #37](https://github.com/meteor/agent-skills/pull/37)
 and [Meteor Core PR #14993](https://github.com/meteor/meteor/pull/14993).
 The Core changes use a separate worktree; the existing Core checkout and
-unrelated files are preserved. No tag, release, merge or directory submission
-was performed.
+unrelated files are preserved. The beta was published from the open preparation
+PR. Neither PR was merged, and no directory submission was performed.
 
 ## Source baseline
 
@@ -110,7 +112,18 @@ https://deploy-preview-14993.docs-online.meteor.com/ai/agent-skills.
 The behavior cases are author-side guidance checks. They are not the required
 outside-contributor acceptance and do not prove production Mongo recovery,
 native-device login or a full Meteor runtime regression suite. Exact-tag
-installation and beta-to-stable upgrade tests must run after publication.
+beta.4 installations and beta.3 upgrades now pass, as recorded in the
+[published handoff](v1.1.0-beta.4.md). The beta-to-stable update still needs
+testing after stable publication.
+
+The final candidate `2e574e4384f04c20f39a9b07702c1a100ad46002` passed a
+30-case rerun, including the eight maintainer workflow cases. Its distributed
+skills are unchanged in the published beta.4 commit
+`a7d4e5b1ab63ff64cd5ea94a6443ab751576644c`. The
+[incremental audit](../../audits/skill-gaps/2026-11-10-meteor-3.6-beta4-candidate.md)
+records that final comparison against official Meteor 3.6. The package catalog,
+all five tool builds and all five platform bootstrap URLs were verified live;
+bootstrap availability is not platform execution coverage.
 
 ## Remaining release steps
 
@@ -120,35 +133,22 @@ installation and beta-to-stable upgrade tests must run after publication.
    outside contributor runs the affected cases in `references/eval-cases.md`
    against Claude Code or Cursor.” Record reviewer, client and outcomes on
    PR #37. The focused case matrix above is ready to run.
-2. Select the next catalog version. Recommended sequence: `1.1.0-beta.4`,
-   then `1.1.0`. Keep the same preparation PR open for the beta. The
+2. After acceptance, authorize the merge and stable publication. The
    [release-publishing skill](../../.github/skills/release-publishing/SKILL.md)
-   requires: “If its guidance changed afterward, publish and test another beta
-   before stable promotion.” These are catalog test releases; their guidance
-   describes official Meteor 3.6.
-3. Pin the reviewed clean candidate and require green CI on that exact commit.
-   Preserve the source audit and record an incremental final-candidate audit
-   if the candidate drifts. Bump both manifests using `pnpm release:bump`,
-   record the exact Meteor-to-catalog mapping and rerun deterministic checks.
-4. Publish the selected beta when authorized. Verify its 18 release assets,
-   exact-tag Codex/Claude/Skills CLI installs, loaded references and updates
-   from the previous beta. Record the tag target and installation hashes.
-5. After acceptance, authorize the merge and stable publication. The release
-   skill says: “A merge requires a separate explicit user request, including
+   says: “A merge requires a separate explicit user request, including
    during stable promotion.” Promote from the reviewed default-branch commit,
-   bump to `1.1.0`, replace README beta status/pins, move the Unreleased
-   changelog entry, and publish the stable tag. Repeat exact-tag installations
-   and the beta-to-stable update path.
-6. Merge the Core documentation PR when approved. After the stable tag is live
+   require green CI on that commit, bump both manifests to `1.1.0`, add its
+   changelog entry and publish the stable tag. Repeat exact-tag installations
+   and the beta.4-to-stable update path, then replace README beta status/pins.
+   Preserve the source audit and re-audit any candidate drift. If skill guidance
+   changes after beta.4, publish and test another beta before stable promotion.
+3. Merge the Core documentation PR when approved. After the stable tag is live
    and verified, add its real pinned command and paired Agent Skills section
    to the Meteor 3.6 changelog, then regenerate Core history. The publishing
    skill permits that section only after successful remote installation.
-7. Verify the paired Meteor packages, tool builds and bootstrap artifacts
-   before tagging. The Linux 3.6 tool/scaffold was exercised here; that does
-   not verify every platform bootstrap. GitHub `/releases/latest` still points
-   to 3.5.3. The Meteor release owner should confirm whether that is deliberate
-   before changing public recommendation metadata.
-8. Announce the release with the reviewed notes and assign feedback ownership.
+   At the initial audit, GitHub `/releases/latest` pointed to 3.5.3; the release
+   owner should confirm the intended recommendation before changing metadata.
+4. Announce the stable release with the reviewed notes and assign feedback ownership.
    Submit directory listings once account details, artwork and approval are
    ready. The existing installation channels can ship before directory review.
 

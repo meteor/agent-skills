@@ -1,8 +1,9 @@
 # First stable catalog release notes, prepared for review
 
-Proposed stable version: `1.1.0`. Publish and verify `1.1.0-beta.4` first under
-the repository's release process. Neither version is published by this change.
-Move the accepted text into the actual release after the tag exists.
+Proposed stable version: `1.1.0`. The prerequisite
+[`1.1.0-beta.4`](v1.1.0-beta.4.md) is published and its tagged installations
+are verified. Stable `1.1.0` remains unpublished. Move the accepted text into
+the stable release after its tag exists.
 
 ## Release text
 
