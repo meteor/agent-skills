@@ -29,7 +29,8 @@
   },
   "pnpm": {
     "overrides": {
-      "fast-uri@3": "3.1.8",
+      "fast-uri@3": "3.1.9",
+      "readdir-glob@3>minimatch": "11.0.1",
       "js-yaml@3": "^4.3.2",
       "brace-expansion@5": "5.0.12"
     }
