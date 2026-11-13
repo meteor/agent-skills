@@ -155,11 +155,10 @@ precomputed synchronous state, or upgrade rather than awaiting Mongo there.
 
 The default rule (5 in 10s per matched method per DDP connection for login / signup / password
 reset) ships with `accounts-base`. Passwordless request validation and default
-`requestLoginTokenForUser` throttling are paired in 3.6
-(`accounts-base@3.4.0`, `accounts-passwordless@3.1.2`) and backported in
-3.5.5 (`3.3.2`, `3.1.1_2`) and 3.4.4 (`3.2.2`, `3.1.0_2`). This does not
-backport every passwordless completion fix. Handle callback rate errors without
-an immediate retry loop. Inspect both package versions on older apps. Remove the
+`requestLoginTokenForUser` throttling ship together in 3.6 and backports
+3.5.5/3.4.4. Inspect both resolved packages; use `meteor-accounts` for pairings
+and atomic-completion differences. Earlier packages need explicit validation
+and abuse protection. Handle callback rate errors without immediate retries. Remove the
 default rule with `Accounts.removeDefaultRateLimit()` only if you replace it.
 
 For cookie hardening on `accounts-base@3.4.0` (3.6) or the `3.3.2`

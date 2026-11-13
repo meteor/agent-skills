@@ -14,7 +14,7 @@ Keep historical feature introductions and earlier-version fallbacks.
    correct cookie settings and backported request validation.
 3. Implement S05-S06: Mongo selector fallback and native manifest/binary
    compatibility. Preserve selectors, authorization and native safety checks.
-4. Implement S07-S09: exact runtime examples, safe extraction diagnostics,
+4. Implement S07-S09: runtime verification, safe extraction diagnostics,
    HMR/DDP boundaries and Rspack static-asset backports.
 5. Run affected behavioral cases in fresh conversations with hidden grading
    criteria. Keep supplied-text, installed-discovery and runtime evidence
@@ -60,7 +60,7 @@ historical claim in those skills.
 | S01-S04 | Accounts password/OAuth/cookie/passwordless references, a new authenticated-fetch reference, routing keywords, and security handoffs. Exact backport pairs distinguish request hardening from atomic completion and later expiry/revocation. |
 | S05 | Mongo live-selector eligibility and polling guidance, with a debugging handoff and a separate 3.4 branch. |
 | S06 | Native manifest rejection and the requirement to rebuild/distribute binaries for plugin 2.0.5. |
-| S07 | Patched Node identities in installation, deployment, testing and migration references; 3.6.1 scaffold/upgrade commands; archive containment recovery. Historical feature floors remain intact. |
+| S07 | Project/bundle runtime inspection in installation, deployment, testing and migration references; 3.6.1 scaffold/upgrade commands; archive containment recovery. Historical feature floors remain intact. |
 | S08-S09 | Development HMR authentication, DDP protocol boundaries and Rspack 1 static-asset backports in debugging/build references. |
 
 No bundle, classification or minimum Meteor range changes. Catalog manifests
@@ -68,7 +68,10 @@ remain at 1.1.0 pending a separate release preparation step.
 
 ## Verification results
 
-Author-side behavior checks used Claude Code 2.1.312, its configured
+### Initial implementation
+
+These results describe `b45c905ef0a5225349cf0ded99559b7a5c8ae0dc`, before
+the simplification below. Author-side behavior checks used Claude Code 2.1.312, its configured
 `claude-opus-5-5` model, and fresh non-persistent conversations. Grading
 criteria were not supplied. Twenty new cases and six existing regressions
 passed after the corrections below:
@@ -108,10 +111,68 @@ Repository checks passed with Node 22.22.0 and pinned pnpm 9.12.0:
   126-file complete plugin; no internal skills, audits or maintenance docs.
 - `git diff --check`.
 
-The final local plugin artifact SHA-256 is
+The initial local plugin artifact SHA-256 was
 `fdbc746e1ef128e9cc4b74502832554adebf1357d28c5f66ebe6750a9b9e8970`.
 Its 1.1.0 manifest is the unchanged working version, not a new publication or
 a replacement for the existing 1.1.0 artifact.
+
+### Simplification decisions
+
+The follow-up keeps application decisions and removes repeated patch history.
+The committed audit remains unchanged.
+
+| Treatment | Reason |
+|---|---|
+| Replace repeated Node patch maps with project commands and bundle metadata | The installed runtime is authoritative for CI/images; copying pins across skills adds drift without changing the decision. Runtime cases now supply command/bundle evidence and still require correct per-project selection, image verification and native rebuilds. |
+| Consolidate passwordless history and cookie retry explanations | One package table distinguishes request hardening from atomic completion; one retry rule preserves logout cancellation. |
+| Keep Accounts, Mongo and native compatibility boundaries | These prevent unsupported configuration, weakened authentication, forced live selectors or assuming HCP updates native code. The authenticated-fetch reference remains because browser/server and explicit/automatic credentials change advice. |
+| Trim HMR/DDP/resolver internals | Keep the failing symptom, compatible patch and safe action. The HMR byte limit and resolver implementation ordering belong in framework docs, not general recovery guidance. |
+| Update internal audit/maintenance skills and the authoring contract | Require a changed agent decision before adding guidance, particularly for patches. Record material keep/trim/docs-only reasons outside published skills; preserve standalone use and meaningful behavioral criteria. |
+
+Three internal acceptance cases cover patch triage and simplification without
+losing compatibility. The maintainer instructions themselves consolidate
+existing workflow repetition to stay within the body limit.
+
+### Checks after simplification
+
+Author-side supplied-text checks used the same Claude Code client/model and
+fresh non-persistent conversations with hidden criteria. Twenty-five affected
+cases passed on the final relevant guidance:
+
+| Skill | Cases |
+|---|---|
+| Accounts | 12, 19, 28, 29, 33-36, 40-41 |
+| Debugging | 45-47 |
+| Native | 29-30 |
+| Security | 14 |
+| CLI installation | 27 |
+| Deployment | 17, 20, 26 |
+| Testing | 20 |
+| Meteor 3 migration | 33 |
+| Internal maintenance | 3-4 |
+| Internal gap audit | 3 |
+
+Responses were inspected against their criteria. Follow-up runs corrected an
+ambiguous unsupported-option sentence, a missing deployment handoff, and
+maintenance wording that could confuse runtime pins with capability floors.
+The native check also exposed an existing instruction treating
+`.meteor/versions` as Cordova plugin inventory; it now selects native build
+metadata. This is supported by `tools/cordova/project.js`'s
+`listInstalledPluginVersions` at Meteor 3.6.1 commit
+`eaf134973529396b660078b705b9fa50a4747fd5`. Case 29 now explicitly checks that
+distinction. All affected follow-up responses passed.
+
+The initial installed-discovery results above remain historical; routing and
+plugin metadata were unchanged in this simplification. These new supplied-text
+runs do not establish installed discovery or application runtime correctness.
+
+Frozen installation, validators, links, catalog checks and all 43 repository
+tests passed. Rebuilt and inspected all 17 skill ZIPs plus the complete plugin:
+all 246 entries match source bytes, including 126 plugin files, with internal
+skills and maintenance evidence excluded. Final plugin SHA-256:
+`b41ebf3546491a71addc3070a789874c8433939f2bce9bbeaaa816cb0a7e9985`.
+The candidate is the simplification commit containing this record, based on
+`b45c905ef0a5225349cf0ded99559b7a5c8ae0dc`; manifests remain at 1.1.0.
 
 ## Remaining release steps
 

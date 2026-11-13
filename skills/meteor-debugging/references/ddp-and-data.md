@@ -72,12 +72,10 @@ Use `meteor-mongo-minimongo` for split-event recovery and observer resync;
 verify resulting DDP/Minimongo state instead of clearing client collections.
 
 Meteor 3.4.4 (`ddp-server@3.2.3`), 3.5.5 (`3.5.1`) and 3.6.1 (`3.6.1`)
-reject non-string `unsub.id` and supplied non-string `ping.id`, and contain
-synchronous protocol-handler throws. Inspect malformed frames and the resolved
-package before adding application retries. Earlier packages lack this
-hardening. These protocol checks do not replace argument validation or
-authorization in application methods/publications; an HMR socket is a separate
-development protocol.
+harden malformed control frames and contain handler failures. Inspect the frame and resolved
+package before adding retries; earlier packages lack these guards. Keep
+argument validation and authorization in application methods/publications.
+DDP protocol checks do not protect the separate development HMR socket.
 
 ## Mongo and Minimongo inspection
 

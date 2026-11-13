@@ -1,12 +1,10 @@
 # Rspack 1 to 2 in Meteor
 
-Use this workflow for Meteor 3.6. Commands below target its 3.6.1 security
-patch; preserve
+Use this workflow for Meteor 3.6. Commands target 3.6.1; preserve
 an explicitly requested earlier release and its pairing from
 [the skill's version table](../SKILL.md). Meteor 3.5.2 retains Rspack 1.x.
-The 3.4.4 and 3.5.5 security backports also retain Rspack 1 and supply
-static-asset fixes in their own Atmosphere package pairs; see
-[backport pairing](../../meteor-modern-build-stack/references/rspack-config.md).
+Meteor 3.4.4 and 3.5.5 also retain Rspack 1; their static-asset fixes do
+not require migrating to Rspack 2.
 
 ## Upgrade the coordinated dependency set
 
@@ -72,7 +70,7 @@ Also check these [upstream migration boundaries](https://www.rspack.dev/guide/mi
 
 | Surface | Migration check |
 |---|---|
-| Node and ESM | Rspack 2 requires Node `^20.19.0 \|\| >=22.12.0`. Meteor 3.6 bundles Node 26.13.0, and 3.6.1 bundles 26.13.1; host Node 18 alone does not prove a Meteor build incompatibility. Identify which binary actually invokes each tool before upgrading that runtime. Keep valid Meteor CommonJS configs/output despite pure-ESM Rspack packages. |
+| Node and ESM | Rspack 2 requires Node `^20.19.0 \|\| >=22.12.0`. Meteor 3.6.x bundles Node 26; host Node 18 alone does not prove a Meteor build incompatibility. Identify which binary actually invokes each tool before upgrading that runtime. Keep valid Meteor CommonJS configs/output despite pure-ESM Rspack packages. |
 | Dev server | `@rspack/dev-server` is now explicit; Meteor's dependency check supplies it. Review custom `devServer.proxy` and `watchFiles` against the v2 guide before reusing old shapes. |
 | Resolution | Upstream changes cover `.wasm` extension lookup, CSS `@import` conditions and empty `resolve.roots`. Meteor supplies explicit extensions and project roots. Inspect `resolve.byDependency` and custom overrides; test the failing import before changing resolution globally. |
 | Custom plugins | Review the plugin's Rspack 2 support and the [2.0 breaking-change overview](https://www.rspack.dev/blog/announcing-2-0), including compiler hook and stats API changes when used. |
@@ -102,8 +100,8 @@ requirement and retest after peer cleanup. Do not convert managers to fix CI.
 Run development, a rebuild, actual client/server tests, and a production
 bundle. Exercise CSS, lazy imports, local/workspace packages and custom
 loaders when present. Boot the extracted bundle and load the browser page.
-For the 3.6.1 target, rebuild and exercise native npm dependencies against Node 26.13.1
-and the deployment architecture before deploying; this is a release migration
+Rebuild and exercise native npm dependencies against the target app's
+`meteor node -v` and deployment architecture before deploying; this is a release migration
 step, not something to defer until a native module crashes in production.
 Follow the [validation matrix](validation-matrix.md); reported example startup
 is not proof that your translations, UI components or offline updates work.

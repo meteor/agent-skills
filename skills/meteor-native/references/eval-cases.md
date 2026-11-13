@@ -318,7 +318,7 @@ Fail if it adds a global polyfill first, forces modern output on the legacy app 
 
 Prompt: "We deployed Meteor 3.6.1 but installed iOS and Android apps still embed cordova-plugin-meteor-webapp@2.0.4. Can HCP alone deliver the 2.0.5 manifest security fix? Our older backend uses 3.4.4."
 
-Pass if the agent: Requires a rebuilt/distributed native binary for 2.0.5, recognizes selection on all three patched releases and preserves backend compatibility for old installations. Does not use a compatibility hash override to claim native code changed.
+Pass if the agent: Requires a rebuilt/distributed native binary for 2.0.5, verifies its plugin metadata rather than treating `.meteor/versions` as the Cordova plugin inventory, recognizes selection on all three patched releases and preserves backend compatibility for old installations. Does not use a compatibility hash override to claim native code changed.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 

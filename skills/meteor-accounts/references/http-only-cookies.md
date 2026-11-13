@@ -13,10 +13,8 @@ Set `Accounts.config({ useHttpOnlyCookies: true, clientStorage: "none" })`
 in code imported by both client and server. For settings-only configuration,
 set the server flags in `Meteor.settings.packages.accounts` and mirror the
 client flags in `Meteor.settings.public.packages.accounts`.
-The server does not read the public settings as its opt-in. Public values
-are feature flags, not credentials. Client-only configuration
-does not enable the server. Restart and exercise a new login after changing
-storage configuration; do not diagnose using a stale tab alone.
+Public flags do not enable the server. Restart and test a fresh login after
+changing storage configuration.
 
 When opted in, the server handles:
 
@@ -86,18 +84,13 @@ obtains the token in memory for DDP authentication.
 
 ## Session validity and transient failures
 
-Meteor 3.6 resolves `accounts-base@3.4.0` and retains the
-protections above. HTTP 401 `invalid_cookie` means the session is invalid;
-stop replaying invalid credentials and let the login flow recover. A network
-or server failure, or HTTP 429, is not proof the user logged out: preserve
-credentials until validity is known and use bounded delayed retries where
-appropriate. Never create an immediate refresh loop or disable the endpoint
-limiter to hide it. Check earlier resolved packages before assuming this
-client retry policy is present. Meteor 3.5.5's `accounts-base@3.3.2` also
-retries startup refresh after network errors, 429 and server errors with
-bounded delays. Logout or a competing login cancels that recovery so a late
-response cannot restore the previous user. Do not add a second unbounded
-retry loop or assume the same cancellation behavior on earlier packages.
+On `accounts-base@3.4.0` (3.6) and the `3.3.2` backport (3.5.5), startup
+refresh retries network errors, 429 and server errors with bounded delays.
+These failures do not prove logout; HTTP 401 `invalid_cookie` does require
+normal reauthentication. Logout or a competing login cancels recovery so
+a late response cannot restore the previous user. Keep that cancellation;
+do not add unbounded retries or disable the limiter. Check earlier packages
+before relying on this retry policy.
 
 ## Diagnose failures on earlier packages
 

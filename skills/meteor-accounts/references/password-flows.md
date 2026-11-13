@@ -49,7 +49,7 @@ Accounts.changePassword(oldPassword, newPassword, (err) => {
 
 ## Verify email
 
-The November security patches change verification-link lifetime and revocation:
+Verification-link expiry and password-change revocation require these patched pairs:
 
 | Meteor release | `accounts-base` | `accounts-password` |
 |---|---|---|
@@ -57,22 +57,16 @@ The November security patches change verification-link lifetime and revocation:
 | 3.5.5 | 3.3.2 | 3.3.1_2 |
 | 3.6.1 | 3.4.1 | 3.3.3 |
 
-Inspect resolved packages, not just a numeric comparison with one row:
-earlier releases on another minor line can have higher package numbers
-without these fixes. Earlier pairings reject these unknown `Accounts.config`
-options and lack the same revocation behavior. Use a compatible patched
-release before relying on them.
+Check `.meteor/versions` against the release line. Earlier pairings reject
+these `Accounts.config` options and lack revocation, even when their package
+numbers exceed another line's patch.
 
-Links expire after three days by default. Configure a positive
-`emailVerificationTokenExpirationInDays` on the server if the application's
-policy needs another lifetime. A positive `emailVerificationTokenExpiration`
-in milliseconds takes precedence when both are supplied. Zero/null are not
-a documented way to disable this expiry.
+Links expire after three days. Server `emailVerificationTokenExpirationInDays`
+sets a positive lifetime; positive `emailVerificationTokenExpiration` in
+milliseconds overrides it. Zero/null are not a supported expiry opt-out.
 
 Changing, resetting, enrolling or setting a password revokes outstanding
-verification links. Request a new verification email for the current address
-when needed. Do not extend the lifetime to recover a revoked token, restore
-token fields, or mark the address verified to bypass a rejected link.
+links. Request a fresh link; changing expiry cannot restore a revoked token.
 
 ```javascript
 Accounts.verifyEmail(token, (err) => {
@@ -87,11 +81,11 @@ automatically when `sendVerificationEmail: true` is set in
 With `accounts-password@3.3.2` (Meteor 3.6), verification consumes the token
 and verifies its matching address in one conditional write. A concurrent
 replay, replaced token or changed address can return an expired-link error.
-This atomic fix does not give that original 3.6 pairing the later expiry
-options or password-change revocation. Those require the patch pairs above.
-Do not mark an email verified manually, retry with another address or assume
-a failed callback means success. Request a fresh link for the current address.
-Check earlier packages/backports before relying on this atomic behavior.
+Original 3.6 has this atomic fix, but expiry options and password-change
+revocation require the patch pairs above. Check earlier packages before
+relying on atomic completion. For a rejected link, request a fresh one for
+the current address; do not restore token fields, manually mark an address
+verified or treat a failed callback as success.
 
 Email verification and login are separate outcomes: with 2FA enabled,
 `2fa-enabled` can mean the email was verified but the user was not logged in.

@@ -254,7 +254,7 @@ Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 27: Pinned security runtime and host prerequisite
 
-Prompt: "We maintain Meteor 3.4.4, 3.5.5 and 3.6.1 projects. Which bundled Node patches should meteor node report? Must host Node be 26 for every npm installer?"
+Prompt: "In our Meteor 3.4.4, 3.5.5 and 3.6.1 projects, meteor node -v reports 22.23.5, 24.22.3 and 26.13.1 respectively. A colleague wants to replace them all with host Node 26. Which runtime evidence should we use, and must host Node be 26 for every npm installer?"
 
-Pass if the agent: Maps releases to 22.23.5/24.22.3/26.13.1, checks project release and selected installer engines separately, and preserves older release pins instead of forcing every project to Node 26.
+Pass if the agent: Uses each project's reported 22.23.5/24.22.3/26.13.1 runtime, checks project release and selected installer engines separately, and preserves older release pins instead of forcing every project to Node 26.
 Fail if it contradicts these boundaries or invents unsupported APIs.

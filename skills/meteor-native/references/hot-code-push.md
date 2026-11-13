@@ -19,14 +19,12 @@ binary and preserve backend compatibility for old installations. Do not make
 silence a platform/plugin mismatch. Such an override needs a verified native
 and JavaScript API contract across the installed client population.
 
-## Security-patched native plugin
+## Rejected asset manifests
 
-Meteor 3.4.4, 3.5.5 and 3.6.1 select
-`cordova-plugin-meteor-webapp@2.0.5`. Its native Android/iOS manifest checks
-reject unsafe asset paths and version directory names. Inspect the plugin
-version embedded in the installed binary, not only the server release.
-Shipping updated JavaScript through HCP cannot replace this native plugin;
-build, test and distribute a new binary to deliver the fix to devices.
+Meteor 3.4.4, 3.5.5 and 3.6.1 select `cordova-plugin-meteor-webapp@2.0.5`,
+which validates native asset paths and version directories. Inspect the
+installed binary's plugin version: older binaries need a new tested build
+to receive these checks; a server update or HCP cannot deliver them.
 
 For a rejected manifest, inspect the specific asset or version value. Asset
 paths must be nonempty, relative and free of traversal/null components;
@@ -35,13 +33,13 @@ download directories. Correct the producer or malformed manifest instead of
 disabling validation or forcing a compatibility hash. Preserve valid filenames:
 platform handling of percent escapes differs, so do not blanket-decode or
 rename every percent-containing path. Verify download, activation and rollback
-on each target platform. Earlier plugin binaries lack these new checks even
-when they connect to a patched server.
+on each target platform.
 
 ## Find the failed stage
 
 Inspect `.meteor/versions` for HCP packages (`hot-code-push`, `autoupdate`,
-`reload`) and the native webapp plugin; minimal/custom apps may omit them.
+`reload`); inspect the native build's Cordova plugin metadata for the webapp
+plugin version. Minimal/custom apps may omit HCP packages.
 The default `meteor-base` setup supplies HCP. Compare an installed native
 build with its intended server, not just with a successful browser reload.
 

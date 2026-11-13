@@ -85,14 +85,19 @@ read-only conversations when changing those audit decisions.
 
 For every publishable folder under `skills/`:
 
-1. Read the frontmatter description, tagline, kind, area, bundle membership, Meteor range, and documentation sync date.
-2. List the outcomes and symptoms promised by `SKILL.md`.
-3. Map each promise to its supporting reference and evaluation case.
-4. Compare naming, classification, routing, structure, references, and case style with the closest neighboring skills. Treat useful local variation as intentional unless it conflicts with the repository contract or behavior.
-5. Note overlap with neighboring skills, promises without behavioral coverage, and classifications that do not match the skill's actual outcome or installation audience.
-6. Exclude folders beginning with `_` and internal `.github/skills/`.
+1. Read frontmatter, promised outcomes and symptoms; map each promise to references and cases.
+2. Compare classification, routing and structure with neighboring skills. Preserve useful local variation that fits the repository contract.
+3. Note overlapping scope, untested promises and classification/audience mismatches.
+4. Exclude folders beginning with `_` and internal `.github/skills/`.
 
 ## Classify findings
+
+Missing changelog text is not itself a gap. Name the user task/symptom and
+decision existing guidance cannot support. Especially for patches, leave
+internals or runtime bumps in docs when current rules already select the
+correct behavior. Retain guidance needed for safe security/compatibility
+decisions. Recommend the smallest correction to the owning rule/reference;
+explain why it is needed, or briefly record a covered/docs-only no-action reason.
 
 | Classification | Meaning | Normal action |
 |----------------|---------|---------------|

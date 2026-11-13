@@ -77,7 +77,9 @@ Summarize relevant documentation changes classified as covered or documentation 
 
 ## Recommended next actions
 
-Order actions by priority. Each action must name the affected skill, expected change, and acceptance evidence.
+Order actions by priority. Each action must name the affected skill, changed
+agent decision, why existing guidance is insufficient, and acceptance evidence.
+Missing release detail alone does not justify an action.
 
 ## Maintenance handoff
 

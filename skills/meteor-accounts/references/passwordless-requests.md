@@ -1,26 +1,18 @@
 # Passwordless request boundaries
 
-Historical Meteor 3.6 references below identify feature introductions. For a
-new upgrade within that release line, target 3.6.1 with
-`accounts-passwordless@3.1.2` and `accounts-base@3.4.1`. The `3.4.0` base
-version below identifies the original 3.6 feature floor, not the 3.6.1
-release pairing. Preserve an explicitly constrained older release and its limitations.
+Check both packages in `.meteor/versions`. All pairs below validate
+`requestLoginTokenForUser` before account lookup/creation and include it in
+the default Accounts rate rule; atomic completion is a separate capability.
 
-Meteor 3.6 pairs `accounts-passwordless@3.1.2` with
-`accounts-base@3.4.0`. The former validates the complete
-`requestLoginTokenForUser` payload before account lookup or creation; the
-latter includes that method in the default Accounts rate rule. Check both
-resolved versions in `.meteor/versions` before relying on these protections.
-These request protections are also backported in the following pairings:
+| Meteor | `accounts-passwordless` | `accounts-base` | Atomic completion |
+|---|---|---|---|
+| 3.4.4 | 3.1.0_2 | 3.2.2 | No |
+| 3.5.5 | 3.1.1_2 | 3.3.2 | No |
+| 3.6 (feature floor) | 3.1.2 | 3.4.0 | Yes |
+| 3.6.1 (current 3.6 target) | 3.1.2 | 3.4.1 | Yes |
 
-| Meteor | `accounts-passwordless` | `accounts-base` |
-|---|---|---|
-| 3.4.4 | 3.1.0_2 | 3.2.2 |
-| 3.5.5 | 3.1.1_2 | 3.3.2 |
-
-Earlier packages need explicit validation and abuse protection or a compatible
-upgrade. The backports validate requests and rate-limit token delivery; do
-not infer that they also include 3.6's atomic completion contract below.
+Preserve an explicitly constrained release. Earlier packages need explicit
+validation and abuse protection or a compatible upgrade.
 
 The public client wrapper accepts a documented
 string selector convenience and normalizes it; the schema below describes

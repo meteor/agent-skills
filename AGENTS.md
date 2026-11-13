@@ -141,6 +141,7 @@ These rules apply to every `SKILL.md` body and every `references/*.md` file. The
 - Code blocks only for actual code or commands. Schema notation goes in a ```` ```text ```` block.
 - Tables only when the structure carries information. A two-column "label / value" used once is just a sentence.
 - Strip filler. "In order to" becomes "to"; "make sure to" becomes the imperative itself.
+- Add detail only when it changes an agent decision. Especially for patches, correct existing guidance instead of reproducing release history; preserve necessary compatibility and security boundaries. Apply [proportional maintenance](.github/skills/skill-maintenance/SKILL.md#keep-updates-proportional).
 - Concrete over abstract: paths, function signatures, exact flag names. Not "the right command".
 - Project-global rules also apply: no em-dashes, no AI-attribution trailers.
 

@@ -125,12 +125,12 @@ Meteor 3 does not have one Node baseline across every minor release:
 | 3.0             | Node 20     |
 | 3.1 through 3.4 | Node 22     |
 | 3.5.x | Node 24 |
-| 3.6 | Node 26.13.0 (npm 11.20.0) |
-| 3.4.4 / 3.5.5 / 3.6.1 security patches | Node 22.23.5 / 24.22.3 / 26.13.1, respectively |
+| 3.6.x | Node 26 |
 
 Run `meteor node --version` in the target app and use that version in CI,
 native dependency builds, and container images. Audit `engines.node` and
 native packages whenever the target Meteor release changes Node major.
+Use `meteor-deployment` for container rollout and environment configuration.
 
 ## "Cannot enlarge memory array" during `meteor update`
 

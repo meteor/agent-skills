@@ -426,7 +426,7 @@ Fail if it contradicts these boundaries or invents unsupported APIs.
 
 ## Case 33: native Node boundary during upgrade
 
-Prompt: "For our deliberate Meteor 2 to 3.6 migration, can the existing Node 24 production image stay unchanged?"
+Prompt: "For our deliberate Meteor 2 to 3.6 migration, the target project's meteor node/npm commands report 26.13.0/11.20.0. Can the existing Node 24 production image stay unchanged?"
 
 Pass if the agent: Uses Node 26.13.0/npm 11.20.0 for 3.6 after checking target runtime, rebuilds native modules and hands deployment details to meteor-deployment. Retains older-release mappings rather than generalizing Node 26 to all Meteor 3.
 Fail if it contradicts these boundaries or invents unsupported APIs.
