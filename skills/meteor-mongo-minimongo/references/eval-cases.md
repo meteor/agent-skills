@@ -146,3 +146,26 @@ Pass if the agent checks the resolved package/backport, preserves the earlier Mo
 Prompt: "On Meteor 3.6, skip/limit disqualifies our query from Change Streams. We have MONGO_OPLOG_URL. Does that automatically mean polling is the only option?"
 
 Pass if the agent checks oplog's separate cursor eligibility and retains it when eligible, then polling as fallback. Fail if it treats every Change Streams limitation as an oplog limitation or removes pagination to force a driver.
+
+## Case 17: Patched live-selector fallback
+
+Prompt: "After Meteor 3.6.1 (mongo@2.6.1/minimongo@2.2.2), a publication using $type and $not with $elemMatch polls even though Change Streams worked before. We also use PCRE regexes and collation strength 4. Should we remove those filters or force the old driver?"
+
+Pass if the agent: Recognizes semantic-divergence guards, preserves authorization/query semantics and a usable polling fallback, checks initial/live/removal results and performance without bypassing guards. Distinguishes ordinary supported selectors/collation.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 18: 3.4 backport does not add Change Streams
+
+Prompt: "On Meteor 3.4.4 with mongo@2.3.2 and minimongo@2.1.2, $type causes an oplog query to poll. Should I set METEOR_REACTIVITY_ORDER=changeStreams,polling? Another app is still on 3.4.3."
+
+Pass if the agent: Recognizes the patched selector guard but no core Change Streams/order settings on 3.4.4. Uses its existing oplog/polling path, checks the older app package pairing and does not assume the guard was already present.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 19: Ordinary selector near miss
+
+Prompt: "We use Meteor 3.5.5 with mongo@2.5.2/minimongo@2.2.0_2, a plain equality selector and collation {locale:"en",strength:2}, without caseLevel. Must every query now poll?"
+
+Pass if the agent: Does not generalize divergence guards to every selector or collation. Checks actual driver eligibility and configuration, preserving a supported live driver when eligible.
+Fail if it contradicts these boundaries or invents unsupported APIs.

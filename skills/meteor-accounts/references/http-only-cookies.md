@@ -10,9 +10,11 @@ compatible Meteor release before assuming those protections exist.
 ## Configure both runtimes
 
 Set `Accounts.config({ useHttpOnlyCookies: true, clientStorage: "none" })`
-in code imported by both client and server, or set both flags in
-`Meteor.settings.public.packages.accounts` using a loaded settings file.
-The public values are feature flags, not credentials. Client-only configuration
+in code imported by both client and server. For settings-only configuration,
+set the server flags in `Meteor.settings.packages.accounts` and mirror the
+client flags in `Meteor.settings.public.packages.accounts`.
+The server does not read the public settings as its opt-in. Public values
+are feature flags, not credentials. Client-only configuration
 does not enable the server. Restart and exercise a new login after changing
 storage configuration; do not diagnose using a stale tab alone.
 
@@ -29,11 +31,12 @@ handler. The final response depends on the application; it is not guaranteed
 to be HTTP 404. Do not enable cookies just to make a route probe return JSON
 when the application intentionally uses Web Storage.
 
-## Meteor 3.6 protections
+## Hardened cookie endpoints
 
-These checks require Meteor 3.6's `accounts-base@3.4.0`. Inspect
-`.meteor/versions`; 3.5.2's server opt-in and size limit alone do not provide
-this full behavior.
+These checks ship in Meteor 3.6's `accounts-base@3.4.0` and are backported
+in Meteor 3.5.5's `accounts-base@3.3.2`. Inspect `.meteor/versions`;
+3.5.2's server opt-in and size limit alone do not provide this full behavior.
+The 3.4.4 security release does not imply the same cookie backport.
 
 | Endpoint / response | Check and action |
 |---|---|
@@ -81,7 +84,7 @@ disables the separate HTTP limit; use only with an intentional replacement.
 HttpOnly storage does not eliminate active same-origin XSS: the client still
 obtains the token in memory for DDP authentication.
 
-## 3.6 session validity and transient failures
+## Session validity and transient failures
 
 Meteor 3.6 resolves `accounts-base@3.4.0` and retains the
 protections above. HTTP 401 `invalid_cookie` means the session is invalid;
@@ -90,7 +93,11 @@ or server failure, or HTTP 429, is not proof the user logged out: preserve
 credentials until validity is known and use bounded delayed retries where
 appropriate. Never create an immediate refresh loop or disable the endpoint
 limiter to hide it. Check earlier resolved packages before assuming this
-client retry policy is present.
+client retry policy is present. Meteor 3.5.5's `accounts-base@3.3.2` also
+retries startup refresh after network errors, 429 and server errors with
+bounded delays. Logout or a competing login cancels that recovery so a late
+response cannot restore the previous user. Do not add a second unbounded
+retry loop or assume the same cancellation behavior on earlier packages.
 
 ## Diagnose failures on earlier packages
 

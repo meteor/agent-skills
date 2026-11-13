@@ -7,7 +7,8 @@ description: >
   ServiceConfiguration.configurations.upsertAsync, Accounts.createUserAsync,
   Accounts.setPasswordAsync, Accounts.forgotPassword, Accounts.resetPassword,
   Accounts.verifyEmail, useHttpOnlyCookies, clientStorage,
-  Meteor.loginWithPasswordAnd2faCode, email verification. Use this skill
+  Meteor.loginWithPasswordAnd2faCode, email verification, accounts-express,
+  authFetchAllowedOrigins. Use this skill
   when the user asks about signups, signins, or asks about token storage
   vs HttpOnly cookies.
 metadata:
@@ -17,7 +18,7 @@ metadata:
   area: auth
   tagline: "Wire up authentication in Meteor 3 (accounts-password, OAuth providers, 2FA, passwordless, email verification)."
   bundle: ["fullstack"]
-  docs_synced_at: "2026-10-07"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 
@@ -119,11 +120,9 @@ Meteor.startup(() => {
 }
 ```
 
-After restart and login, `Meteor.loginToken*` no longer appears in
-`localStorage`; the browser receives an HttpOnly `meteor_login_token`
-cookie. Each tab keeps its own in-memory credentials. DDP authentication still
-reads the resume token into memory; this does not protect it from a malicious
-script already executing in the application origin.
+After restart and login, verify an HttpOnly `meteor_login_token` cookie and
+no persisted `Meteor.loginToken*`. Tabs still hold credentials in memory
+for DDP; active same-origin XSS can access them.
 
 With `accounts-base@3.3.1` (Meteor 3.5.2), the server handles cookie endpoints
 only when it is opted in too. A client-only setting can therefore produce an
@@ -133,6 +132,7 @@ larger requests return HTTP 413. See
 routes, version boundary, and diagnostic checks. Meteor 3.6's
 `accounts-base@3.4.0` also requires trusted origins and valid tokens,
 uses `SameSite=Strict`, and adds a separate per-address endpoint rate limit.
+These protections are also backported in Meteor 3.5.5's `accounts-base@3.3.2`.
 Review custom callers and cross-site entry flows before upgrading. Distinguish invalid sessions from transient or
 rate-limit responses before retrying or discarding credentials.
 
@@ -170,44 +170,26 @@ Meteor.loginWithGoogle(
 
 For native Google/Facebook login, see
 [native token validation](references/oauth-services.md#native-google-and-facebook-tokens).
+For production setup on 3.4.4, 3.5.5 and 3.6.1, use server configuration;
+see [client configuration restrictions](references/oauth-services.md#production-service-configuration).
 
-To encrypt OAuth secrets at rest, add `oauth-encryption` and pass
-`oauthSecretKey` to `Accounts.config`. This seals the provider application
-secret in `ServiceConfiguration.configurations.secret` and the supported
-provider-specific user token fields. It does not create a generic
-`Meteor.users.services.<provider>.secret` field. See `meteor-security`.
+For `accounts-express` authenticated fetch, check the resolved version and
+[trusted destinations](references/authenticated-fetch.md) before forwarding
+credentials to another origin. Cookie endpoint and fetch allowlists are separate.
+
+For provider and per-user credential encryption, use `oauth-encryption`
+and top-level `Accounts.config({ oauthSecretKey })`. See `meteor-security`
+and the OAuth reference for supported fields and key requirements.
 
 ## Email verification and reset
 
-```javascript
-// client
-Accounts.forgotPassword({ email }, (err) => { ... });
+The 3.4.4, 3.5.5 and 3.6.1 security releases add verification-link expiry
+and password-change revocation. Follow [password flows](references/password-flows.md)
+for exact package pairings, configuration and earlier-version behavior.
 
-// reset page
-Accounts.resetPassword(token, newPassword, (err) => { ... });
-
-// verify email
-Accounts.verifyEmail(token, (err) => { ... });
-```
-
-Customize the URL pattern that lands in the email:
-
-```javascript
-Accounts.urls.resetPassword = (token) =>
-  Meteor.absoluteUrl(`reset/${token}`);
-Accounts.urls.verifyEmail = (token) =>
-  Meteor.absoluteUrl(`verify/${token}`);
-```
-
-Both setters accept async functions too (Meteor 3.x).
-
-Customize the message:
-
-```javascript
-Accounts.emailTemplates.resetPassword.subject = () => "Reset your password";
-Accounts.emailTemplates.resetPassword.text = (user, url) =>
-  `Reset link: ${url}`;
-```
+Use the client callbacks for `forgotPassword`, `resetPassword` and
+`verifyEmail`; await their server email APIs. The reference also covers
+`Accounts.urls` and email-template customization, stale links and 2FA.
 
 ## Passwordless
 
@@ -237,7 +219,8 @@ Set `userCreationDisabled: true` for sign-in-only flows. Configure
 token-request method as an abuse-sensitive endpoint and rate-limit repeated
 requests. With Meteor 3.6's `accounts-passwordless@3.1.2`
 and `accounts-base@3.4.0`, the complete request is validated before
-lookup/creation and joins the default Accounts DDP rate rule. See
+lookup/creation and joins the default Accounts DDP rate rule. The 3.4.4 and
+3.5.5 backports also validate/throttle requests. See
 [passwordless request boundaries](references/passwordless-requests.md)
 for custom callers, one-time completion, 2FA and earlier packages. Retain the
 default limiter and handle callback errors without an immediate retry loop.

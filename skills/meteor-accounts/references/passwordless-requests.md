@@ -1,12 +1,26 @@
 # Passwordless request boundaries
 
+Historical Meteor 3.6 references below identify feature introductions. For a
+new upgrade within that release line, target 3.6.1 with
+`accounts-passwordless@3.1.2` and `accounts-base@3.4.1`. The `3.4.0` base
+version below identifies the original 3.6 feature floor, not the 3.6.1
+release pairing. Preserve an explicitly constrained older release and its limitations.
+
 Meteor 3.6 pairs `accounts-passwordless@3.1.2` with
 `accounts-base@3.4.0`. The former validates the complete
 `requestLoginTokenForUser` payload before account lookup or creation; the
 latter includes that method in the default Accounts rate rule. Check both
 resolved versions in `.meteor/versions` before relying on these protections.
+These request protections are also backported in the following pairings:
+
+| Meteor | `accounts-passwordless` | `accounts-base` |
+|---|---|---|
+| 3.4.4 | 3.1.0_2 | 3.2.2 |
+| 3.5.5 | 3.1.1_2 | 3.3.2 |
+
 Earlier packages need explicit validation and abuse protection or a compatible
-upgrade; do not claim they have Meteor 3.6's defaults.
+upgrade. The backports validate requests and rate-limit token delivery; do
+not infer that they also include 3.6's atomic completion contract below.
 
 The public client wrapper accepts a documented
 string selector convenience and normalizes it; the schema below describes
@@ -31,7 +45,7 @@ and the application's account-creation policy. Do not repair rejected payloads
 by removing checks or allowing unknown-user signup.
 
 Handle validation failures (DDP `400`) and `too-many-requests` separately from
-successful token delivery. Meteor 3.6's default Accounts rule is five requests
+successful token delivery. The pairings above use a default Accounts rule of five requests
 per ten seconds per matched method per DDP connection: both method name
 and connection ID contribute to the bucket. The methods share a rule, not
 one combined counter. It is not a per-user or per-IP mail quota. Retain stronger

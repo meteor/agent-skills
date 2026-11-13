@@ -12,8 +12,9 @@ Check the host before selecting a command:
 | Existing executable | Run `meteor --version`. Do not reinstall only to replace a project-specific release. |
 
 The reviewed installation documentation requires host Node 24 or newer.
-Meteor 3.6 bundles Node 26.13.0 separately; that does not raise the installer's
-host prerequisite to 26.
+Meteor 3.6 bundles Node 26.13.0 separately; 3.6.1 bundles 26.13.1. The
+3.4.4 and 3.5.5 backports retain Node 22.23.5 and 24.22.3 respectively.
+These bundled runtimes do not raise the installer's host prerequisite to 26.
 Earlier Meteor 3 installers can have earlier host requirements. Preserve the
 selected release when the user supplied one instead of silently choosing the
 latest installer.

@@ -111,7 +111,7 @@ cookies only in client startup. /_accounts/cookie/refresh returns HTML. Should
 I replace the server route?"
 
 Pass if the agent checks both runtime flags, enables the intended flow in
-shared code or loaded public package settings, and explains fall-through to
+shared code or separate loaded server/private and client/public package settings, and explains fall-through to
 later handlers rather than a guaranteed 404. It must preserve the cookie
 design, not return to localStorage or install a replacement token endpoint.
 
@@ -280,4 +280,67 @@ Pass if the agent verifies only the matching email and consumes the token once, 
 
 Prompt: "On accounts-password@3.3.2, an old verification link races with changing the email address. Another user gets 2fa-enabled from verifyEmail. Should we mark emails verified manually or treat both callbacks as successful login?"
 
-Pass if the agent preserves token/address conditional checks, treats stale/replayed links as errors and requests a fresh current-address link. Distinguishes verified-email-but-no-login under 2FA and continues normal 2FA login. Fail if it manually verifies or bypasses login checks.
+Pass if the agent preserves token/address conditional checks, treats stale/replayed links as errors and requests a fresh current-address link. Distinguishes verified-email-but-no-login under 2FA and continues normal 2FA login. Keeps the later expiry/revocation patch separate from this atomic-consumption package. Fail if it manually verifies, bypasses login checks or applies the later options to this older pairing.
+
+## Case 35: Verification expiry and password-change revocation
+
+Prompt: "On Meteor 3.5.5 with accounts-base@3.3.2 and accounts-password@3.3.1_2, a four-day-old verification link fails. A newer link also fails after setPasswordAsync. We configured emailVerificationTokenExpirationInDays: 7 and emailVerificationTokenExpiration: 60000. What is the default without overrides? Should we restore token fields or set the lifetime to zero?"
+
+Pass if the agent: Identifies the three-day default, positive millisecond override over days and password-change revocation. Requests a fresh link without restoring tokens, manually verifying an address or using zero/null as an expiry bypass.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 36: Older verification package boundary
+
+Prompt: "We must keep Meteor 3.5.4 with accounts-base@3.3.1 and accounts-password@3.3.1_1. Do the verification expiry options and password-change revocation in 3.5.5 already apply because our package numbers are above 3.2.2?"
+
+Pass if the agent: Checks paired release/package versions across minor lines; does not promise the new options or revocation on the older pairing. Preserves the pin and explains a compatible update is needed to rely on the patch.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 37: Production OAuth setup after security update
+
+Prompt: "After updating to Meteor 3.6.1/accounts-base@3.4.1, accounts-ui cannot configure Google in production. A suggestion says to set allowClientServiceConfiguration: true. Is that the correct fix? Our 3.4.3 app also has an unconfigured service."
+
+Pass if the agent: Selects server-owned ServiceConfiguration/private settings, separates setup from login, and explains the opt-in permits unauthenticated first configuration rather than enforcing admin access. Distinguishes default development access and the older app lacking the protection/option.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 38: Authenticated fetch origin selection
+
+Prompt: "On Meteor 3.6.1 with accounts-express@1.0.1, its client fetch authenticates to our app but not https://api.example.com. We also request https://metrics.example.net. Should we disable auth for everything or add both hosts to httpOnlyCookieAllowedOrigins?"
+
+Pass if the agent: Uses the authenticated-fetch reference, distinguishes automatic page/ROOT_URL/explicit exact-origin trust, and adds only a verified owned API to public.packages.accounts-express.authFetchAllowedOrigins. Keeps unrelated requests credential-free and checks CORS without conflating the cookie endpoint allowlist.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 39: Explicit credentials and fetch scope
+
+Prompt: "On accounts-express@1.0.0_1, does auth: false remove my explicit Authorization header to a third-party URL? Will an allowlisted API override Request credentials: omit or SameSite=Strict? Does the same allowlist protect our server fetch?"
+
+Pass if the agent: Preserves caller-owned Authorization and omit, states auth:false only disables automatic credentials, retains browser SameSite/CORS constraints and separates client-origin gating from server destination policy. Does not claim a universal secret scrubber.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 40: Cookie settings and retry backport
+
+Prompt: "On Meteor 3.5.5/accounts-base@3.3.2, settings.json only has public.packages.accounts.useHttpOnlyCookies=true and clientStorage=none. Refresh returns HTML. Later a network failure/429 happens during startup, and the user logs out before the retry finishes. Should we replace the endpoint or force the old token back?"
+
+Pass if the agent: Enables server/private settings as well as client/public flags, explains fall-through, identifies bounded transient retry and cancellation on logout/competing login, and preserves Strict cookies, token checks and the separate HTTP limiter. Does not replay credentials after logout.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 41: Passwordless backport without atomic-completion claim
+
+Prompt: "Our Meteor 3.4.4 app has accounts-base@3.2.2 and accounts-passwordless@3.1.0_2; our 3.5.5 app has 3.3.2 and 3.1.1_2. Both flows should stay sign-in-only and keep custom userData fields. Do requestLoginTokenForUser payload validation and the default DDP limiter apply? Can we also promise every 3.6 one-time completion guarantee?"
+
+Pass if the agent: Recognizes both validation/throttling backports and the five-per-ten-second per-method/connection rule. Preserves valid custom userData/options and sign-in-only policy; does not infer atomic completion or every 3.6 feature.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 42: Plain server fetch near miss
+
+Prompt: "Our server-only Node worker uses global fetch to a third-party API with an explicit API key. It does not import Meteor fetch or accounts-express. Would authFetchAllowedOrigins fix its CORS error and stop an accidental token disclosure?"
+
+Pass if the agent: Does not route this as an accounts-express configuration repair or claim client-only origin gating affects global server fetch. Separates server destination/explicit credential ownership from browser CORS and requests the actual failing runtime.
+Fail if it contradicts these boundaries or invents unsupported APIs.

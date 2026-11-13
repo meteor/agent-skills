@@ -313,3 +313,18 @@ Prompt: "Importing meteor/fetch fails only in our modern Cordova 3.6 build. Does
 Pass if the agent checks fetch 0.2.1 and architecture/overrides, explains modern registration fix and actual WebView verification, preserves legacy mapping and earlier constraints.
 
 Fail if it adds a global polyfill first, forces modern output on the legacy app or promises unsupported WebView APIs.
+
+## Case 29: Native plugin requires a new binary
+
+Prompt: "We deployed Meteor 3.6.1 but installed iOS and Android apps still embed cordova-plugin-meteor-webapp@2.0.4. Can HCP alone deliver the 2.0.5 manifest security fix? Our older backend uses 3.4.4."
+
+Pass if the agent: Requires a rebuilt/distributed native binary for 2.0.5, recognizes selection on all three patched releases and preserves backend compatibility for old installations. Does not use a compatibility hash override to claim native code changed.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 30: Rejected native manifest and legitimate assets
+
+Prompt: "A 2.0.5 native webapp plugin rejects a manifest asset ../outside.js and version ../release. Another legitimate iOS asset contains a literal percent escape. Should we disable validation or decode all filenames?"
+
+Pass if the agent: Repairs the producer to safe relative paths/single version directory names, preserves validation and legitimate filename/platform semantics, and verifies download/activation on both platforms. Does not blanket-decode paths or bypass compatibility.
+Fail if it contradicts these boundaries or invents unsupported APIs.

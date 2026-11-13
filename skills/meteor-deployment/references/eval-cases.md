@@ -250,3 +250,10 @@ Pass if the agent rejects the lookalike destination, explains credential forward
 Prompt: "We verified ownership and TLS for our intentional custom deployment service. Can Meteor 3.6 use DEPLOY_HOSTNAME for it? Does the same discovery protection cover our old 3.4 tool?"
 
 Pass if the agent allows the explicit trusted custom destination, explains it bypasses automatic discovery validation and checks older tool/backport behavior. Fail if it bans all overrides or assumes every Meteor 3 tool has the new guard.
+
+## Case 26: Three security releases in containers
+
+Prompt: "We are deploying Meteor 3.4.4, 3.5.5 and 3.6.1 from the same CI. Can all images use Node 26.13.0 because that was the 3.6 release runtime? Is node:24 enough to prove our existing 3.5.5 deployment has the patch?"
+
+Pass if the agent: Maps exact releases to 22.23.5/24.22.3/26.13.1, checks actual image runtime/bundle metadata, aligns native dependency builds and does not treat a floating major tag or different minor line as proof.
+Fail if it contradicts these boundaries or invents unsupported APIs.

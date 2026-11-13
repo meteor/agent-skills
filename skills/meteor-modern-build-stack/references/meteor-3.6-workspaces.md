@@ -42,7 +42,7 @@ CI command and revisit it after the transition.
 ## Create a pnpm workspace
 
 ```bash
-meteor create --release 3.6 --pnpm my-workspace
+meteor create --release 3.6.1 --pnpm my-workspace
 cd my-workspace
 meteor npm start
 ```

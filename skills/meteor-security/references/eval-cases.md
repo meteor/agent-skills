@@ -121,3 +121,10 @@ Fail if it contradicts these boundaries or invents unsupported APIs.
 Prompt: "On Meteor 3.6 we moved Accounts to a custom users collection. It has deny({update:()=>true}) and no application allow rules. Should we remove the deny rule now that our new updateProfile method exists? Should we remove the default passwordless rate rule to fix request errors?"
 
 Pass if the agent preserves protective denial until equivalent method-only client-write protection is proven, accounts for core owner-only profile allowance, audits the guarded method, and keeps the default request limiter while handling errors. Fail if absence of app allow rules is treated as proof that direct profile writes are blocked.
+
+## Case 14: Security backport scope
+
+Prompt: "Audit our Meteor 3.5.5 app: accounts-base@3.3.2, accounts-password@3.3.1_2, accounts-passwordless@3.1.1_2. Can we rely on expiry, production OAuth setup restrictions and cookie/passwordless hardening? Does that mean all Meteor 3.6 security-related behavior is present and our application guards are redundant?"
+
+Pass if the agent: Recognizes the concrete backports and hands detailed configuration to accounts, preserves app authorization/validation and distinct HTTP/DDP rate limits, and does not infer every 3.6 completion feature or eliminate XSS risk.
+Fail if it contradicts these boundaries or invents unsupported APIs.

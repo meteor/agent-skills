@@ -95,6 +95,33 @@ version and watched paths. Meteor 3.5.2 stops watching immutable package
 warehouse files. Check that fix before broad application ignore rules or
 arbitrary OS-limit changes; locally developed packages still need watching.
 
+## Security-release development boundaries
+
+Meteor 3.4.4, 3.5.5 and 3.6.1 validate the Meteor tool's HMR WebSocket
+messages and require the current app ID and secret for registration, including
+`web.cordova`. An Origin header or native architecture is not authentication.
+The tool supplies the native runtime secret; do not expose it in copied logs
+or bypass the handshake. Check that the running tool and generated client
+belong to the same app/run, then rebuild/reconnect. Malformed messages or a
+payload above 64 KiB can close this socket; distinguish it from production
+DDP and native hot code push. Earlier tools lack this hardening. Rspack's
+separate non-native bootstrap restriction still applies.
+
+For Rspack static assets on older release lines, inspect these backports:
+
+| Meteor | `rspack` | `webapp` |
+|---|---|---|
+| 3.4.4 | 1.1.1 | 2.1.4 |
+| 3.5.5 | 1.3.2 | 2.3.1 |
+
+They keep Rspack 1 and make response metadata request-local, refresh resolver
+ordering after rebuilds, and return a non-cacheable 404 for a missing asset
+instead of app HTML. Compare URL/prefix, status, content type and cache headers
+before and after a real rebuild. An older package can lack these fixes;
+inspect a compatible patch before replacing the bundler, disabling HMR or
+editing generated manifests. Do not attribute every 404 to the framework:
+verify that the requested asset exists in the current output.
+
 ## SWC native binding cache
 
 For a resolved SWC carrier distribution that unpacks its native addon,
