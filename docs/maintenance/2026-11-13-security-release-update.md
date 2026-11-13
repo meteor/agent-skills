@@ -1,5 +1,10 @@
 # Agent Skills update for Meteor 3.6.1 and security backports
 
+The initial beta/outside-contributor plan below was superseded by the owner's
+request for verified direct stable publication and proportionate release rules.
+Current verification and publication status lives in [the 1.1.1 handoff](../releases/v1.1.1.md).
+The original implementation and evaluation history is retained here.
+
 ## Scope and plan
 
 Use the [incremental audit](../../audits/skill-gaps/2026-11-13-meteor-security-releases.md)
