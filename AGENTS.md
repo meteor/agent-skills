@@ -237,6 +237,6 @@ generator. Hand edits inside the markers are reverted on next run.
 1. Validator must pass.
 2. Link checker must pass.
 3. The skill body is <=8 KB; bigger content moves to `references/`.
-4. For a new skill, routing change, or high-risk guidance change, at least one outside contributor runs the affected cases in `references/eval-cases.md` against Claude Code or Cursor.
+4. For a new skill, routing change, or high-risk guidance change, prefer an outside contributor running the affected cases in Claude Code or Cursor. The release owner may accept documented maintainer-run source and behavior checks instead; record that decision and limitations without claiming independent acceptance. Unresolved correctness failures still block release.
 5. New skills, routing changes, and high-risk decision changes add or update the smallest relevant cases in `references/eval-cases.md`. Run affected prompts in fresh conversations or disposable projects and record their outcomes in the PR.
 6. The PR description links to the relevant v3-docs section(s).

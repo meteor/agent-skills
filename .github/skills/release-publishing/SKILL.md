@@ -19,15 +19,25 @@ changing release state.
 | Public beta | Public | `X.Y.Z-beta.N` and `vX.Y.Z-beta.N` | Test the exact remote installation path. |
 | Stable | Public | `X.Y.Z` and `vX.Y.Z` | Publish the accepted catalog and submit it to directories. |
 
-A GitHub repository does not need to be public for local working-tree tests.
-It must be public before testing installation through
-`meteor/agent-skills@<tag>` or submitting to public directories.
+Local tests can use a private repository; public remote installs and directory
+submissions require a public one. Independent catalog releases do not require
+Meteor audits, compatibility mappings or artifact gates. Apply coordination
+below only when intentionally pairing the catalog with a Meteor release.
 
-Catalog releases may be published independently for skill additions, corrections,
-evaluation improvements, packaging changes, or other catalog maintenance. For an
-independent release, follow the normal beta or stable flow without requiring a Meteor
-release audit, compatibility mapping, or Meteor artifact gates. Apply the coordinated
-rules below only when the catalog is intentionally paired with a Meteor release.
+Choose verification from the changed behavior, not the version label alone.
+An existing-skill correction can go directly to stable when source review and
+affected cases pass, distribution mechanisms are unchanged, and candidate
+installation/update checks pass. Record why that path fits. A security-related
+correction still needs its security boundaries checked; it does not automatically
+need a beta. Prefer a tested beta for new distribution/client behavior, broad
+routing or compatibility changes, or uncertainty that remote testing can resolve.
+Never waive an observed failure because the version is a patch.
+
+For direct stable, test upgrades from the previous stable release to the local
+candidate, then repeat installs and upgrades from the exact published tag.
+For beta promotion, verify the accepted beta and review/test any later delta;
+publish another beta when that delta needs remote acceptance. Apply the review
+evidence policy in `AGENTS.md`; do not invent independent contributor results.
 
 ## Preserve the release branch
 
@@ -36,13 +46,14 @@ release PR branch. Record its repository, branch, PR and freshly fetched head SH
 Keep preparation, audits and post-publication records on that same branch/PR.
 Leave the PR open and the branch unmerged after publication; do not merge, close
 or delete either project's release branch/PR just to publish or finish cleanup.
-Publication approval is not merge approval. A merge requires a separate explicit
-user request, including during stable promotion.
+Beta publication does not authorize merging either project's release PR.
 
 Use the clean reviewed PR head as the beta candidate, not `main` or a synthetic
 PR merge commit. Green CI must cover that exact content; default-branch CI alone
 is insufficient. For stable publication, retain the reviewed, merged default-branch
-candidate gate, but ask for merge authorization if it is not already granted.
+candidate gate. Resolve merge authorization from the user's requested scope:
+an end-to-end stable release can include the necessary catalog PR merge;
+preparation alone cannot. Preserve any explicit no-merge instruction.
 For beta/RC, if the PR is already merged/closed or its branch is missing, ask which
 branch to use; do not silently create a replacement PR or rewrite history.
 
@@ -58,9 +69,6 @@ not derive one version from the other.
 | Beta | Public beta, `X.Y.Z-beta.N` |
 | RC | Public beta, `X.Y.Z-beta.N` |
 | Official | Stable, `X.Y.Z` |
-
-The documented catalog stages are public beta and stable, so a Meteor RC remains paired
-with an Agent Skills beta unless the repository adopts a separate RC policy.
 
 Before preparing the catalog version:
 
@@ -84,24 +92,13 @@ choose whether to keep the reviewed candidate or update it. Updating requires a 
 audit of every affected catalog claim and another validation pass.
 
 Publish the Agent Skills tag only after the paired Meteor packages, tool builds, and
-bootstrap tarballs are live. A stable catalog must be based on a tagged beta that
-passed local checks, remote installation tests, and affected behavioral cases. If its
-guidance changed afterward, publish and test another beta before stable promotion.
+bootstrap tarballs are live. Use the direct-stable or beta-promotion path above;
+pairing with an official Meteor release does not itself require a catalog beta.
 
-After publication, record the exact Meteor-to-catalog mapping and live GitHub release
-URL in the release handoff. Request Meteor's dedicated Agent Skills changelog section
-only when this is a newly published paired tag and its remote installation tests pass;
-otherwise the section must be omitted, not filled with `N/A`. Independent catalog
-releases never create that Meteor changelog section.
-
-Use the concise client-neutral changelog shape in `RELEASING.md`: the verified
-release link and generic `npx skills add 'meteor/agent-skills#<tag>'`
-command must use the same exact tag. Test that command remotely and compare
-installed files with the tag. Link to the official
-[Meteor Agent Skills guide](https://docs.meteor.com/ai/agent-skills); keep
-client-specific commands in the catalog's release notes. Put the current
-Skills CLI Node requirement beside the short command and keep the older-Node
-installer pin in separate compatibility guidance.
+Record the exact mapping and live release URL in the handoff. Only a newly
+published paired tag with passing remote tests gets a Meteor changelog section;
+otherwise omit it. Follow `RELEASING.md` for its tested exact-tag command,
+client-neutral format, guide link and installer runtime requirements.
 
 ## Prepare the version
 
@@ -112,15 +109,13 @@ version in both plugin manifests with:
 pnpm release:bump 1.0.0-beta.1
 ```
 
-Use a stable version only after its beta has passed local and tagged remote
-installation tests:
+Use a stable version after selecting and recording its verification path:
 
 ```bash
 pnpm release:bump 1.0.0
 ```
 
-Do not add versions to `package.json` or individual `SKILL.md` files. The
-repository tag identifies the complete catalog snapshot.
+Version the catalog tag and both manifests, not `package.json` or individual skills.
 
 ## Verify
 
@@ -130,8 +125,8 @@ release, complete [stable consolidation](references/verification-and-handoff.md#
 For every release, use the same reference for complete-plugin packaging,
 isolated installation/update checks and post-publication report retention.
 
-Test from the working tree before making the repository public. After pushing a
-beta tag, repeat the Codex, Claude Code, and individual-skill installations
+Test from the working tree before publication. After pushing any release
+tag, repeat the Codex, Claude Code, and individual-skill installations
 from that exact tag.
 
 For changes to release decisions, run the affected
@@ -143,7 +138,8 @@ Treat preparation and publication as separate operations.
 
 - A request to prepare a release authorizes local version changes and checks.
 - A request to publish a release authorizes the requested commit, tag, push,
-  and GitHub release flow on the selected branch, not a PR merge or closure.
+  and GitHub release flow. Resolve the necessary stable catalog merge as above;
+  do not extend that scope to other repositories or beta PR cleanup.
 - Marketplace submissions require the publisher account, approved listing
   details, and explicit authorization for that submission.
 

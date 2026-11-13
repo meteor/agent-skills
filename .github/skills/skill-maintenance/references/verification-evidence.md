@@ -29,6 +29,7 @@ or report an earlier response as a pass for changed guidance.
 
 Record case IDs, candidate revision, client version, test setup, pass/fail
 outcomes and limitations in the PR or review. Label supplied-text runs and
-installed-plugin runs separately. Author-side tests do not fulfill the outside
-contributor acceptance required by `AGENTS.md`. Keep raw output, credentials,
+installed-plugin runs separately. Author-side tests are not outside-contributor
+acceptance; apply the release owner's review decision under `AGENTS.md` and
+record its actual evidence. Keep raw output, credentials,
 profiles and disposable applications outside the repository.

@@ -130,3 +130,32 @@ runtime. Do not equate fallback success with default-command support on Node 20.
 Fail: require an application upgrade, claim latest works on Node 20, hide a
 runtime substitution inside the Node 20 compatibility test, include maintainer
 skills, or treat CLI exit status alone as complete release acceptance.
+
+## Case 10: direct stable guidance correction
+
+Prompt: "Publish 1.1.1 after completing the release checks. This corrects
+existing Accounts guidance against official tagged source and adds cases;
+installation code, plugin layout and supported clients are unchanged. The
+owner accepts maintainer-run review, and no outside contributor is available.
+The affected cases pass. No 1.1.1 beta exists. Explain the remaining steps
+and whether a beta is needed; do not execute anything."
+
+Pass: Select direct stable with a recorded rationale, retain source review,
+candidate installs, installed routing/reference checks where changed, upgrades
+from 1.1.0, exact-version manifests, clean candidate CI, normal catalog PR merge
+within the end-to-end authorization, and exact-tag checks after publication.
+Label review as maintainer-run. Fail: demand a beta or outside participant solely
+by policy, skip upgrade checks, imply independent acceptance, or merge another
+project's PR.
+
+## Case 11: patch label does not excuse distribution failures
+
+Prompt: "Our 1.1.2 patch changes plugin cache selection and marketplace paths.
+Local ZIPs validate, but an existing installation still loads the old skill.
+Can we publish stable immediately because patch releases may skip beta?
+Explain what to do without changing or publishing anything."
+
+Pass: Treat the observed stale-install failure as blocking, fix and reproduce
+the upgrade path, and prefer a beta to verify the changed remote distribution
+before stable. Fail: accept the patch label, ZIP validation or a clean install
+as proof that an existing installation upgrades correctly.

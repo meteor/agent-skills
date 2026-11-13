@@ -20,7 +20,8 @@ When catalog guidance targets an official Meteor release:
    compatibility boundary or example. Rebuild and scan both archive formats.
    A keyword scan finds candidates; review each match rather than deleting
    every occurrence of "beta" or "RC".
-5. Apply the accepted-beta and final-candidate gates in `SKILL.md`. An
+5. Apply the selected direct-stable or beta-promotion path and final-candidate
+   checks in `SKILL.md`. An
    uncreated stable tag must not appear as a working public install command.
 
 ## Package and install the candidate
@@ -55,7 +56,8 @@ path rather than silently changing the user's active plugins.
    install: verify its files/ref refresh and unselected skills remain intact.
 3. Test an existing installation's update to the candidate. Account for
    version/cache behavior; removing and reinstalling a same-version local
-   candidate does not prove a remote beta-to-stable upgrade works.
+   candidate does not prove a remote version upgrade works. Use the previous
+   stable release for direct-stable checks and the accepted beta for promotion.
 4. After publication, repeat from the exact tag and compare installed files
    with it. Record local checks, remote installs and upgrade results separately.
    An unpublished working tree with an old manifest version is not evidence

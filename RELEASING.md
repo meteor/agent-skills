@@ -12,8 +12,11 @@ human review.
 - Keep the version in `.codex-plugin/plugin.json` and
   `.claude-plugin/plugin.json` identical.
 - Bump both versions deterministically with `pnpm release:bump X.Y.Z`.
-- Use `1.0.0-beta.1` for the first public installation test, then increment the
-  prerelease number only when publishing another beta.
+- Select direct stable or beta promotion using the publishing skill's
+  [release-stage criteria](.github/skills/release-publishing/SKILL.md#choose-the-release-stage).
+  Existing-skill corrections with unchanged distribution can release directly
+  after source, behavior and candidate installation/update checks. Use a beta
+  when remote testing is needed to establish new distribution or compatibility.
 - Choose the matching `vX.Y.Z` repository tag for the complete catalog
   snapshot, for example `v1.0.0-beta.1`.
 - Regenerate the catalog with `pnpm run catalog:write`.
@@ -36,8 +39,10 @@ publication records in the same PR. Do not create follow-up branches just to pub
 or update installation links. Do not merge, close or delete the Meteor release
 branch/PR either. Publishing does not authorize those actions.
 
-Stable publication retains the reviewed, merged default-branch candidate gate;
-merging still requires a separate explicit user request. For beta/RC, if the PR is
+Stable publication retains the reviewed, merged default-branch candidate gate.
+An end-to-end stable release request can authorize the necessary catalog PR merge;
+preparation alone cannot, and explicit no-merge instructions remain binding.
+For beta/RC, if the PR is
 already merged/closed or its branch is missing, ask for a target instead of
 automatically recreating a branch or PR.
 
@@ -56,10 +61,11 @@ Agent Skills publish commit: <tag target commit SHA>
 Agent Skills tag: <vX.Y.Z-beta.N or vX.Y.Z>
 ```
 
-Use a public Agent Skills beta for both Meteor beta and RC releases. Use a stable Agent
-Skills version for an official Meteor release only after its tagged beta passed local
-checks, exact-tag remote installations, and affected manual cases. The two projects
-have independent version sequences; never mirror the Meteor version automatically.
+Use a public Agent Skills beta for both Meteor beta and RC releases. For an official
+Meteor release, select direct stable or beta promotion by the catalog's actual delta.
+Both paths require source/behavior checks, candidate installations and upgrades,
+and exact-tag remote verification after publication. Record the chosen path and
+review evidence. The projects have independent version sequences.
 
 The first release audit may include approved but uncommitted Meteor documentation.
 Before tagging, require an audit against the final Meteor release commit. Preserve a
@@ -122,7 +128,7 @@ claude plugin validate .claude-plugin/plugin.json --strict
 - For a coordinated Meteor beta or RC, run every affected manual case and at least one
   realistic updated-skill workflow against the exact Meteor candidate.
 - For a coordinated official release, repeat the exact-tag installation smoke tests
-  with the stable catalog and confirm it preserves the accepted beta behavior.
+  and confirm the stable catalog preserves the accepted candidate behavior.
 
 ## Test the plugin locally
 

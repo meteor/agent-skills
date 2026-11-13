@@ -87,10 +87,11 @@ Do not expose the documented pass and fail conditions until the run ends. Keep
 temporary projects and raw output outside this repository. Record each affected
 case and its pass or fail result in the PR.
 
-For a new skill, routing change, or high-risk guidance change, ask an outside
-contributor to run the affected cases against Claude Code or Cursor and record
-the results in the PR. Static CI validates that case files exist but does not
-invoke a model.
+For a new skill, routing change, or high-risk guidance change, prefer outside
+contributor acceptance in Claude Code or Cursor. The release owner may accept
+documented maintainer-run source and behavior checks under `AGENTS.md`; record
+that decision, actual results and limitations. Static CI validates that case
+files exist but does not invoke a model.
 
 ## Reporting an issue
 
