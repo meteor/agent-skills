@@ -8,10 +8,10 @@ Agent Skills for AI assistants helping developers build, debug, migrate, and ope
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-[Version 1.1.0](https://github.com/meteor/agent-skills/releases/tag/v1.1.0)
-consolidates guidance around official Meteor 3.6, including MongoDB recovery,
-Accounts, deployment and native TypeScript. Earlier Meteor 3 compatibility
-branches remain explicit. See the [verification handoff](./docs/releases/v1.1.0.md).
+[Version 1.1.1](https://github.com/meteor/agent-skills/releases/tag/v1.1.1)
+updates guidance for Meteor 3.6.1, 3.5.5 and 3.4.4, including Accounts security,
+authenticated fetch, Mongo query fallbacks and native rebuilds. Earlier Meteor 3
+compatibility branches remain explicit. See the [verification handoff](./docs/releases/v1.1.1.md).
 
 ## Install
 
@@ -32,7 +32,7 @@ To install the official release, pin the marketplace checkout to its
 repository tag:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0
+codex plugin marketplace add meteor/agent-skills --ref v1.1.1
 codex plugin add meteor@meteor
 ```
 
@@ -49,7 +49,7 @@ To install the official release, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.0
+claude plugin marketplace add meteor/agent-skills#v1.1.1
 claude plugin install meteor@meteor
 ```
 
@@ -74,7 +74,7 @@ npx skills add meteor/agent-skills
 To install the official release, pin the catalog tag:
 
 ```bash
-npx skills add 'meteor/agent-skills#v1.1.0'
+npx skills add 'meteor/agent-skills#v1.1.1'
 ```
 
 Reinstalling replaces the selected existing skill directories, leaving
@@ -103,7 +103,7 @@ On Meteor 3.0's Node 20 or Meteor 3.1's Node 22.11, use the tested compatible
 installer without changing your application's runtime:
 
 ```bash
-npx skills@1.5.18 add 'meteor/agent-skills#v1.1.0'
+npx skills@1.5.18 add 'meteor/agent-skills#v1.1.1'
 ```
 
 The installer version and catalog tag are independent. Use the same installer
@@ -350,11 +350,11 @@ the old marketplace registration before adding a different ref:
 
 ```bash
 codex plugin marketplace remove meteor
-codex plugin marketplace add meteor/agent-skills --ref v1.1.0
+codex plugin marketplace add meteor/agent-skills --ref v1.1.1
 codex plugin add meteor@meteor
 ```
 
-This path was tested from beta.4 to stable 1.1.0 without removing the plugin first.
+This path was tested from stable 1.1.0 to 1.1.1 without removing the plugin first.
 Restart Codex after the update.
 
 Remove the Meteor plugin:
@@ -381,11 +381,12 @@ claude plugin marketplace list
 To update an existing marketplace pinned to an earlier tag:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.0
+claude plugin marketplace add meteor/agent-skills#v1.1.1
 claude plugin update meteor@meteor
 ```
 
-Use the same scope as the existing installation, for example `--scope local`
+This path was tested from stable 1.1.0 to 1.1.1. Use the same scope as the
+existing installation, for example `--scope local`
 on both commands for a local project installation. Restart Claude Code after
 the update.
 
