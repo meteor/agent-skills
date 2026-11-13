@@ -18,7 +18,7 @@ metadata:
   area: ops
   tagline: "Ship Meteor 3 apps to production (meteor build, Galaxy, Docker/Kubernetes, settings.json, env vars, Node version matching)."
   bundle: ["ops"]
-  docs_synced_at: "2026-10-07"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 
@@ -40,10 +40,10 @@ Match the Node version to the bundled Meteor Node:
 | 3.0 | 20 |
 | 3.1 through 3.4 | 22 |
 | 3.5.x | 24 |
-| 3.6 | 26 (26.13.0) |
+| 3.6.x | 26 |
 
 Run `meteor node -v` and `meteor npm -v` in the target app to confirm.
-Meteor 3.6 bundles npm 11.20.0. Match the deployed runtime and native
+Match the deployed runtime and native
 dependency build environment to that release; rebuild and test native npm
 modules for Node 26 and the production architecture before deployment.
 An extracted bundle records its exact Node version in

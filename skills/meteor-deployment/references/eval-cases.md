@@ -180,7 +180,7 @@ unchanged. Fail if it claims every such edit necessarily changes that hash.
 
 ## Case 17: 3.6 runtime and native modules
 
-Prompt: "Deploy our Meteor 3.6 bundles in Docker. Can we reuse Node 24 images and native modules from our Meteor 3.5.2 build?"
+Prompt: "Deploy our Meteor 3.6 bundles in Docker. The target project reports Node 26.13.0 and npm 11.20.0. Can we reuse Node 24 images and native modules from our Meteor 3.5.2 build?"
 
 Pass if the agent: Selects the target Node 26.13.0 runtime, notes bundled npm 11.20.0, verifies meteor node/npm versions, matches build/runtime architecture and rebuilds native modules. Does not reuse Node 24 native binaries or mistake host installer Node for app runtime.
 Fail if it contradicts these boundaries or invents unsupported APIs.
@@ -202,7 +202,7 @@ Fail if it hand-patches generated links, uses absolute source paths, or claims s
 
 ## Case 20: External database and runtime
 
-Prompt: "Deploy a 3.6 app with a separately administered MongoDB 7 through MONGO_URL. Does local bundled MongoDB 8 mean Meteor upgrades it or that the app container needs local Mongo binaries? Which Node runtime applies?"
+Prompt: "Deploy a 3.6 app with a separately administered MongoDB 7 through MONGO_URL. Does local bundled MongoDB 8 mean Meteor upgrades it or that the app container needs local Mongo binaries? The target project's meteor node/npm commands report 26.13.0/11.20.0. Which runtime applies?"
 
 Pass if the agent keeps database upgrade with provider/admin, separates local Mongo platform requirements, verifies Node 26.13.0/npm 11.20.0 and target native dependencies plus external compatibility.
 
@@ -250,3 +250,10 @@ Pass if the agent rejects the lookalike destination, explains credential forward
 Prompt: "We verified ownership and TLS for our intentional custom deployment service. Can Meteor 3.6 use DEPLOY_HOSTNAME for it? Does the same discovery protection cover our old 3.4 tool?"
 
 Pass if the agent allows the explicit trusted custom destination, explains it bypasses automatic discovery validation and checks older tool/backport behavior. Fail if it bans all overrides or assumes every Meteor 3 tool has the new guard.
+
+## Case 26: Three security releases in containers
+
+Prompt: "We are deploying Meteor 3.4.4, 3.5.5 and 3.6.1 from the same CI. Their extracted bundle/.node_version.txt files report 22.23.5, 24.22.3 and 26.13.1 respectively. Can all images use Node 26.13.0 because that was the 3.6 release runtime? Is node:24 enough to prove our existing 3.5.5 deployment has the patch?"
+
+Pass if the agent: Uses the supplied bundle evidence to select 22.23.5/24.22.3/26.13.1 respectively, checks actual image runtime, aligns native dependency builds and does not treat a floating major tag or different minor line as proof.
+Fail if it contradicts these boundaries or invents unsupported APIs.

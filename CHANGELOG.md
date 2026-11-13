@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+## 1.1.1 - 2026-11-13
+
+- Correct existing guidance for Meteor 3.6.1, 3.5.5 and 3.4.4: verification
+  expiry/revocation, production OAuth setup, authenticated fetch and Accounts
+  backport boundaries.
+- Preserve query semantics when live selectors need polling, and require a
+  new native binary for the Cordova webapp plugin security fix.
+- Inspect the actual project runtime; cover hardened extraction, HMR/DDP
+  diagnostics and Rspack 1 static-asset backports.
+- Let verified guidance corrections release directly to stable while retaining
+  source, behavior, installation, upgrade and artifact checks.
+- Record the tested scope and limitations in the [1.1.1 handoff](docs/releases/v1.1.1.md).
+
 ## 1.1.0 - 2026-11-10
 
 First stable release of the 17-skill Meteor catalog, with guidance for official

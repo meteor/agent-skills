@@ -19,6 +19,12 @@ Inspect `.meteor/versions`, `package.json`, and the lockfile. Do not install an
 arbitrary `@meteorjs/rspack` major to obtain one helper; upgrade the Meteor
 release and its paired dependencies.
 
+Meteor 3.4.4 backports static-asset fixes in `rspack@1.1.1` with
+`webapp@2.1.4`; 3.5.5 uses `rspack@1.3.2` with `webapp@2.3.1`.
+Both retain Rspack 1. Do not install the 3.6 npm integration to obtain these
+fixes. For missing assets, stale response headers or rebuild resolver ordering,
+use `meteor-debugging`'s build reference and verify the actual locked pairing.
+
 ## Required npm dependencies
 
 With `rspack@1.3.0` and `tools-core@1.3.0` (Meteor 3.5.2), the shared manager

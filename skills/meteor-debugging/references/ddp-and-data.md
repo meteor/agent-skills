@@ -71,6 +71,12 @@ For oversized events, lost history or a reconnect between fragments, inspect
 Use `meteor-mongo-minimongo` for split-event recovery and observer resync;
 verify resulting DDP/Minimongo state instead of clearing client collections.
 
+Meteor 3.4.4 (`ddp-server@3.2.3`), 3.5.5 (`3.5.1`) and 3.6.1 (`3.6.1`)
+harden malformed control frames and contain handler failures. Inspect the frame and resolved
+package before adding retries; earlier packages lack these guards. Keep
+argument validation and authorization in application methods/publications.
+DDP protocol checks do not protect the separate development HMR socket.
+
 ## Mongo and Minimongo inspection
 
 On Meteor 3.6, `mongo@2.6.0` separately fixes fieldless
@@ -80,6 +86,12 @@ and distinguish it from 3.6's pending-stub duplicate-add fix. Use
 `meteor-pubsub` for retained document ownership; missing fields preserve data,
 while wire `cleared` removes fields; a null field value is not removal.
 Do not clear shared Minimongo data.
+
+After a 3.4.4, 3.5.5 or 3.6.1 update, a query can legitimately switch to
+polling because its live selector differs from MongoDB semantics. For `$type`,
+negated `$elemMatch`, PCRE-only regexes or divergent collation, use
+`meteor-mongo-minimongo` to check package pairing and fallback. Do not strip
+the selector, clear Minimongo or force a live driver as a diagnostic shortcut.
 
 Use the local shells for read-first evidence:
 

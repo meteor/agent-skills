@@ -44,6 +44,26 @@ provider-specific credential fields change.
 - `"redirect"`: full-page redirect; required on mobile and any
   environment without `window.close` / `window.opener`.
 
+## Production service configuration
+
+Meteor 3.4.4 (`accounts-base@3.2.2`), 3.5.5 (`3.3.2`) and 3.6.1
+(`3.4.1`) restrict client calls to `configureLoginService` to development
+by default. The `accounts-ui` setup dialog can therefore fail in production
+even though normal provider login remains supported.
+
+Configure provider credentials in server code or private `Meteor.settings`.
+The server-only `Accounts.config({ allowClientServiceConfiguration: true })`
+opt-in restores client configuration, including an unauthenticated visitor's
+ability to claim the first configuration. Do not enable it as the routine
+production repair; it is not an administrator authorization check. Setting
+it to `false` also disables the development dialog. Server-originated calls
+remain allowed.
+
+Earlier package pairings lack this protection and reject the unknown
+`allowClientServiceConfiguration` option in `Accounts.config`.
+Prepare server-owned configuration and a compatible upgrade rather than
+assuming an unconfigured production service is protected.
+
 ## Client login
 
 ```javascript

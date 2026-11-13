@@ -13,7 +13,7 @@ metadata:
   area: data
   tagline: "Write and debug Mongo queries in Meteor 3 (server async vs Minimongo, oplog vs change streams, indexes, selectors, modifiers)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-10-07"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 
@@ -143,9 +143,15 @@ require fallback. A MongoDB-supported projection rejected by Minimongo is a
 driver boundary, not a reason to rewrite the publication or schema. Verify
 fallback before proposing that broader change. Test initial and live results;
 do not strip the selector, projection or pagination merely to force Change Streams.
-Earlier 3.5 packages can choose the wrong driver for `$where`/`$near`;
+The 3.5.5 backport (`mongo@2.5.2`) also declines `$where`/`$near`.
+Earlier 3.5 packages can choose the wrong driver;
 on a constrained release, use a supported polling configuration or an
 authorized compatible upgrade and rerun the exact query.
+
+Meteor 3.4.4, 3.5.5 and 3.6.1 add further live-selector guards for `$type`,
+negated `$elemMatch`, PCRE-only regexes and divergent collations. Preserve
+the query and verify polling, using the exact package pairs and earlier-version
+branches in [selector compatibility](references/selectors-modifiers.md#live-selector-compatibility).
 
 On Meteor 3.5+, override the app-wide order with
 `METEOR_REACTIVITY_ORDER=oplog,polling` or:

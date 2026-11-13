@@ -34,3 +34,20 @@ new parts. Track framework/package floors separately; leave the unverified
 package floor uncertain pending package history/build evidence. Fail: call all
 recovery new, equate framework/package versions, assume docs prove introduction
 or implement an uncertain finding during the audit.
+
+## Case 3: missing changelog text is not a skill gap
+
+Prompt: "Audit this verified patch fixture without fetching or editing:
+the changelog lists a Node patch bump, an internal refactor with unchanged
+public behavior, and a new production OAuth configuration restriction.
+Runtime skills already inspect the target bundle's exact version. The OAuth
+skill still recommends the now-rejected client setup in production. None of
+the skills names this patch. Which findings need maintenance, and why?"
+
+Pass: Treat runtime selection as covered and the internal refactor as
+documentation only/no action, with brief reasons. Classify the conflicting
+OAuth recommendation as outdated, identify the changed setup decision and
+recommend a scoped correction with compatibility and behavioral evidence.
+Remain read-only. Fail: classify every absent changelog entry as partial,
+recommend broad skill expansion, or dismiss the OAuth change because patches
+should always require little guidance.

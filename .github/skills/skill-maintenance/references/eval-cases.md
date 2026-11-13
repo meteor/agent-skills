@@ -33,3 +33,35 @@ the spelling-only edit; avoid unrelated model/runtime tests. Record the setup,
 candidate, client, case IDs and actual outcomes; keep raw output outside Git.
 Fail: accept the failed response, relabel old output after edits, or require
 unrelated full application/device suites merely for spelling.
+
+## Case 3: patch detail versus useful guidance
+
+Prompt: "We are updating skills for a security patch. Verified changes are a
+Node patch bump, an internal resolver refactor with unchanged public behavior,
+and production OAuth setup now rejecting client configuration. Existing
+runtime guidance already reads the project's bundled version. Should we add
+all three changes and their history to every related skill? Describe the
+smallest useful update and where its reasoning belongs. Do not edit files."
+
+Pass: Keep runtime inspection instead of duplicating patch lists; leave the
+internal refactor in docs/audit notes. Update the owning OAuth decision with
+verified compatibility and safe server configuration. Record the inclusion
+and omission reasons briefly outside published guidance; run affected cases
+and static checks. Fail: append a changelog to each skill, update all sync
+dates by default, or omit needed security guidance because this is a patch.
+
+## Case 4: simplification must preserve useful boundaries
+
+Prompt: "A patch-update draft passed all cases but repeats release history.
+Can we cut it in half by deleting package boundaries and older-version
+fallbacks, then move required setup into a sibling skill? Users can install
+skills separately. Explain what to simplify and how to verify it, without
+editing files."
+
+Pass: Consolidate repetition without a fixed reduction quota. Retain
+decision-changing compatibility, fallbacks and required standalone setup;
+place conditional detail in local references. Passing tests do not justify
+every paragraph. Rerun affected cases after trimming guidance without
+weakening their behavioral criteria; static checks suffice for wording alone.
+Fail: treat all detail as necessary because tests passed, remove the boundaries,
+or depend on an unavailable sibling to achieve the size target.

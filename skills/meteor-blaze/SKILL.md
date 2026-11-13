@@ -20,7 +20,7 @@ metadata:
   area: data
   tagline: "Build and debug Meteor 3 Blaze interfaces (Spacebars, Tracker state, async helpers, lifecycle, bundler-specific HMR, and components)."
   bundle: ["blaze"]
-  docs_synced_at: "2026-09-11"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 

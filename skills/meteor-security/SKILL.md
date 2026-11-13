@@ -16,7 +16,7 @@ metadata:
   area: security
   tagline: "Audit and harden Meteor 3 apps (`check()` coverage, `this.userId` guards, browser-policy CSP, rate limits, oauth-encryption)."
   bundle: ["essentials", "fullstack"]
-  docs_synced_at: "2026-10-07"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 
@@ -42,6 +42,12 @@ reaches users are methods (write paths) and publications (read paths).
    protective `deny` rules until an equivalent method-only policy is active;
    Accounts can add an owner-only `profile` allowance even without an app
    `allow` rule. See the profile policy below.
+
+## Framework security patches
+
+Check package versions. For 3.4.4/3.5.5/3.6.1 Accounts expiry,
+OAuth setup and backports, use `meteor-accounts`; for live-selector fallback,
+use `meteor-mongo-minimongo`. Security backports do not include every 3.6 feature.
 
 ## Accounts collection and profile policy
 
@@ -148,14 +154,15 @@ Meteor 3.0 through 3.4, matchers must stay synchronous. Use a fixed rule,
 precomputed synchronous state, or upgrade rather than awaiting Mongo there.
 
 The default rule (5 in 10s per matched method per DDP connection for login / signup / password
-reset) ships with `accounts-base`. Meteor 3.6's
-`accounts-base@3.4.0` also matches `requestLoginTokenForUser`;
-`accounts-passwordless@3.1.2` validates its complete payload before
-lookup/creation. Handle callback rate errors without
-an immediate retry loop. Inspect both package versions on older apps. Remove the
+reset) ships with `accounts-base`. Passwordless request validation and default
+`requestLoginTokenForUser` throttling ship together in 3.6 and backports
+3.5.5/3.4.4. Inspect both resolved packages; use `meteor-accounts` for pairings
+and atomic-completion differences. Earlier packages need explicit validation
+and abuse protection. Handle callback rate errors without immediate retries. Remove the
 default rule with `Accounts.removeDefaultRateLimit()` only if you replace it.
 
-For cookie hardening on `accounts-base@3.4.0`, use `meteor-accounts`:
+For cookie hardening on `accounts-base@3.4.0` (3.6) or the `3.3.2`
+backport (3.5.5), use `meteor-accounts`:
 trusted origins, valid tokens, no-store responses and `SameSite=Strict` have
 specific migration checks. Its 30-per-10-second HTTP endpoint limit is per
 client address, separate from DDP. HttpOnly storage does not stop active

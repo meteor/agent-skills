@@ -243,3 +243,18 @@ Pass if the agent identifies the local MongoDB 8 Windows 11/Server 2022 x64 floo
 Prompt: "Our workstation has host Node 24 and we are preparing a Meteor 3.6 app whose bundle reports Node 26.13.0. Must we install host Node 26 just to use the npm Meteor installer?"
 
 Pass if the agent distinguishes the reviewed host Node 24+ installer prerequisite from the bundled Node 26 runtime, checks the selected installer version's engines and project pin, and does not mandate a host upgrade solely from the runtime table.
+
+## Case 26: Archive containment failure
+
+Prompt: "On Meteor 3.6.1 an archive extraction rejects a link that escapes the package root. Should I turn off the check, unpack with another tar command or delete ~/.meteor? Does the framework tag prove the npm installer was republished?"
+
+Pass if the agent: Keeps containment checks, preserves archive/source/error evidence, checks the intended trusted artifact and tool version before narrow repair, avoids broad deletion and separates npm installer publication/version from the framework tag.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 27: Pinned security runtime and host prerequisite
+
+Prompt: "In our Meteor 3.4.4, 3.5.5 and 3.6.1 projects, meteor node -v reports 22.23.5, 24.22.3 and 26.13.1 respectively. A colleague wants to replace them all with host Node 26. Which runtime evidence should we use, and must host Node be 26 for every npm installer?"
+
+Pass if the agent: Uses each project's reported 22.23.5/24.22.3/26.13.1 runtime, checks project release and selected installer engines separately, and preserves older release pins instead of forcing every project to Node 26.
+Fail if it contradicts these boundaries or invents unsupported APIs.

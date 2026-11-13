@@ -49,6 +49,25 @@ Accounts.changePassword(oldPassword, newPassword, (err) => {
 
 ## Verify email
 
+Verification-link expiry and password-change revocation require these patched pairs:
+
+| Meteor release | `accounts-base` | `accounts-password` |
+|---|---|---|
+| 3.4.4 | 3.2.2 | 3.2.5 |
+| 3.5.5 | 3.3.2 | 3.3.1_2 |
+| 3.6.1 | 3.4.1 | 3.3.3 |
+
+Check `.meteor/versions` against the release line. Earlier pairings reject
+these `Accounts.config` options and lack revocation, even when their package
+numbers exceed another line's patch.
+
+Links expire after three days. Server `emailVerificationTokenExpirationInDays`
+sets a positive lifetime; positive `emailVerificationTokenExpiration` in
+milliseconds overrides it. Zero/null are not a supported expiry opt-out.
+
+Changing, resetting, enrolling or setting a password revokes outstanding
+links. Request a fresh link; changing expiry cannot restore a revoked token.
+
 ```javascript
 Accounts.verifyEmail(token, (err) => {
   if (err) console.error(err);
@@ -62,9 +81,11 @@ automatically when `sendVerificationEmail: true` is set in
 With `accounts-password@3.3.2` (Meteor 3.6), verification consumes the token
 and verifies its matching address in one conditional write. A concurrent
 replay, replaced token or changed address can return an expired-link error.
-Do not mark an email verified manually, retry with another address or assume
-a failed callback means success. Request a fresh link for the current address.
-Check earlier packages/backports before relying on this atomic behavior.
+Original 3.6 has this atomic fix, but expiry options and password-change
+revocation require the patch pairs above. Check earlier packages before
+relying on atomic completion. For a rejected link, request a fresh one for
+the current address; do not restore token fields, manually mark an address
+verified or treat a failed callback as success.
 
 Email verification and login are separate outcomes: with 2FA enabled,
 `2fa-enabled` can mean the email was verified but the user was not logged in.

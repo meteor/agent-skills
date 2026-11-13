@@ -54,17 +54,30 @@ history. For package APIs, use package history and the resolved package version.
 
 ## Authoring workflow
 
-1. Define one coherent user outcome and the neighboring requests it excludes.
-2. Map every capability advertised in the description to instructions and an evaluation case.
-3. Keep routing and essential decisions in `SKILL.md`. Move conditional detail and long examples into focused references.
-4. Use scripts only for repeated operations where deterministic execution improves reliability.
-5. Preserve naming, frontmatter, writing, compatibility, source footer, and bundle rules from `AGENTS.md`.
-6. Keep only runtime skill content under `skills/<name>/`: `SKILL.md`, `references/`, `scripts/`, and `assets/`. Keep audit reports, raw results, and reviewer-only solutions outside the distributable folder.
-7. Update `docs_synced_at` only after checking the relevant current documentation.
-8. Regenerate the catalog when names, taglines, or bundle membership change.
-9. Add realistic positive, failure, and near-miss evaluation cases. Grade observable behavior instead of exact wording.
-10. Run affected manual cases for a new skill, a description or routing change, a high-risk decision change, or a confirmed behavioral regression.
-11. Run all repository checks before reporting completion.
+1. Define the user outcome and neighboring exclusions. Map advertised capabilities to instructions and cases.
+2. Keep essential decisions in `SKILL.md`, conditional detail in references, and repeated deterministic work in scripts.
+3. Preserve `AGENTS.md` conventions. Keep audit reports, raw results and reviewer-only solutions outside distributable folders.
+4. Update `docs_synced_at` only after checking current documentation. Regenerate the catalog when names, taglines or bundles change.
+5. Follow the evaluation and validation sections below before reporting completion.
+
+## Keep updates proportional
+
+For each addition, name the user task/symptom and the decision it changes.
+Keep release history and internals with no changed action in docs/audit notes.
+Especially for patches, correct existing rules instead of appending release
+summaries or updating every skill. Retain security warnings, package boundaries
+and older-version fallbacks that prevent concrete mistakes, regardless of
+release size.
+
+Consolidate repetition. Keep capability floors and inspect resolved packages
+to select them; read runtime metadata instead of duplicating exact runtime pins.
+Keep partial installations useful: required setup
+must not depend on an unavailable sibling skill.
+
+Briefly explain material keep/trim/docs-only decisions in the PR or maintenance
+record. Passing cases proves behavior, not every paragraph's necessity. After
+trimming decision guidance, rerun affected cases without weakening criteria;
+wording-only edits need static checks. Do not impose a reduction quota.
 
 ## Version-sensitive capabilities
 
@@ -105,14 +118,11 @@ Apply the catalog classification contract in `AGENTS.md` before changing frontma
 
 Use this workflow when [`skill-gap-audit`](../skill-gap-audit/SKILL.md) produced the input:
 
-1. Read the report, its Meteor revision, and the cited documentation, source, or tests.
-2. Confirm each finding still applies to the current skill and Meteor checkout.
-3. Implement only the findings authorized by the user. Do not act on `Covered`, `Documentation only`, or uncertain findings.
-4. Require explicit approval before adding a proposed skill. Prefer an existing skill when it already owns the user outcome.
-5. Read the complete target skill and neighboring skills before editing. Match their structure, terminology, tables, snippets, and reference placement so the change feels native instead of appended.
-6. Update the smallest coherent surface: routing description, decision guidance, supporting reference, evaluation case, and metadata only where each is affected.
-7. Preserve an evidence trail from the report finding to the changed guidance and its acceptance case.
-8. Run validation and confirm the internal maintainer skills remain outside release archives.
+1. Verify the report's findings against its pinned evidence and the current skills/source.
+2. Implement only authorized findings, excluding `Covered`, `Documentation only` and uncertain items. Proposed skills need explicit approval; prefer the existing owner.
+3. Read complete target and neighboring skills. Preserve their useful structure and terminology.
+4. Change only affected routing, decisions, references, cases and metadata. Link findings to guidance and acceptance evidence.
+5. Run validation, including exclusion of maintainer skills from release archives.
 
 An audit finding is evidence for review, not permission to broaden the task. If implementation reveals a materially different scope, stop and ask the user.
 

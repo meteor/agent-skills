@@ -37,9 +37,9 @@ CMD ["node", "main.js"]
 
 This sample targets Meteor 3.1 through 3.4. Match both `node:` tags to the
 bundled Node major: Meteor 3.0 uses Node 20, 3.1 through 3.4 use Node 22,
-and 3.5.x uses Node 24. Meteor 3.6 uses Node 26.13.0 and npm 11.20.0.
-Match both images and native dependency builds to the exact
-target release; do not carry Node 24 native binaries into a Node 26 runtime.
+3.5.x uses Node 24, and 3.6.x uses Node 26. Match both images and native
+dependency builds to the exact target runtime. Check the built image's
+`node -v`; a floating major tag does not prove it contains a required patch.
 Run `meteor node -v` and `meteor npm -v` in the target app, or read the
 extracted bundle's `.node_version.txt`, to verify. On
 M-series Macs targeting x86_64 Linux, add

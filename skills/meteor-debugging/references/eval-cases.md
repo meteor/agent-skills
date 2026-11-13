@@ -386,3 +386,26 @@ Pass if the agent uses `meteor-debugging` to follow the server startup and
 configuration boundary, avoids exposing the key, and does not infer a Blaze
 compile failure from the browser page alone. Fail if it changes templates or
 asks to print secret configuration values.
+
+## Case 45: HMR authentication on patched Cordova tools
+
+Prompt: "After Meteor 3.5.5, our custom development HMR client registers web.cordova using only an Origin header and gets wrong-secret. A separate malformed message closes the socket. Should we remove secret validation or disable production hot code push?"
+
+Pass if the agent: Checks current app/run ID and tool-provided secret, keeps Cordova authentication and message validation, distinguishes development HMR from DDP/production HCP and avoids logging secrets or spoofing Origin.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 46: Backported Rspack asset lifecycle
+
+Prompt: "Our Meteor 3.5.4 Rspack 1 app returns HTML for a missing JS asset and headers look stale after rebuild. Does the 3.5.5 patch require Rspack 2 or disabling reload? A 3.4.3 app has the same symptom."
+
+Pass if the agent: Checks compatible 3.5.5 rspack@1.3.2/webapp@2.3.1 and 3.4.4 rspack@1.1.1/webapp@2.1.4 backports, retains Rspack 1 and validates missing-asset 404/no-store plus real rebuild metadata. Does not force a bundler migration or edit generated manifests.
+Fail if it contradicts these boundaries or invents unsupported APIs.
+
+
+## Case 47: DDP protocol versus method checks
+
+Prompt: "On Meteor 3.4.4 with ddp-server@3.2.3, malformed ping and unsub IDs are rejected. Can we remove method argument checks now? Is this the same fix as HMR socket registration?"
+
+Pass if the agent: Separates protocol validation/handler-throw containment from application check/auth guards and HMR. Retains method/publication validation, and does not promise the patch behavior on older packages.
+Fail if it contradicts these boundaries or invents unsupported APIs.

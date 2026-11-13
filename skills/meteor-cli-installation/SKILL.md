@@ -16,7 +16,7 @@ metadata:
   area: ops
   tagline: "Install, locate, repair, reset, or cleanly reinstall the Meteor 3 CLI with correct version and PATH handling."
   bundle: ["essentials", "migration", "fullstack", "ops", "blaze", "react"]
-  docs_synced_at: "2026-10-07"
+  docs_synced_at: "2026-11-13"
 license: MIT
 ---
 

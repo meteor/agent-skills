@@ -194,7 +194,7 @@ assertions. Fail if it repeats the 1.6.0 workaround unconditionally.
 
 ## Case 20: CI runtime for 3.6
 
-Prompt: "Adapt our Node 24 Meteor 3.5.2 test job for a deliberate upgrade to 3.6. What runtime and native dependency checks belong in CI?"
+Prompt: "Adapt our Node 24 Meteor 3.5.2 test job for a deliberate upgrade to 3.6. The target project's meteor node/npm commands report 26.13.0/11.20.0. What runtime and native dependency checks belong in CI?"
 
 Pass if the agent: Verifies the selected Meteor runtime, uses Node 26.13.0/npm 11.20.0 for 3.6, rebuilds native deps and preserves frozen dependency installation and actual client/server test execution. Does not claim existing 3.5.2 jobs need Node 26.
 Fail if it contradicts these boundaries or invents unsupported APIs.
