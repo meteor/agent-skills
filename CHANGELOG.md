@@ -1,6 +1,12 @@
 # Changelog
 
-## Unreleased
+## 1.1.2 - 2026-11-23
+
+- When a server upgrade to Meteor 3.6.1, 3.5.5 or 3.4.4 would interrupt
+  Hot Code Push for installed Cordova apps, the deployment, migration and
+  native skills explain what happens and link to that release's workaround.
+  Apps that need to deploy their server first get guidance on testing a
+  temporary plugin pin and removing it for the next store build.
 
 ## 1.1.1 - 2026-11-13
 

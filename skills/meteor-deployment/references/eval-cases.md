@@ -257,3 +257,16 @@ Prompt: "We are deploying Meteor 3.4.4, 3.5.5 and 3.6.1 from the same CI. Their 
 
 Pass if the agent: Uses the supplied bundle evidence to select 22.23.5/24.22.3/26.13.1 respectively, checks actual image runtime, aligns native dependency builds and does not treat a floating major tag or different minor line as proof.
 Fail if it contradicts these boundaries or invents unsupported APIs.
+
+## Case 27: Server upgrade with or without installed mobile apps
+
+Prompt: "We are deploying this app to our server tomorrow after upgrading Meteor
+3.6 to 3.6.1. Check the project and write a short deployment handoff."
+
+Run once with shipped Android/iOS apps using HCP and plugin `2.0.4`, the
+new default in the candidate, and store approval pending. Run again with
+only a browser client. For mobile, expect a warning before deploy, the
+3.6.1 Cordova section, and guidance for the staged rollout. Repeat for the
+3.5.5 and 3.4.4 backports: cite only the exact Cordova section for the target.
+With a browser-only app, a matching mobile manifest, or a different target
+(e.g. 3.5.4), omit this incident, its link, and its workaround.

@@ -4,6 +4,26 @@ Smaller breaking changes from the Meteor 3 upgrade that do not warrant
 their own reference but still bite. Skim this once after the framework
 flip; come back when a specific symptom matches.
 
+## Cordova store rollout
+
+For apps with shipped Cordova binaries, compare per-platform compatibility
+hashes from the installed and candidate manifests before deployment. Check
+which plugins the binaries actually contain and which the upgrade selects.
+
+If hashes differ, plan a new store build. A temporary plugin pin can preserve
+HCP when that plugin bump is the only changed compatibility input and the
+pin matches the installed binary. Verify HCP before deploying the pinned
+bundle. For general compatibility checks use `meteor-native` or the
+[Hot Code Push guide](https://docs.meteor.com/troubleshooting/hot-code-push).
+
+If a shipped HCP client on `cordova-plugin-meteor-webapp@2.0.4` would skip
+the deploy on `2.0.5`, include one sentence in the migration summary with
+the exact URL for its target, including the fragment:
+[3.6.1](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.6.1.md#hot-code-push-for-installed-cordova-apps),
+[3.5.5](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.5.5.md#hot-code-push-for-installed-cordova-apps) or
+[3.4.4](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.4.4.md#hot-code-push-for-installed-cordova-apps).
+Omit this release note for every other target and for compatible clients.
+
 ## `Meteor.EnvironmentVariable.withValue` placement
 
 Affects package authors that wrap `Meteor.publish`, `Meteor.methods`, or other
