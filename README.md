@@ -8,10 +8,9 @@ Agent Skills for AI assistants helping developers build, debug, migrate, and ope
 
 See [the changelog](./CHANGELOG.md) for additions and updates.
 
-[Version 1.1.1](https://github.com/meteor/agent-skills/releases/tag/v1.1.1)
-updates guidance for Meteor 3.6.1, 3.5.5 and 3.4.4, including Accounts security,
-authenticated fetch, Mongo query fallbacks and native rebuilds. Earlier Meteor 3
-compatibility branches remain explicit. See the [verification handoff](./docs/releases/v1.1.1.md).
+[Version 1.1.2](https://github.com/meteor/agent-skills/releases/tag/v1.1.2)
+helps teams deploying Meteor 3.6.1, 3.5.5 or 3.4.4 keep Hot Code Push working
+for installed Cordova apps during a store rollout. See the [release verification](./docs/releases/v1.1.2.md).
 
 ## Install
 
@@ -32,7 +31,7 @@ To install the official release, pin the marketplace checkout to its
 repository tag:
 
 ```bash
-codex plugin marketplace add meteor/agent-skills --ref v1.1.1
+codex plugin marketplace add meteor/agent-skills --ref v1.1.2
 codex plugin add meteor@meteor
 ```
 
@@ -49,7 +48,7 @@ To install the official release, append its repository tag to the marketplace
 source:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.1
+claude plugin marketplace add meteor/agent-skills#v1.1.2
 claude plugin install meteor@meteor
 ```
 
@@ -74,7 +73,7 @@ npx skills add meteor/agent-skills
 To install the official release, pin the catalog tag:
 
 ```bash
-npx skills add 'meteor/agent-skills#v1.1.1'
+npx skills add 'meteor/agent-skills#v1.1.2'
 ```
 
 Reinstalling replaces the selected existing skill directories, leaving
@@ -103,7 +102,7 @@ On Meteor 3.0's Node 20 or Meteor 3.1's Node 22.11, use the tested compatible
 installer without changing your application's runtime:
 
 ```bash
-npx skills@1.5.18 add 'meteor/agent-skills#v1.1.1'
+npx skills@1.5.18 add 'meteor/agent-skills#v1.1.2'
 ```
 
 The installer version and catalog tag are independent. Use the same installer
@@ -345,16 +344,16 @@ manage plugins. See the
 [official OpenAI plugin documentation](https://developers.openai.com/codex/plugins).
 
 To update an existing marketplace pinned to an earlier tag, change the
-marketplace pin and install the new version. Codex 0.164.0 requires removing
-the old marketplace registration before adding a different ref:
+marketplace pin and install the new version. With Codex 0.170.0, use these commands to replace
+the old marketplace registration and install the new version:
 
 ```bash
 codex plugin marketplace remove meteor
-codex plugin marketplace add meteor/agent-skills --ref v1.1.1
+codex plugin marketplace add meteor/agent-skills --ref v1.1.2
 codex plugin add meteor@meteor
 ```
 
-This path was tested from stable 1.1.0 to 1.1.1 without removing the plugin first.
+This path was tested from stable 1.1.1 to 1.1.2 without removing the plugin first.
 Restart Codex after the update.
 
 Remove the Meteor plugin:
@@ -381,11 +380,11 @@ claude plugin marketplace list
 To update an existing marketplace pinned to an earlier tag:
 
 ```bash
-claude plugin marketplace add meteor/agent-skills#v1.1.1
+claude plugin marketplace add meteor/agent-skills#v1.1.2
 claude plugin update meteor@meteor
 ```
 
-This path was tested from stable 1.1.0 to 1.1.1. Use the same scope as the
+This path was tested from stable 1.1.1 to 1.1.2. Use the same scope as the
 existing installation, for example `--scope local`
 on both commands for a local project installation. Restart Claude Code after
 the update.

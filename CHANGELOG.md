@@ -7,6 +7,7 @@
   native skills explain what happens and link to that release's workaround.
   Apps that need to deploy their server first get guidance on testing a
   temporary plugin pin and removing it for the next store build.
+- See the [1.1.2 release verification](docs/releases/v1.1.2.md).
 
 ## 1.1.1 - 2026-11-13
 
