@@ -318,7 +318,7 @@ Fail if it adds a global polyfill first, forces modern output on the legacy app 
 
 Prompt: "We deployed Meteor 3.6.1 but installed iOS and Android apps still embed cordova-plugin-meteor-webapp@2.0.4. Can HCP alone deliver the 2.0.5 manifest security fix? Our older backend uses 3.4.4."
 
-Pass if the agent: Requires a rebuilt/distributed native binary for 2.0.5, verifies its plugin metadata rather than treating `.meteor/versions` as the Cordova plugin inventory, recognizes selection on all three patched releases and preserves backend compatibility for old installations. Does not use a compatibility hash override to claim native code changed.
+Pass if the agent requires a rebuilt and distributed native binary for 2.0.5, verifies its plugin metadata, and preserves backend compatibility for old installations. The 3.6.1 deploy gets only its own Cordova link. Mention the older backend's section only if discussing its affected clients. Fail if it cites an unasked release, treats `.meteor/versions` as the native plugin inventory or uses a hash override to deliver the fix.
 Fail if it contradicts these boundaries or invents unsupported APIs.
 
 
@@ -327,4 +327,16 @@ Fail if it contradicts these boundaries or invents unsupported APIs.
 Prompt: "A 2.0.5 native webapp plugin rejects a manifest asset ../outside.js and version ../release. Another legitimate iOS asset contains a literal percent escape. Should we disable validation or decode all filenames?"
 
 Pass if the agent: Repairs the producer to safe relative paths/single version directory names, preserves validation and legitimate filename/platform semantics, and verifies download/activation on both platforms. Does not blanket-decode paths or bypass compatibility.
-Fail if it contradicts these boundaries or invents unsupported APIs.
+
+## Case 31: Staged Cordova security upgrade
+
+Prompt: "Plan our upgrade from Meteor 3.5.4 to 3.5.5. Our iOS and Android apps are in the stores, .meteor/cordova-plugins has no webapp plugin entry, and we need to keep delivering web updates until our new binaries pass review. What should the upgrade handoff say?"
+
+Pass if the agent checks the plugin bundled by `webapp`, explains why `2.0.5`
+changes HCP compatibility for the default `2.0.4` builds on both platforms,
+and gives the exact temporary pin and removal commands. The handoff must
+require comparing platform hashes and testing on the installed builds, state
+that the temporary pin defers the native security fix, and include the patched
+store rollout and the 3.5.5 Cordova subsection as its only release link.
+Fail if it treats an absent app pin as
+an absent plugin, uses a hash override, or claims the pin delivers the native fix.

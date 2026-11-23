@@ -4,10 +4,11 @@ description: >
   Use when building or maintaining Meteor 3 Android/iOS apps through Cordova.
   Triggers on meteor add-platform, android-device, ios-device, mobile-config.js,
   Cordova plugins, native signing or store artifacts, and mobile hot code push
-  compatibility. Use this skill when the task already concerns Meteor's
-  Cordova app workflow; use meteor-debugging for an unexplained cross-layer
-  failure and meteor-deployment for the backend. React Native/Expo, Capacitor,
-  and native Node.js addons are separate workflows.
+  compatibility before Meteor upgrades, including patch releases. Use this
+  skill when the task already concerns Meteor's Cordova app workflow.
+  Use meteor-debugging for unexplained cross-layer failures and
+  meteor-deployment for the backend. React Native/Expo, Capacitor, and
+  native Node.js addons are separate workflows.
 metadata:
   author: meteor
   kind: workflow
@@ -42,6 +43,12 @@ native debugging, signing and distribution tools.
 4. Rebuild/reinstall when native plugins, platform versions, permissions or
    native configuration change. HCP can update compatible web code/assets;
    it cannot supply missing native code or change installed binary metadata.
+   Before a Meteor upgrade for an app with shipped Cordova binaries, read
+   [Hot code push](references/hot-code-push.md) and check the candidate against
+   the shipped binary. For a confirmed HCP mismatch, give one sentence on
+   the deployment impact. Use the release-specific link in that reference
+   only when the upgrade target and plugin change match. Expand the rollout
+   steps when the app needs them. If the shipped version is unknown, check it.
 5. Verify on the target emulator/device or inspect the requested artifact.
    Record command, versions, endpoint and observable result. A successful web
    build alone does not validate a native app or a signed store artifact.
@@ -51,7 +58,7 @@ native debugging, signing and distribution tools.
 | Set up Android/iOS, add/remove platforms, run a device, choose WebView compatibility | [Toolchain and development](references/toolchain-and-development.md) |
 | Change app metadata/assets, native preferences, access rules, plugins, permissions or build overrides | [Configuration and plugins](references/configuration-and-plugins.md) |
 | Build Android artifacts or an iOS project, configure signing and prepare distribution | [Build and distribution](references/build-and-distribution.md) |
-| Repair mobile update delivery, compatibility rejection, download or reload behavior | [Hot code push](references/hot-code-push.md) |
+| Check HCP before a Meteor upgrade, or repair compatibility, download or reload behavior | [Hot code push](references/hot-code-push.md) |
 
 ## Persistent state and runtime boundaries
 

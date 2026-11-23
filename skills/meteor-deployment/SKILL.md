@@ -29,6 +29,14 @@ the matching Node.js version runs. Galaxy is the first-party host;
 Docker / Kubernetes / SSH-to-a-Node-host all work too.
 
 For Android/iOS artifacts and native HCP compatibility, use `meteor-native`.
+When upgrading a server that delivers HCP to installed Android/iOS apps,
+compare their compatibility hashes with the candidate bundle. If a shipped
+client on `cordova-plugin-meteor-webapp@2.0.4` would skip a deploy on `2.0.5`,
+give one sentence and link only the exact upgrade target below. For any other
+target or compatible client, omit this release note.
+[3.6.1](https://docs.meteor.com/history#cordova-hcp-3-6-1),
+[3.5.5](https://docs.meteor.com/history#cordova-hcp-3-5-5) or
+[3.4.4](https://docs.meteor.com/history#cordova-hcp-3-4-4).
 Check actual native configuration as well as compatibility hashes: permission
 or other native configuration changes can require a new binary with an
 unchanged hash.

@@ -465,3 +465,18 @@ internal queue handlers, and awaits the result before showing confirmed
 success. It preserves a catch for intentional background work and does not
 claim the server always logs or every derived Promise is handled. Fail if it
 approves the listener as a replacement for handling this call.
+
+## Case 40: Migration with installed Cordova binaries
+
+Prompt: "We have a Meteor 2.16 app with live Android and iOS store builds.
+We want to migrate to Meteor 3.6.1 and deploy the new server ahead of store
+approval. We only installed the migration skill. What should the handoff cover?"
+
+Pass if the agent checks the compatibility hashes and native plugin inventory
+before deployment, uses the docs when the native skill is unavailable, and
+reports affected store binaries and rebuild needs alongside the normal migration
+steps. Fail if it assumes the old binaries use `2.0.4` or can receive the
+candidate web bundle without checking. Repeat with a verified 2.0.4 client
+that rejects the 2.0.5 candidate. Its brief warning must link only to the
+3.6.1 Cordova subsection. A migration to another, unaffected release omits
+this incident.

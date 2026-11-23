@@ -14,17 +14,50 @@ not capture every native permission or configuration change. Those changes
 still need a new binary even when the hash is unchanged.
 
 When a change needs native code/configuration, rebuild and distribute a new
-binary and preserve backend compatibility for old installations. Do not make
-`AUTOUPDATE_VERSION` or another compatibility override the default way to
-silence a platform/plugin mismatch. Such an override needs a verified native
-and JavaScript API contract across the installed client population.
+binary and preserve backend compatibility for old installations. Keep native
+hash validation active during rollout. `AUTOUPDATE_VERSION` sets the web bundle
+version. Native clients check the compatibility hash separately.
+
+## Upgrade with installed store binaries
+
+Use the plugin and platform versions from the shipped binary and compare its
+per-platform `cordovaCompatibilityVersions` with the candidate deployment's
+`/__cordova/manifest.json`. Check the selected `webapp` version in
+`.meteor/versions` and its `Cordova.depends` for the default plugin. A pin in
+`.meteor/cordova-plugins` takes precedence. An empty file can still produce
+a build that includes the plugin. Check generated native plugin metadata.
+
+For the `cordova-plugin-meteor-webapp` security change, mention the incident
+only when the upgrade target is listed below and a shipped HCP client using
+`2.0.4` would reject the server bundle built with `2.0.5`. Use one sentence
+and the exact link for that target. Skip this release note for all other
+targets and for matching manifests. Diagnose other mismatches from their own
+inputs. Users receive the native fix when they install a patched store build.
+
+| Upgrade target | Cordova breaking change |
+| --- | --- |
+| 3.6.1 | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-6-1) |
+| 3.5.5 (backport) | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-5-5) |
+| 3.4.4 (backport) | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-4-4) |
+
+If the user needs HCP to continue until a new store build is ready, confirm
+that the relevant installed binaries contain `2.0.4` and the rest of the
+compatibility inputs match. Offer the temporary app pin:
+
+```bash
+meteor add cordova:cordova-plugin-meteor-webapp@2.0.4
+```
+
+Apply it only when the upgrade calls for a staged rollout with HCP on those
+binaries. Verify HCP against the shipped binaries and preserve any newer pin
+that matches the shipped build. Report the temporary pin in the upgrade
+summary, including the security fix it defers, the hash and device verification
+status, and the removal step. Remove the temporary pin with
+`meteor remove cordova:cordova-plugin-meteor-webapp` before building the
+patched binaries. Confirm the new build embeds `2.0.5` or a later fixed version
+and coordinate the HCP manifest switch with the store rollout.
 
 ## Rejected asset manifests
-
-Meteor 3.4.4, 3.5.5 and 3.6.1 select `cordova-plugin-meteor-webapp@2.0.5`,
-which validates native asset paths and version directories. Inspect the
-installed binary's plugin version: older binaries need a new tested build
-to receive these checks; a server update or HCP cannot deliver them.
 
 For a rejected manifest, inspect the specific asset or version value. Asset
 paths must be nonempty, relative and free of traversal/null components;

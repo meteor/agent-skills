@@ -24,15 +24,14 @@ license: MIT
 
 # Migrate a Meteor 2.x application to Meteor 3.x
 
-Meteor 3 removed Fibers. Server-side Mongo APIs are async. The module system
-enforces strict mode. Client reactivity inside async code needs care.
-Atmosphere packages often need forking or replacement. Approach the migration
-in phases. Do not flip the framework version flag first.
+Meteor 3 removed Fibers, made server Mongo APIs async and enforces strict mode
+in modules. Check client reactivity after `await` and Atmosphere compatibility.
 
 ## Recommended strategy
 
-For Meteor 3.6, [prepare retained local data](references/other-breaking-changes.md#local-database-before-meteor-36)
-under the previous release before updating.
+Before upgrading, [prepare data for 3.6](references/other-breaking-changes.md#local-database-before-meteor-36).
+For shipped HCP clients, [check the Cordova rollout](references/other-breaking-changes.md#cordova-store-rollout).
+When affected, copy the exact target's Cordova link into the handoff.
 
 1. Update the project to the latest 2.x release.
 2. Run the app with `WARN_WHEN_USING_OLD_API=true meteor run`. The console
