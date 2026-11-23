@@ -24,22 +24,13 @@ license: MIT
 
 # Meteor deployment
 
-`meteor build` produces a self-contained Node bundle that runs anywhere
-the matching Node.js version runs. Galaxy is the first-party host;
-Docker / Kubernetes / SSH-to-a-Node-host all work too.
+`meteor build` produces a Node bundle for Galaxy or your own host. Match its Node version.
 
-For Android/iOS artifacts and native HCP compatibility, use `meteor-native`.
-When upgrading a server that delivers HCP to installed Android/iOS apps,
-compare their compatibility hashes with the candidate bundle. If a shipped
-client on `cordova-plugin-meteor-webapp@2.0.4` would skip a deploy on `2.0.5`,
-give one sentence and link only the exact upgrade target below. For any other
-target or compatible client, omit this release note.
-[3.6.1](https://docs.meteor.com/history#cordova-hcp-3-6-1),
-[3.5.5](https://docs.meteor.com/history#cordova-hcp-3-5-5) or
-[3.4.4](https://docs.meteor.com/history#cordova-hcp-3-4-4).
-Check actual native configuration as well as compatibility hashes: permission
-or other native configuration changes can require a new binary with an
-unchanged hash.
+For Cordova builds, use `meteor-native`. Compare the server and installed apps’ HCP hashes. If a shipped client on `cordova-plugin-meteor-webapp@2.0.4` would reject the deploy on `2.0.5`, give one sentence and link only its target:
+[3.6.1](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.6.1.md#hot-code-push-for-installed-cordova-apps),
+[3.5.5](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.5.5.md#hot-code-push-for-installed-cordova-apps) or
+[3.4.4](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.4.4.md#hot-code-push-for-installed-cordova-apps).
+Omit this release note for other targets or compatible clients. Native permission or configuration changes can require a store build even when hashes match.
 
 Match the Node version to the bundled Meteor Node:
 

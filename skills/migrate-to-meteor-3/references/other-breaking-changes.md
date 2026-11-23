@@ -19,9 +19,9 @@ bundle. For general compatibility checks use `meteor-native` or the
 If a shipped HCP client on `cordova-plugin-meteor-webapp@2.0.4` would skip
 the deploy on `2.0.5`, include one sentence in the migration summary with
 the exact URL for its target, including the fragment:
-[3.6.1](https://docs.meteor.com/history#cordova-hcp-3-6-1),
-[3.5.5](https://docs.meteor.com/history#cordova-hcp-3-5-5) or
-[3.4.4](https://docs.meteor.com/history#cordova-hcp-3-4-4).
+[3.6.1](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.6.1.md#hot-code-push-for-installed-cordova-apps),
+[3.5.5](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.5.5.md#hot-code-push-for-installed-cordova-apps) or
+[3.4.4](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.4.4.md#hot-code-push-for-installed-cordova-apps).
 Omit this release note for every other target and for compatible clients.
 
 ## `Meteor.EnvironmentVariable.withValue` placement

@@ -36,9 +36,9 @@ inputs. Users receive the native fix when they install a patched store build.
 
 | Upgrade target | Cordova breaking change |
 | --- | --- |
-| 3.6.1 | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-6-1) |
-| 3.5.5 (backport) | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-5-5) |
-| 3.4.4 (backport) | [Installed apps and Hot Code Push](https://docs.meteor.com/history#cordova-hcp-3-4-4) |
+| 3.6.1 | [Installed apps and Hot Code Push](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.6.1.md#hot-code-push-for-installed-cordova-apps) |
+| 3.5.5 (backport) | [Installed apps and Hot Code Push](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.5.5.md#hot-code-push-for-installed-cordova-apps) |
+| 3.4.4 (backport) | [Installed apps and Hot Code Push](https://github.com/meteor/meteor/blob/84a46d4a618619766b330c6e7cfa268d257fe178/v3-docs/docs/generators/changelog/versions/3.4.4.md#hot-code-push-for-installed-cordova-apps) |
 
 If the user needs HCP to continue until a new store build is ready, confirm
 that the relevant installed binaries contain `2.0.4` and the rest of the
